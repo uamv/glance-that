@@ -31,7 +31,11 @@
 define( 'GT_VERSION', '2.0' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
-! defined( 'GT_SHOW_ALL' ) ? define( 'GT_SHOW_ALL', TRUE ) : FALSE;
+
+// Determine whether statuses are to be shown (keep GT_SHOW_ALL for backwards compatibility - pre v2.1)
+( ! defined( 'GT_SHOW_ALL_STATUS' ) || ( defined( 'GT_SHOW_ALL' ) && GT_SHOW_ALL ) ) ? define( 'GT_SHOW_ALL_STATUS', TRUE ) : FALSE;
+
+// Determine whether items with zero published items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT' ) ? define( 'GT_SHOW_ZERO_COUNT', TRUE ) : FALSE;
 
 /**
@@ -257,7 +261,7 @@ class Glance_That {
 								
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
-									if ( GT_SHOW_ALL ) {
+									if ( GT_SHOW_ALL_STATUS ) {
 										$statuses = '<div class="gt-statuses">';
 										$statuses .= '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached">' . $unattached . '</a></div>';
 										$statuses .= '</div>';
@@ -277,7 +281,7 @@ class Glance_That {
 								
 									$text = sprintf( $text, number_format_i18n( $num_comments->approved ) );
 
-									if ( GT_SHOW_ALL ) {
+									if ( GT_SHOW_ALL_STATUS ) {
 										$moderation = intval( $num_comments->moderated ) > 0 ? 'gt-moderate' : '';
 										$statuses = '<div id="gt-statuses-comments" class="gt-statuses">';
 										$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending">' . $num_comments->moderated . '</a></div>';
@@ -309,7 +313,7 @@ class Glance_That {
 								
 									$text = sprintf( $text, number_format_i18n( $num_plugins ) );
 
-									if ( GT_SHOW_ALL ) {
+									if ( GT_SHOW_ALL_STATUS ) {
 										$statuses = '<div class="gt-statuses">';
 											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=active" class="gt-active">' . $num_plugins_active . '</a></div>';
 											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=inactive" class="gt-inactive">' . ( $num_plugins - $num_plugins_active ) . '</a></div>';
@@ -347,7 +351,7 @@ class Glance_That {
 									
 										$text = sprintf( $text, number_format_i18n( $num_forms['total'] ) );
 
-										if ( GT_SHOW_ALL ) {
+										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
 												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active">' . $num_forms['active'] . '</a></div>';
 												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive">' . $num_forms['inactive'] . '</a></div>';
@@ -370,7 +374,7 @@ class Glance_That {
 									
 										$text = sprintf( $text, number_format_i18n( $num_posts->publish ) );
 
-										if ( GT_SHOW_ALL ) {
+										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
 											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=future" class="gt-future">' . $num_posts->future . '</a></div>';
