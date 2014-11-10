@@ -5,7 +5,7 @@ Donate link: http://vandercar.net/wp
 Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.1
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
