@@ -119,7 +119,7 @@ class Glance_That {
 	private function __construct() {
 
 		// Process the form
-		add_action( 'plugins_loaded', array( $this, 'get_users_glances' ) );
+		add_action( 'init', array( $this, 'get_users_glances' ) );
 
 		// Load the administrative Stylesheets and JavaScript
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_stylesheets_and_javascript' ) );
@@ -1070,7 +1070,23 @@ class Glance_That {
 
 		$this->glances = get_user_meta( $current_user->ID, 'glance_that', TRUE );
 
-		$this->glances = empty( $this->glances ) ? array() : $this->glances;
+		// If user has no glances set
+		if ( empty( $this->glances ) ) {
+
+			// Define standard defaults
+			$gt_default_glances = array(
+				'post' => array( 'icon' => 'f109', 'sort' => 1 ),
+				'page' => array( 'icon' => 'f105', 'sort' => 2 ),
+				'comment' => array( 'icon' => 'f101', 'sort' => 3 ),
+				);
+
+			// Set default glances
+			$this->glances = apply_filters( 'gt_default_glances', $gt_default_glances, $current_user->ID );
+
+			// Update the option
+			update_user_meta( $current_user->ID, 'glance_that', $this->glances );
+
+		}
 
 		// Set an indexed array of glances to reference when sorting
 		$this->glances_indexed = array();
