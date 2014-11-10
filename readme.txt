@@ -33,8 +33,10 @@ Additionally, Glance That allows you to view the number of items matching the fo
 * Active, Inactive (Plugins & Gravity Forms)
 * Updates (Plugins)
 
+= Constants =
+
 Statuses can be hid by adding the following to wp-config.php
-`define( GT_SHOW_ALL, FALSE );`
+`define( GT_SHOW_ALL_STATUS, FALSE );`
 
 Items with a zero published count can be hid by adding
 `define( GT_SHOW_ZERO_COUNT, FALSE );`
