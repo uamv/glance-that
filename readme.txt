@@ -71,6 +71,9 @@ Silence is golden.
 
 == Changelog ==
 
+= 2.2 =
+* Supports new dashicons
+
 = 2.1 =
 * Allows filtering of default glances with gt_default_glances
 * Changes GT_SHOW_ALL to GT_SHOW_ALL_STATUS

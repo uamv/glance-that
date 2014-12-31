@@ -536,6 +536,10 @@ class Glance_That {
 			'backup',
 			'lightbulb',
 			'microphone',
+			'building',
+			'store',
+			'album',
+			'tickets-alt'
 		);
 
 		// Assemble a form for adding/removing post types
@@ -796,6 +800,15 @@ class Glance_That {
 			'f490' => 'media-video',
 			'f492' => 'playlist-audio',
 			'f493' => 'playlist-video',
+			'f522' => 'controls-play',
+			'f523' => 'controls-pause',
+			'f519' => 'controls-forward',
+			'f517' => 'controls-skipforward',
+			'f518' => 'controls-back',
+			'f516' => 'controls-skipback',
+			'f515' => 'controls-repeat',
+			'f521' => 'controls-volumeon',
+			'f520' => 'controls-volumeoff',
 			
 			// image editing
 			'f165' => 'image-crop',
@@ -967,6 +980,13 @@ class Glance_That {
 			'f471' => 'tablet',
 			'f470' => 'smartphone',
 			'f328' => 'smiley',
+			'f525' => 'phone',
+			'f512' => 'building',
+			'f513' => 'store',
+			'f514' => 'album',
+			'f527' => 'palmtree',
+			'f524' => 'tickets-alt',
+			'f526' => 'money',
 			);
 
 		// Allow users to filter available iconset
