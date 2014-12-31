@@ -4,8 +4,8 @@ Contributors: UaMV
 Donate link: http://vandercar.net/wp
 Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.0
-Stable tag: 2.1
+Tested up to: 4.1
+Stable tag: 2.2
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -118,6 +118,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 2.2 =
+* Supporting new dashicons and tagging WP 4.1 compatibility
 
 = 1.8 =
 * New features include sorting and control of native items. Please, note that native items (posts, pages, comments) will need to be manually added after this update.
