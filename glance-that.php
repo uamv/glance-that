@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://vandercar.net/wp/glance-that
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 2.2
+ * Version: 2.3
  * Author: UaMV
  * Author URI: http://vandercar.net
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 2.2
+ * @version 2.3
  * @author UaMV
  * @copyright Copyright (c) 2013, UaMV
  * @link http://vandercar.net/wp/glance-that
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '2.2' );
+define( 'GT_VERSION', '2.3' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -37,6 +37,9 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
 // Determine whether items with zero published items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT' ) ? define( 'GT_SHOW_ZERO_COUNT', TRUE ) : FALSE;
+
+// Set a capability required for editing of one's glances
+! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
 
 /**
  * Get instance of class if in admin.
@@ -107,6 +110,15 @@ class Glance_That {
 	 */
 	protected $glances_indexed;
 
+	/**
+	 * editable
+	 *
+	 * @since    2.4
+	 *
+	 * @var      array
+	 */
+	protected $editable;
+
 	/*---------------------------------------------------------------------------------*
 	 * Consturctor
 	 *---------------------------------------------------------------------------------*/
@@ -118,11 +130,16 @@ class Glance_That {
 	 */
 	private function __construct() {
 
+		add_action( 'plugins_loaded', array( $this, 'check_user_cap' ) );
+
 		// Process the form
 		add_action( 'init', array( $this, 'get_users_glances' ) );
 
 		// Load the administrative Stylesheets and JavaScript
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_stylesheets_and_javascript' ) );
+
+		// Add custom post types to end of At A Glance table
+		add_filter( 'dashboard_glance_items', array( $this, 'customize_items' ), 10, 1 );
 
 		// Process the form
 		add_action( 'admin_init', array( $this, 'process_form' ) );
@@ -132,9 +149,6 @@ class Glance_That {
 
 		// Add post statuses to native types
 		add_action( 'admin_footer', array( $this, 'add_sort_order' ) );
-
-		// Add custom post types to end of At A Glance table
-		add_filter( 'dashboard_glance_items', array( $this, 'customize_items' ), 10, 1 );
 
 		// Add form activation to end of At A Glance table
 		add_filter( 'dashboard_glance_items', array( $this, 'add_form_activation_link' ), 20, 1 );
@@ -174,10 +188,26 @@ class Glance_That {
 	 *
 	 * @since    1.0
 	 */
+	public function check_user_cap() {
+
+		$this->editable = current_user_can( GT_EDIT_GLANCES ) ? TRUE : FALSE;
+
+	} // end check_user_cap
+
+	/**
+	 * Registers the plugin's administrative stylesheets and JavaScript
+	 *
+	 * @since    1.0
+	 */
 	public function add_stylesheets_and_javascript() {
 		wp_enqueue_style( 'glance', GT_DIR_URL . 'glance.css', array(), GT_VERSION );
-		wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
-		wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
+		if ( $this->editable ) {
+
+			wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
+			wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+
+		}
 
 	} // end add_stylesheets_and_javascript
 
@@ -217,6 +247,9 @@ class Glance_That {
 		// If not empty, add items
 		if ( '' != $this->glances_indexed ) {
 
+			// Set classes for glanced items
+			$classes = $this->editable ? 'gt-item gt-editable unordered' : 'gt-item unordered';
+
 			// Sort array of glanced items for display
 			$order = array();
 			foreach ( $this->glances as $item => $data )
@@ -246,7 +279,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
 									ob_start();
-										printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="#" class="glance-that" style="pointer-events:none;color:#444;">%2$s</a></div>', $item, $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="#" class="glance-that" style="pointer-events:none;color:#444;">%2$s</a></div>', $item, $text );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -268,7 +301,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that">%2$s</a>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that">%2$s</a>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -291,7 +324,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit-comments.php" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit-comments.php" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -323,7 +356,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 
@@ -337,7 +370,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
-										printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that">%1$s</a></div>', $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that">%1$s</a></div>', $text );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -360,7 +393,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -396,7 +429,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="gt-item unordered" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -417,13 +450,18 @@ class Glance_That {
 	 */
 	public function add_form_activation_link( $elements ) {
 
-		// Define a link handled by jquery to show the form
-		$html = '<a href="#" id="show-gt-form"';
-		$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? ' style="display:none;">' : '>';
-		$html .= 'Add/Remove Item</a>';
+		if ( $this->editable ) {
 
-		// Add it to the At A Glance elements array and return results
-		$elements[] = $html;
+			// Define a link handled by jquery to show the form
+			$html = '<a href="#" id="show-gt-form"';
+			$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? ' style="display:none;">' : '>';
+			$html .= 'Add/Remove Item</a>';
+
+			// Add it to the At A Glance elements array and return results
+			$elements[] = $html;
+
+		}
+
 		return $elements;
 
 	}
@@ -435,197 +473,201 @@ class Glance_That {
 	 */
 	public function add_form() {
 
-		global $current_user;
-		wp_get_current_user();
+		if ( $this->editable ) {
 
-		// Define dashicon fields allowable icons
-		$iconset = array(
-			'admin-site',
-			'dashboard',
-			'admin-post',
-			'admin-media',
-			'admin-links',
-			'marker',
-			'admin-page',
-			'admin-comments',
-			'admin-plugins',
-			'admin-users',
-			'admin-network',
-			'admin-home',
-			'welcome-write-blog',
-			'welcome-view-site',
-			'welcome-widgets-menus',
-			'welcome-learn-more',			
-			'format-aside',
-			'format-image',
-			'format-gallery',
-			'format-video',
-			'format-status',
-			'format-quote',
-			'format-chat',
-			'format-audio',
-			'camera',
-			'images-alt',
-			'images-alt2',
-			'video-alt',
-			'video-alt2',
-			'video-alt3',
-			'playlist-audio',
-			'playlist-video',
-			'editor-help',
-			'lock',
-			'calendar',
-			'visibility',
-			'post-status',
-			'edit',
-			'share',
-			'share-alt',
-			'share-alt2',
-			'twitter',
-			'rss',
-			'email',
-			'email-alt',
-			'facebook',
-			'googleplus',
-			'networking',
-			'art',
-			'performance',
-			'universal-access',
-			'tickets',
-			'nametag',
-			'clipboard',
-			'heart',
-			'megaphone',
-			'schedule',
-			'wordpress',
-			'pressthis',
-			'update',
-			'screenoptions',
-			'info',
-			'cart',
-			'feedback',
-			'cloud',
-			'translation',
-			'tag',
-			'category',
-			'archive',
-			'marker',	
-			'star-filled',
-			'flag',
-			'location',
-			'location-alt',
-			'shield',
-			'shield-alt',
-			'sos',
-			'search',
-			'slides',
-			'analytics',
-			'chart-pie',
-			'chart-bar',
-			'chart-area',
-			'groups',
-			'businessman',
-			'id-alt',
-			'products',
-			'awards',
-			'forms',
-			'testimonial',
-			'portfolio',
-			'book-alt',
-			'download',
-			'backup',
-			'lightbulb',
-			'microphone',
-			'building',
-			'store',
-			'album',
-			'tickets-alt'
-		);
+			global $current_user;
+			wp_get_current_user();
 
-		// Assemble a form for adding/removing post types
-		$html = '<form id="gt-form" method="post" action="index.php?action=add-gt-item" data-userid="' . $current_user->ID . '"';
+			// Define dashicon fields allowable icons
+			$iconset = array(
+				'admin-site',
+				'dashboard',
+				'admin-post',
+				'admin-media',
+				'admin-links',
+				'marker',
+				'admin-page',
+				'admin-comments',
+				'admin-plugins',
+				'admin-users',
+				'admin-network',
+				'admin-home',
+				'welcome-write-blog',
+				'welcome-view-site',
+				'welcome-widgets-menus',
+				'welcome-learn-more',			
+				'format-aside',
+				'format-image',
+				'format-gallery',
+				'format-video',
+				'format-status',
+				'format-quote',
+				'format-chat',
+				'format-audio',
+				'camera',
+				'images-alt',
+				'images-alt2',
+				'video-alt',
+				'video-alt2',
+				'video-alt3',
+				'playlist-audio',
+				'playlist-video',
+				'editor-help',
+				'lock',
+				'calendar',
+				'visibility',
+				'post-status',
+				'edit',
+				'share',
+				'share-alt',
+				'share-alt2',
+				'twitter',
+				'rss',
+				'email',
+				'email-alt',
+				'facebook',
+				'googleplus',
+				'networking',
+				'art',
+				'performance',
+				'universal-access',
+				'tickets',
+				'nametag',
+				'clipboard',
+				'heart',
+				'megaphone',
+				'schedule',
+				'wordpress',
+				'pressthis',
+				'update',
+				'screenoptions',
+				'info',
+				'cart',
+				'feedback',
+				'cloud',
+				'translation',
+				'tag',
+				'category',
+				'archive',
+				'marker',	
+				'star-filled',
+				'flag',
+				'location',
+				'location-alt',
+				'shield',
+				'shield-alt',
+				'sos',
+				'search',
+				'slides',
+				'analytics',
+				'chart-pie',
+				'chart-bar',
+				'chart-area',
+				'groups',
+				'businessman',
+				'id-alt',
+				'products',
+				'awards',
+				'forms',
+				'testimonial',
+				'portfolio',
+				'book-alt',
+				'download',
+				'backup',
+				'lightbulb',
+				'microphone',
+				'building',
+				'store',
+				'album',
+				'tickets-alt'
+			);
 
-			// Keep form visible if submission has just been made
-			$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? '>' : ' style="display:none;">';
-			
-			// Build up the list of post types
-			$post_types = get_post_types( array(), 'objects' );
+			// Assemble a form for adding/removing post types
+			$html = '<form id="gt-form" method="post" action="index.php?action=add-gt-item" data-userid="' . $current_user->ID . '"';
 
-			// Apply filters to available post types
-			$post_types = apply_filters( 'gt_post_type_selection', $post_types );
+				// Keep form visible if submission has just been made
+				$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? '>' : ' style="display:none;">';
+				
+				// Build up the list of post types
+				$post_types = get_post_types( array(), 'objects' );
 
-			// Get the dashicon field
-			$html .= $this->get_dashicon_field( 'gt-item-icon', 'marker', $iconset );
+				// Apply filters to available post types
+				$post_types = apply_filters( 'gt_post_type_selection', $post_types );
 
-			$html .= ' <select id="gt-item" name="gt-item">';
-				$html .= '<option value""></option>';
-				foreach( $post_types as $index => $post_type ) {
+				// Get the dashicon field
+				$html .= $this->get_dashicon_field( 'gt-item-icon', 'marker', $iconset );
 
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances[ $post_type->name ] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+				$html .= ' <select id="gt-item" name="gt-item">';
+					$html .= '<option value""></option>';
+					foreach( $post_types as $index => $post_type ) {
 
-					// Only show revisions to admininstrators
-					if ( 'revision' == $post_type->name && current_user_can( 'edit_dashboard' ) ) {
-						$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="backup" ' . $glancing . '>' . esc_html( $post_type->labels->name ) . '</option>';
-					}
+						// Set data-glancing attribute
+						$glancing = isset( $this->glances[ $post_type->name ] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-					// Only show post types on which user has edit permissions
-					elseif ( current_user_can( $post_type->cap->edit_posts ) && 'nav_menu_item' != $post_type->name ) {
-						$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="';
-						// add default dashicons for post types
-						if ( 'post' == $post_type->name ) {
-							$html .= 'admin-post';
-						} elseif ( 'page' == $post_type->name ) {
-							$html .= 'admin-page';
-						} elseif ( 'attachment' == $post_type->name ) {
-							$html .= 'admin-media';
-						} elseif ( ! empty( $post_type->menu_icon  ) ) {
-							$html .= esc_attr( str_replace( 'dashicons-', '', $post_type->menu_icon ) );
-						} else {
-							$html .= 'marker';
+						// Only show revisions to admininstrators
+						if ( 'revision' == $post_type->name && current_user_can( 'edit_dashboard' ) ) {
+							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="backup" ' . $glancing . '>' . esc_html( $post_type->labels->name ) . '</option>';
 						}
-						$html .= '" ' . $glancing . '>' . esc_html( $post_type->labels->name ) . '</option>';
+
+						// Only show post types on which user has edit permissions
+						elseif ( current_user_can( $post_type->cap->edit_posts ) && 'nav_menu_item' != $post_type->name ) {
+							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="';
+							// add default dashicons for post types
+							if ( 'post' == $post_type->name ) {
+								$html .= 'admin-post';
+							} elseif ( 'page' == $post_type->name ) {
+								$html .= 'admin-page';
+							} elseif ( 'attachment' == $post_type->name ) {
+								$html .= 'admin-media';
+							} elseif ( ! empty( $post_type->menu_icon  ) ) {
+								$html .= esc_attr( str_replace( 'dashicons-', '', $post_type->menu_icon ) );
+							} else {
+								$html .= 'marker';
+							}
+							$html .= '" ' . $glancing . '>' . esc_html( $post_type->labels->name ) . '</option>';
+						}
+
 					}
 
-				}
+					if ( class_exists( 'RGFormsModel' ) ) {					
+						// Set data-glancing attribute
+						$glancing = isset( $this->glances['gravityform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-				if ( class_exists( 'RGFormsModel' ) ) {					
+						// Only show users option if user can edit forms
+						( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ? $html .= '<option value="gravityform" data-dashicon="feedback" ' . $glancing . '>Gravity Forms</options>' : FALSE;
+					}
+
 					// Set data-glancing attribute
-					$glancing = isset( $this->glances['gravityform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+					$glancing = isset( $this->glances['comment'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-					// Only show users option if user can edit forms
-					( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ? $html .= '<option value="gravityform" data-dashicon="feedback" ' . $glancing . '>Gravity Forms</options>' : FALSE;
-				}
+					// Only show users option if user can list users
+					current_user_can( 'moderate_comments' ) ? $html .= '<option value="comment" data-dashicon="admin-comments" ' . $glancing . '>Comments</options>' : FALSE;
 
-				// Set data-glancing attribute
-				$glancing = isset( $this->glances['comment'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+					// Set data-glancing attribute
+					$glancing = isset( $this->glances['user'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-				// Only show users option if user can list users
-				current_user_can( 'moderate_comments' ) ? $html .= '<option value="comment" data-dashicon="admin-comments" ' . $glancing . '>Comments</options>' : FALSE;
+					// Only show users option if user can list users
+					current_user_can( 'list_users' ) ? $html .= '<option value="user" data-dashicon="admin-users" ' . $glancing . '>Users</options>' : FALSE;
 
-				// Set data-glancing attribute
-				$glancing = isset( $this->glances['user'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+					// Set data-glancing attribute
+					$glancing = isset( $this->glances['plugin'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-				// Only show users option if user can list users
-				current_user_can( 'list_users' ) ? $html .= '<option value="user" data-dashicon="admin-users" ' . $glancing . '>Users</options>' : FALSE;
+					// Only show plugins optino if user can activate plugins
+					current_user_can( 'activate_plugins' ) ? $html .= '<option value="plugin" data-dashicon="admin-plugins" ' . $glancing . '>Plugins</options>' : FALSE;
 
-				// Set data-glancing attribute
-				$glancing = isset( $this->glances['plugin'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+				$html .= '</select>';
+				
+				// Set the submission buttons which are handled via jquery
+				$html .= '<span style="float: right;">';
+					$html .= '<input type="submit" class="button-primary" value="Add" id="add-gt-item" />';
+					$html .= '<input type="submit" class="button-primary" value="Remove" id="remove-gt-item" />';
+				$html .= '</span>';
 
-				// Only show plugins optino if user can activate plugins
-				current_user_can( 'activate_plugins' ) ? $html .= '<option value="plugin" data-dashicon="admin-plugins" ' . $glancing . '>Plugins</options>' : FALSE;
+			$html .= '</form>';
 
-			$html .= '</select>';
-			
-			// Set the submission buttons which are handled via jquery
-			$html .= '<span style="float: right;">';
-				$html .= '<input type="submit" class="button-primary" value="Add" id="add-gt-item" />';
-				$html .= '<input type="submit" class="button-primary" value="Remove" id="remove-gt-item" />';
-			$html .= '</span>';
+			echo $html;
 
-		$html .= '</form>';
-
-		echo $html;
+		}
 
 	}
 
@@ -635,85 +677,90 @@ class Glance_That {
 	 * @since    2.1.0
 	 */
 	public function process_form() {
+
+		if ( $this->editable ) {
 		
-		// Check if in admin and user has submitted the form
-		if ( is_admin() && isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) {
+			// Check if in admin and user has submitted the form
+			if ( is_admin() && isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) {
 
-			// Get current user
-			$current_user = wp_get_current_user();
+				// Get current user
+				$current_user = wp_get_current_user();
 
-			// Get the submitted post type glance
-			$glance = isset( $_POST['gt-item'] ) ? $_POST['gt-item'] : '';
+				// Get the submitted post type glance
+				$glance = isset( $_POST['gt-item'] ) ? $_POST['gt-item'] : '';
 
-			// Get all post types
-			$post_types = get_post_types();
+				// Get all post types
+				$post_types = get_post_types();
 
-			// If adding an item
-			if ( 'add-gt-item' == $_GET['action'] ) {
+				// If adding an item
+				if ( 'add-gt-item' == $_GET['action'] ) {
 
-				// If no item is selected
-				if ( '' == $glance ) {
-					$this->notices[] = array( 'message' => 'You must select an item to add.', 'class' => 'error' );
-				}
-				// Otherwise, add submitted item
-				else {
-
-					// Add item to glance_that user meta
-					$this->glances[ $glance ] = array( 'icon' => $_POST['gt-item-icon'] );
-
-					// Alphabetize the items
-					ksort( $this->glances );
-
-					// Update the meta
-					update_user_meta( $current_user->ID, 'glance_that', $this->glances );
-
-					// Display notices
-					if ( in_array( $glance, $post_types ) ) {
-						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name ) . '</strong> were successfully added to your glances.', 'class' => 'updated' );
-					} elseif ( 'user' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully added to your glances.', 'class' => 'updated' );
-					} elseif ( 'plugin' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully added to your glances.', 'class' => 'updated' );
-					} elseif ( 'comment' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Comments</strong> were successfully added to your glances.', 'class' => 'updated' );
-					} elseif ( 'gravityform' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'updated' );
+					// If no item is selected
+					if ( '' == $glance ) {
+						$this->notices[] = array( 'message' => 'You must select an item to add.', 'class' => 'error' );
 					}
-				}
+					// Otherwise, add submitted item
+					else {
 
-			// If removing item
-			} elseif ( 'remove-gt-item' == $_GET['action'] ) {
+						// Add item to glance_that user meta
+						$this->glances[ $glance ] = array( 'icon' => $_POST['gt-item-icon'] );
 
-				// If no item is selected
-				if ( '' == $glance ) {
-					$this->notices[] = array( 'message' => 'You must select an item to remove.', 'class' => 'error' );
-				}
-				// Otherwise, remove submitted item
-				else {
+						// Alphabetize the items
+						ksort( $this->glances );
 
-					// Remove item from glance_that user meta
-					unset( $this->glances[ $glance ] );
+						// Update the meta
+						update_user_meta( $current_user->ID, 'glance_that', $this->glances );
 
-					// Update the option
-					update_user_meta( $current_user->ID, 'glance_that', $this->glances );
-					
-					// Display notices
-					if ( in_array( $glance, $post_types ) ) {
-						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name ) . '</strong> were successfully removed from your glances.', 'class' => 'updated' );
-					} elseif ( 'user' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully removed from your glances.', 'class' => 'updated' );
-					} elseif ( 'plugin' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
-					} elseif ( 'comment' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
-					} elseif ( 'gravityform' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						// Display notices
+						if ( in_array( $glance, $post_types ) ) {
+							$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name ) . '</strong> were successfully added to your glances.', 'class' => 'updated' );
+						} elseif ( 'user' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully added to your glances.', 'class' => 'updated' );
+						} elseif ( 'plugin' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully added to your glances.', 'class' => 'updated' );
+						} elseif ( 'comment' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Comments</strong> were successfully added to your glances.', 'class' => 'updated' );
+						} elseif ( 'gravityform' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'updated' );
+						}
 					}
+
+				// If removing item
+				} elseif ( 'remove-gt-item' == $_GET['action'] ) {
+
+					// If no item is selected
+					if ( '' == $glance ) {
+						$this->notices[] = array( 'message' => 'You must select an item to remove.', 'class' => 'error' );
+					}
+					// Otherwise, remove submitted item
+					else {
+
+						// Remove item from glance_that user meta
+						unset( $this->glances[ $glance ] );
+
+						// Update the option
+						update_user_meta( $current_user->ID, 'glance_that', $this->glances );
+						
+						// Display notices
+						if ( in_array( $glance, $post_types ) ) {
+							$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name ) . '</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						} elseif ( 'user' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						} elseif ( 'plugin' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						} elseif ( 'comment' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						} elseif ( 'gravityform' == $glance ) {
+							$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						}
+					}
+
 				}
 
 			}
 
 		}
+
 	} // end process_notice_response
 
 	/**

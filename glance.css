@@ -1,3 +1,7 @@
+.post-count,.page-count,.comment-count {
+	display: none;
+}
+
 .gt-statuses {
 	margin-left: 2.5em;
 }
@@ -72,6 +76,6 @@
 	border-left: 4px dotted #ececec;
 	margin-right: -4px;
 }
-.gt-item:hover {
+.gt-item.gt-editable:hover {
 	cursor: move;
 }

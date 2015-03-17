@@ -3,8 +3,6 @@
  */
 jQuery(document).ready(function( $ ) {
 
-	$('.post-count,.page-count,.comment-count').hide();
-
 	$(function() {
 
 	    $( "#dashboard_right_now .inside .main ul" ).sortable({
