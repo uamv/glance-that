@@ -4,8 +4,8 @@ Contributors: UaMV
 Donate link: http://vandercar.net/wp
 Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.2.1
-Stable tag: 2.3
+Tested up to: 4.3
+Stable tag: 2.4
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -74,6 +74,9 @@ Silence is golden.
 
 == Changelog ==
 
+= 2.4 =
+* Supports new dashicons in WP 4.3
+
 = 2.3 =
 * Allows restriction of the editability of glances
 
@@ -125,6 +128,9 @@ Silence is golden.
 
 == Upgrade Notice ==
 
+= 2.4 =
+* Supports new dashicons in WP 4.3
+
 = 2.3 =
 * You can now restrict users without a specific capability from editing their visible glances.
 
@@ -136,4 +142,3 @@ Silence is golden.
 
 = 1.4 =
 * Adds new features
-

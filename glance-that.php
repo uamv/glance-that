@@ -3,21 +3,21 @@
  * Plugin Name: Glance That
  * Plugin URI: http://vandercar.net/wp/glance-that
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 2.3
+ * Version: 2.4
  * Author: UaMV
  * Author URI: http://vandercar.net
  *
  * The Glance That plugin was created to extend At A Glance.
  *
- * This program is free software; you can redistribute it and/or modify it under the terms of the GNU 
- * General Public License version 2, as published by the Free Software Foundation.  You may NOT assume 
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU
+ * General Public License version 2, as published by the Free Software Foundation.  You may NOT assume
  * that you can use any other version of the GPL.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 2.3
+ * @version 2.4
  * @author UaMV
  * @copyright Copyright (c) 2013, UaMV
  * @link http://vandercar.net/wp/glance-that
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '2.3' );
+define( 'GT_VERSION', '2.4' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -217,7 +217,7 @@ class Glance_That {
 	 * @since    1.4
 	 */
 	public function add_sort_order() { ?>
-		
+
 		<script type="text/javascript" language="javascript">
 			jQuery(document).ready(function($) {
 
@@ -262,7 +262,7 @@ class Glance_That {
 			$this->glances = array_reverse( $this->glances );
 
 			foreach ( $this->glances as $glance => $options ) {
-				
+
 				foreach ( $this->glances_indexed as $key => $data ) {
 
 					if ( $glance == $data['glance'] ) {
@@ -275,7 +275,7 @@ class Glance_That {
 								$num_posts = wp_count_posts( $item );
 								if ( $num_posts && $num_posts->inherit && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 									$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->inherit );
-								
+
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
 									ob_start();
@@ -291,7 +291,7 @@ class Glance_That {
 
 								if ( $num_posts && ( $num_posts->inherit || GT_SHOW_ZERO_COUNT ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 									$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->inherit );
-								
+
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
 									if ( GT_SHOW_ALL_STATUS ) {
@@ -311,7 +311,7 @@ class Glance_That {
 
 								if ( ( $num_comments->approved || GT_SHOW_ZERO_COUNT ) && current_user_can( 'moderate_comments' ) ) {
 									$text = _n( '%s Comment', '%s Comments', $num_comments->approved );
-								
+
 									$text = sprintf( $text, number_format_i18n( $num_comments->approved ) );
 
 									if ( GT_SHOW_ALL_STATUS ) {
@@ -320,7 +320,7 @@ class Glance_That {
 										$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending">' . $num_comments->moderated . '</a></div>';
 										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=spam" class="gt-spam">' . $num_comments->spam . '</a></div>';
 										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=trash" class="gt-trash">' . $num_comments->trash . '</a></div>';
-										$statuses .= '</div>'; 
+										$statuses .= '</div>';
 									}
 
 									ob_start();
@@ -336,14 +336,14 @@ class Glance_That {
 
 								$plugin_updates = get_plugin_updates();
 								$num_plugin_updates = count( $plugin_updates );
-								
+
 								foreach ( $plugins as $plugin => $data ) {
 									is_plugin_active( $plugin ) ? $num_plugins_active++ : FALSE;
 								}
 
 								if ( ( $num_plugins || GT_SHOW_ZERO_COUNT ) && current_user_can( 'activate_plugins' ) ) {
 									$text = _n( '%s Plugin', '%s Plugins', $num_plugins );
-								
+
 									$text = sprintf( $text, number_format_i18n( $num_plugins ) );
 
 									if ( GT_SHOW_ALL_STATUS ) {
@@ -366,7 +366,7 @@ class Glance_That {
 								$num_users = count_users();
 								if ( current_user_can( 'list_users' ) ) {
 									$text = _n( '%s User', '%s Users', $num_users['total_users'] );
-								
+
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
@@ -381,7 +381,7 @@ class Glance_That {
 
 									if ( ( $num_forms['total'] || GT_SHOW_ZERO_COUNT ) && ( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ) {
 										$text = _n( '%s Form', '%s Forms', $num_forms['total'] );
-									
+
 										$text = sprintf( $text, number_format_i18n( $num_forms['total'] ) );
 
 										if ( GT_SHOW_ALL_STATUS ) {
@@ -404,7 +404,7 @@ class Glance_That {
 									$num_posts = wp_count_posts( $item );
 									if ( $num_posts && ( $num_posts->publish || GT_SHOW_ZERO_COUNT ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 										$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->publish );
-									
+
 										$text = sprintf( $text, number_format_i18n( $num_posts->publish ) );
 
 										if ( GT_SHOW_ALL_STATUS ) {
@@ -495,7 +495,7 @@ class Glance_That {
 				'welcome-write-blog',
 				'welcome-view-site',
 				'welcome-widgets-menus',
-				'welcome-learn-more',			
+				'welcome-learn-more',
 				'format-aside',
 				'format-image',
 				'format-gallery',
@@ -549,7 +549,7 @@ class Glance_That {
 				'tag',
 				'category',
 				'archive',
-				'marker',	
+				'marker',
 				'star-filled',
 				'flag',
 				'location',
@@ -579,7 +579,20 @@ class Glance_That {
 				'building',
 				'store',
 				'album',
-				'tickets-alt'
+				'tickets-alt',
+
+				'admin-customizer',
+				'admin-multisite',
+				'editor-table',
+				'filter',
+				'image-filter',
+				'image-rotate',
+				'layout',
+				'sticky',
+				'thumbs-down',
+				'thumbs-up',
+				'unlock',
+				'warning',
 			);
 
 			// Assemble a form for adding/removing post types
@@ -587,7 +600,7 @@ class Glance_That {
 
 				// Keep form visible if submission has just been made
 				$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? '>' : ' style="display:none;">';
-				
+
 				// Build up the list of post types
 				$post_types = get_post_types( array(), 'objects' );
 
@@ -629,7 +642,7 @@ class Glance_That {
 
 					}
 
-					if ( class_exists( 'RGFormsModel' ) ) {					
+					if ( class_exists( 'RGFormsModel' ) ) {
 						// Set data-glancing attribute
 						$glancing = isset( $this->glances['gravityform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
@@ -656,7 +669,7 @@ class Glance_That {
 					current_user_can( 'activate_plugins' ) ? $html .= '<option value="plugin" data-dashicon="admin-plugins" ' . $glancing . '>Plugins</options>' : FALSE;
 
 				$html .= '</select>';
-				
+
 				// Set the submission buttons which are handled via jquery
 				$html .= '<span style="float: right;">';
 					$html .= '<input type="submit" class="button-primary" value="Add" id="add-gt-item" />';
@@ -679,7 +692,7 @@ class Glance_That {
 	public function process_form() {
 
 		if ( $this->editable ) {
-		
+
 			// Check if in admin and user has submitted the form
 			if ( is_admin() && isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) {
 
@@ -740,7 +753,7 @@ class Glance_That {
 
 						// Update the option
 						update_user_meta( $current_user->ID, 'glance_that', $this->glances );
-						
+
 						// Display notices
 						if ( in_array( $glance, $post_types ) ) {
 							$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name ) . '</strong> were successfully removed from your glances.', 'class' => 'updated' );
@@ -790,7 +803,7 @@ class Glance_That {
 	 */
 
 	public function get_dashicon_field( $id = 'dashicon', $default = 'marker', $options = array() ) {
-		
+
 		// Define all dashicons in associate array with code and class id excluding dashicon- prefix
 		$dashicons = array(
 			'f333' => 'menu',
@@ -809,15 +822,15 @@ class Glance_That {
 			'f112' => 'admin-network',
 			'f102' => 'admin-home',
 			'f111' => 'admin-generic',
-			'f148' => 'admin-collapse',	
-			
+			'f148' => 'admin-collapse',
+
 			// welcome screen
 			'f119' => 'welcome-write-blog',
 			'f133' => 'welcome-add-page',
 			'f115' => 'welcome-view-site',
 			'f116' => 'welcome-widgets-menus',
 			'f117' => 'welcome-comments',
-			'f118' => 'welcome-learn-more',			
+			'f118' => 'welcome-learn-more',
 
 			// post formats
 			'f123' => 'format-aside',
@@ -856,7 +869,7 @@ class Glance_That {
 			'f515' => 'controls-repeat',
 			'f521' => 'controls-volumeon',
 			'f520' => 'controls-volumeoff',
-			
+
 			// image editing
 			'f165' => 'image-crop',
 			'f166' => 'image-rotate-left',
@@ -865,10 +878,10 @@ class Glance_That {
 			'f169' => 'image-flip-horizontal',
 			'f171' => 'undo',
 			'f172' => 'redo',
-			
+
 			// tinymce
 			'f200' => 'editor-bold',
-			'f201' => 'editor-italic',	
+			'f201' => 'editor-italic',
 			'f203' => 'editor-ul',
 			'f204' => 'editor-ol',
 			'f205' => 'editor-quote',
@@ -898,10 +911,10 @@ class Glance_That {
 			'f464' => 'editor-break',
 			'f475' => 'editor-code',
 			'f476' => 'editor-paragraph',
-			
+
 			// posts
 			'f135' => 'align-left',
-			'f136' => 'align-right',	
+			'f136' => 'align-right',
 			'f134' => 'align-center',
 			'f138' => 'align-none',
 			'f160' => 'lock',
@@ -910,7 +923,7 @@ class Glance_That {
 			'f173' => 'post-status',
 			'f327' => 'edit',
 			'f182' => 'trash',
-			
+
 			// sorting
 			'f142' => 'arrow-up',
 			'f140' => 'arrow-down',
@@ -929,7 +942,7 @@ class Glance_That {
 			'f503' => 'randomize',
 			'f163' => 'list-view',
 			'f164' => 'exerpt-view',
-			
+
 			// social
 			'f237' => 'share',
 			'f240' => 'share-alt',
@@ -942,8 +955,8 @@ class Glance_That {
 			'f305' => 'facebook-alt',
 			'f462' => 'googleplus',
 			'f325' => 'networking',
-								
-			// jobs			
+
+			// jobs
 			'f308' => 'hammer',
 			'f309' => 'art',
 			'f310' => 'migrate',
@@ -956,7 +969,7 @@ class Glance_That {
 			'f487' => 'heart',
 			'f488' => 'megaphone',
 			'f489' => 'schedule',
-			
+
 			// internal/products
 			'f120' => 'wordpress',
 			'f324' => 'wordpress-alt',
@@ -968,7 +981,7 @@ class Glance_That {
 			'f175' => 'feedback',
 			'f176' => 'cloud',
 			'f326' => 'translation',
-			
+
 			// taxonomies
 			'f323' => 'tag',
 			'f318' => 'category',
@@ -977,7 +990,7 @@ class Glance_That {
 			'f480' => 'archive',
 			'f479' => 'tagcloud',
 			'f478' => 'text',
-			
+
 			// alerts/notifications/flags
 			'f147' => 'yes',
 			'f158' => 'no',
@@ -986,15 +999,15 @@ class Glance_That {
 			'f502' => 'plus-alt',
 			'f460' => 'minus',
 			'f153' => 'dismiss',
-			'f159' => 'marker',	
+			'f159' => 'marker',
 			'f155' => 'star-filled',
 			'f459' => 'star-half',
-			'f154' => 'star-empty',	
+			'f154' => 'star-empty',
 			'f227' => 'flag',
-			
+
 			// misc/cpt
 			'f230' => 'location',
-			'f231' => 'location-alt',	
+			'f231' => 'location-alt',
 			'f178' => 'vault',
 			'f332' => 'shield',
 			'f334' => 'shield-alt',
@@ -1034,6 +1047,20 @@ class Glance_That {
 			'f527' => 'palmtree',
 			'f524' => 'tickets-alt',
 			'f526' => 'money',
+
+			'f540' => 'admin-customizer',
+			'f541' => 'admin-multisite',
+			'f535' => 'editor-table',
+			'f536' => 'filter',
+			'f530' => 'hidden',
+			'f533' => 'image-filter',
+			'f531' => 'image-rotate',
+			'f538' => 'layout',
+			'f537' => 'sticky',
+			'f542' => 'thumbs-down',
+			'f529' => 'thumbs-up',
+			'f528' => 'unlock',
+			'f534' => 'warning',
 			);
 
 		// Allow users to filter available iconset
@@ -1044,10 +1071,10 @@ class Glance_That {
 
 		// Loop through registered post types
 		foreach ( $post_types as $post_type => $data ) {
-			
+
 			// If dashicon isset
 			if ( ! is_null( $data->menu_icon ) ) {
-				
+
 				// If not included in options array, add it
 				! in_array( str_replace( 'dashicons-', '', $data->menu_icon ), $options ) ? $options[] = str_replace( 'dashicons-', '', $data->menu_icon ) : FALSE;
 
@@ -1074,14 +1101,14 @@ class Glance_That {
 
 					// If dashicon is in set, add it to the limited icon array
 					$option == $dashicons[ $code ] ? $limited_icons[ $code ] = $dashicons[ $code ] : FALSE;
-				
+
 				}
-			
+
 			}
 
 			// Reset the dashicons that will be used
 			$dashicons = $limited_icons;
-		
+
 		}
 
 		// Add styling for iconset
@@ -1118,7 +1145,7 @@ class Glance_That {
 			foreach ( $dashicons as $code => $icon ) {
 				$html .= '<div alt="' . $code . '" class="dashicon dashicons-' . $icon . ' dashicon-option" data-dashicon="' . $icon . '" style="padding-top:6px;"></div>';
 			}
-	
+
 		$html .= '</div>';
 
 		return $html;
@@ -1186,7 +1213,7 @@ class Glance_That {
 		// Rekey the array
 		$order = array_values( $order );
 
-		// 
+		//
 		foreach ( $order as $key => $gt_index ) {
 			foreach ( $this->glances_indexed as $index => $data ) {
 				$gt_index = str_replace( 'gt_', '', $gt_index );
