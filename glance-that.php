@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Glance That
- * Plugin URI: http://vandercar.net/wp/glance-that
+ * Plugin URI: http://vandercar.net/wp/
  * Description: Adds content control to At a Glance on the Dashboard
  * Version: 2.4
  * Author: UaMV
@@ -20,7 +20,7 @@
  * @version 2.4
  * @author UaMV
  * @copyright Copyright (c) 2013, UaMV
- * @link http://vandercar.net/wp/glance-that
+ * @link http://vandercar.net/wp/
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 

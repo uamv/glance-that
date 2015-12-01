@@ -4,7 +4,7 @@ Contributors: UaMV
 Donate link: http://vandercar.net/wp
 Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.3
+Tested up to: 4.4
 Stable tag: 2.4
 License: GPLv2 or later
 
