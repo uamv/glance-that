@@ -1,11 +1,11 @@
 === Glance That ===
 
 Contributors: UaMV
-Donate link: http://vandercar.net/wp
+Donate link: http://paypal.me/uamv
 Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.4
-Stable tag: 2.4
+Tested up to: 4.6
+Stable tag: 2.5
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -41,6 +41,9 @@ Statuses can be hid by adding the following to wp-config.php
 Items with a zero published count can be hid by adding
 `define( 'GT_SHOW_ZERO_COUNT', FALSE );`
 
+Show all dashicons in the icon selector by adding
+`define( 'GT_SHOW_ALL_DASHICONS' );`
+
 Restrict modification of visible glances by adding
 `define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
 
@@ -73,6 +76,10 @@ Silence is golden.
 2. Glance That Form
 
 == Changelog ==
+
+= 2.5 =
+* Supports new dashicons
+* Adds option to display all dashicons by default
 
 = 2.4 =
 * Supports new dashicons in WP 4.3
@@ -127,6 +134,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 2.5 =
+* Supports new dashicons and adds constant to display all dashicons by default
 
 = 2.4 =
 * Supports new dashicons in WP 4.3
