@@ -147,6 +147,9 @@ class Glance_That {
 		// Process the form
 		add_action( 'admin_init', array( $this, 'process_form' ) );
 
+		// Account for icons selected via Post State Tags plugin
+		add_action( 'admin_head', array( $this, 'check_override_status_icons' ) );
+
 		// Load up an administration notice to guide users to the next step
 		add_action( 'admin_notices', array( $this, 'show_notices' ) );
 
@@ -828,7 +831,115 @@ class Glance_That {
 
 	public function get_dashicon_field( $id = 'dashicon', $default = 'marker', $options = array() ) {
 
-		$dashicons = array(
+		$dashicons = $this->get_dashicons();
+
+		// Allow users to filter available iconset
+		$options = apply_filters( $id . '_selection', $options );
+
+		// if dashicon set has been provided by user, replace the default dashicon set
+		if ( ! empty( $options ) ) {
+
+			// initialize limited icon array
+			$limited_icons = array();
+
+			foreach ( $dashicons as $category => $group ) {
+				// Loop through all available dashicons
+				foreach ( $group as $code => $icon ) {
+
+					// Loop through user provided iconset
+					foreach ( $options as $option ) {
+
+						// If dashicon is in set, add it to the limited icon array
+						$option == $dashicons[ $category ][ $code ] ? $limited_icons[ $category ][ $code ] = $dashicons[ $category ][ $code ] : FALSE;
+
+					}
+
+				}
+			}
+
+			// Reset the dashicons that will be used
+			$dashicons = $limited_icons;
+
+		}
+
+		// Add registered post type dashicons, if defined
+		$post_types = get_post_types( array(), 'objects' );
+
+		// Loop through registered post types
+		foreach ( $post_types as $post_type => $data ) {
+
+			// If dashicon isset
+			if ( ! is_null( $data->menu_icon ) ) {
+
+				// If not included in options array, add it
+				! in_array( str_replace( 'dashicons-', '', $data->menu_icon ), $options ) ? $options[] = str_replace( 'dashicons-', '', $data->menu_icon ) : FALSE;
+
+			}
+
+		}
+
+		// Set the default icon code from default icon name
+		foreach ( $dashicons as $category => $group ) {
+			foreach ( $group as $code => $icon ) {
+				if ( $default == $icon ) {
+					$default_code = $code;
+					break;
+				}
+			}
+		}
+
+		// Add styling for iconset
+		$html = '<style type="text/css">
+			.dashicon{display:inline-block;}
+			.dashicon:before{
+				font: normal 20px/1 \'dashicons\';
+				padding: 6px;
+				left: -1px;
+				position: relative;
+				vertical-align: top;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				text-decoration: none !important;}
+			#iconlist{
+				display:none;
+				position:absolute;
+				padding:12px 10px;
+				margin:5px 15px 0 0;
+				z-index:999;
+			}
+			</style>';
+
+		// Set the visible icon according to default icon
+		$html .= '<div id="visible-icon" alt="' . esc_attr( $default_code ) . '" class="dashicon dashicons-' . esc_attr( $default ) . '"></div>';
+
+		// Set the hidden form field according to provided id and default icon
+		$html .= '<input id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" type="hidden" data-dashicon="selected" value="' . esc_attr( $default_code ) . '" />';
+
+		// Container div for iconset
+		$html .= '<div id="iconlist" class="postbox">';
+
+			// Show available icons (selection currently handled by external jquery)
+			foreach ( $dashicons as $category => $group ) {
+				foreach ( $group as $code => $icon ) {
+					$html .= '<div alt="' . $code . '" class="dashicon dashicons-' . $icon . ' dashicon-option" data-dashicon="' . $icon . '" style="padding-top:6px;"></div>';
+				}
+			}
+
+		$html .= '</div>';
+
+		return $html;
+
+	}
+
+	/**
+	 * Get the categorized array of dashicons.
+	 *
+	 * @since    2.6
+	 */
+
+	public function get_dashicons() {
+
+		return array(
 			'Admin Menu' => array(
 				'f333' => 'menu',
 				'f319' => 'admin-site',
@@ -1094,102 +1205,6 @@ class Glance_That {
 			)
 		);
 
-		// Allow users to filter available iconset
-		$options = apply_filters( $id . '_selection', $options );
-
-		// if dashicon set has been provided by user, replace the default dashicon set
-		if ( ! empty( $options ) ) {
-
-			// initialize limited icon array
-			$limited_icons = array();
-
-			foreach ( $dashicons as $category => $group ) {
-				// Loop through all available dashicons
-				foreach ( $group as $code => $icon ) {
-
-					// Loop through user provided iconset
-					foreach ( $options as $option ) {
-
-						// If dashicon is in set, add it to the limited icon array
-						$option == $dashicons[ $category ][ $code ] ? $limited_icons[ $category ][ $code ] = $dashicons[ $category ][ $code ] : FALSE;
-
-					}
-
-				}
-			}
-
-			// Reset the dashicons that will be used
-			$dashicons = $limited_icons;
-
-		}
-
-		// Add registered post type dashicons, if defined
-		$post_types = get_post_types( array(), 'objects' );
-
-		// Loop through registered post types
-		foreach ( $post_types as $post_type => $data ) {
-
-			// If dashicon isset
-			if ( ! is_null( $data->menu_icon ) ) {
-
-				// If not included in options array, add it
-				! in_array( str_replace( 'dashicons-', '', $data->menu_icon ), $options ) ? $options[] = str_replace( 'dashicons-', '', $data->menu_icon ) : FALSE;
-
-			}
-
-		}
-
-		// Set the default icon code from default icon name
-		foreach ( $dashicons as $category => $group ) {
-			foreach ( $group as $code => $icon ) {
-				if ( $default == $icon ) {
-					$default_code = $code;
-					break;
-				}
-			}
-		}
-
-		// Add styling for iconset
-		$html = '<style type="text/css">
-			.dashicon{display:inline-block;}
-			.dashicon:before{
-				font: normal 20px/1 \'dashicons\';
-				padding: 6px;
-				left: -1px;
-				position: relative;
-				vertical-align: top;
-				-webkit-font-smoothing: antialiased;
-				-moz-osx-font-smoothing: grayscale;
-				text-decoration: none !important;}
-			#iconlist{
-				display:none;
-				position:absolute;
-				padding:12px 10px;
-				margin:5px 15px 0 0;
-				z-index:999;
-			}
-			</style>';
-
-		// Set the visible icon according to default icon
-		$html .= '<div id="visible-icon" alt="' . esc_attr( $default_code ) . '" class="dashicon dashicons-' . esc_attr( $default ) . '"></div>';
-
-		// Set the hidden form field according to provided id and default icon
-		$html .= '<input id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" type="hidden" data-dashicon="selected" value="' . esc_attr( $default_code ) . '" />';
-
-		// Container div for iconset
-		$html .= '<div id="iconlist" class="postbox">';
-
-			// Show available icons (selection currently handled by external jquery)
-			foreach ( $dashicons as $category => $group ) {
-				foreach ( $group as $code => $icon ) {
-					$html .= '<div alt="' . $code . '" class="dashicon dashicons-' . $icon . ' dashicon-option" data-dashicon="' . $icon . '" style="padding-top:6px;"></div>';
-				}
-			}
-
-		$html .= '</div>';
-
-		return $html;
-
 	}
 
 	/**
@@ -1273,9 +1288,76 @@ class Glance_That {
 
 	}
 
+
+
+	/**
+	 * Overrides status icons if defined by Post State Tags plugin
+	 *
+	 * @since    2.6
+	 */
+	public function check_override_status_icons() {
+
+		if ( is_plugin_active( 'post-state-tags/post-state-tags.php' ) ) {
+
+			// Add styling for iconset
+			$html = '<style type="text/css">';
+
+			$post_state_tags_options = array(
+				'future'  => get_option( 'bb-pst-color-future-icon' ),
+				'draft'   => get_option( 'bb-pst-color-draft-icon' ),
+				'pending' => get_option( 'bb-pst-color-pending-icon' ),
+				'private' => get_option( 'bb-pst-color-private-icon' ),
+				'trash'   => get_option( 'bb-pst-color-trash-icon' ),
+				'archive' => get_option( 'bb-pst-color-archive-icon' )
+			);
+
+			foreach ( $post_state_tags_options as $status => $icon ) {
+
+				if ( false !== $icon ) {
+
+					$html .= "#dashboard_right_now div.gt-status a.gt-" . $status . ":before { content: '\\" . $this->get_dashicon_code( $icon ) . "'; }";
+
+				}
+
+			}
+
+			$html .= '</style>';
+
+			echo $html;
+
+		}
+
+	}
+
+	/**
+	 * Checks whether Archived Post Status plugin is active
+	 *
+	 * @since    2.6
+	 */
 	public function is_archive_active() {
 
 		return is_plugin_active( 'archived-post-status/archived-post-status.php' );
+
+	}
+
+	/**
+	 * Retrieve dashicon character code from dashicon name
+	 *
+	 * @since    2.6
+	 */
+	public function get_dashicon_code( $dashicon ) {
+
+		$dashicons = $this->get_dashicons();
+
+		foreach ( $dashicons as $category => $group ) {
+			foreach ( $group as $code => $icon ) {
+				$icon = 'dashicons-' . $icon;
+				if ( $dashicon == $icon ) {
+					return $code;
+					break;
+				}
+			}
+		}
 
 	}
 
