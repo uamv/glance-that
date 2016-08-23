@@ -425,6 +425,9 @@ class Glance_That {
 											if ( ( ! isset( get_post_type_object( $item )->cap->edit_private_posts ) && current_user_can( 'edit_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->edit_private_posts ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=private" class="gt-private">' . $num_posts->private . '</a></div>';
 											}
+											if ( $this->is_archive_active() && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) ) {
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=archive" class="gt-archive">' . $num_posts->archive . '</a></div>';
+											}
 											if ( ( ! isset( get_post_type_object( $item )->cap->delete_posts ) && current_user_can( 'delete_posts' ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) || ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && current_user_can( get_post_type_object( $item )->cap->delete_posts ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=trash" class="gt-trash">' . $num_posts->trash . '</a></div>';
 											}
@@ -1267,6 +1270,12 @@ class Glance_That {
 		$response = array( 'success' => true, 'order' => $order );
 
 		wp_send_json( $response );
+
+	}
+
+	public function is_archive_active() {
+
+		return is_plugin_active( 'archived-post-status/archived-post-status.php' );
 
 	}
 

@@ -43,6 +43,9 @@
 #dashboard_right_now div.gt-status a.gt-draft:before {
 	content: '\f339';
 }
+#dashboard_right_now div.gt-status a.gt-archive:before {
+	content: '\f480';
+}
 #dashboard_right_now div.gt-status a.gt-private:before {
 	content: '\f160';
 }
