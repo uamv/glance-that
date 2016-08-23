@@ -2,10 +2,10 @@
 
 Contributors: UaMV
 Donate link: http://paypal.me/uamv
-Tags: cpt, custom, post type, glance, dashboard, admin, dashicons
+Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.6
-Stable tag: 2.5
+Stable tag: 2.6
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -27,11 +27,14 @@ Additionally, Glance That allows you to view the number of items matching the fo
 * Pending
 * Draft
 * Private
+* Archived (via [Archived Post Status](https://wordpress.org/plugins/archived-post-status/))
 * Trash
 * Unattached (Media)
 * Spam (Comments)
 * Active, Inactive (Plugins & Gravity Forms)
 * Updates (Plugins)
+
+If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
 = Constants =
 
@@ -76,6 +79,10 @@ Silence is golden.
 2. Glance That Form
 
 == Changelog ==
+
+= 2.6 =
+* Supports `archive` post status
+* Integrates with Post State Tags icon selection
 
 = 2.5 =
 * Supports new dashicons
@@ -134,6 +141,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 2.6 =
+* Supports `archive` post status & integrates with Post State Tags icon selection
 
 = 2.5 =
 * Supports new dashicons and adds constant to display all dashicons by default
