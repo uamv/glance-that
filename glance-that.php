@@ -399,7 +399,31 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										$elements[] = ob_get_clean();
+									}
+								}
+								break;
+
+							case 'formidableform':
+								if ( class_exists( 'FrmForm' ) ) {
+									$num_forms = FrmForm::get_count();
+
+									if ( ( $num_forms->published || GT_SHOW_ZERO_COUNT ) && ( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ) {
+										$text = _n( '%s Form', '%s Forms', $num_forms->published );
+
+										$text = sprintf( $text, number_format_i18n( $num_forms->published ) );
+
+										if ( GT_SHOW_ALL_STATUS ) {
+											$statuses = '<div class="gt-statuses">';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template">' . $num_forms->template . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=draft" class="gt-draft">' . $num_forms->draft . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=trash" class="gt-trash">' . $num_forms->trash . '</a></div>';
+											$statuses .= '</div>';
+										}
+
+										ob_start();
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -649,8 +673,8 @@ class Glance_That {
 							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="backup" ' . $glancing . '>' . esc_html( $post_type->labels->name ) . '</option>';
 						}
 
-						// Only show post types on which user has edit permissions
-						elseif ( current_user_can( $post_type->cap->edit_posts ) && 'nav_menu_item' != $post_type->name ) {
+						// Only show post types on which user has edit permissions (also disallow some Formidable Form types)
+						elseif ( current_user_can( $post_type->cap->edit_posts ) && 'nav_menu_item' != $post_type->name && 'frm_styles' != $post_type->name && 'frm_form_actions' != $post_type->name ) {
 							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="';
 							// add default dashicons for post types
 							if ( 'post' == $post_type->name ) {
@@ -674,7 +698,15 @@ class Glance_That {
 						$glancing = isset( $this->glances['gravityform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
 						// Only show users option if user can edit forms
-						( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ? $html .= '<option value="gravityform" data-dashicon="feedback" ' . $glancing . '>Gravity Forms</options>' : FALSE;
+						( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ? $html .= '<option value="gravityform" data-dashicon="gravityform" ' . $glancing . '>Gravity Forms</options>' : FALSE;
+					}
+
+					if ( class_exists( 'FrmForm' ) ) {
+						// Set data-glancing attribute
+						$glancing = isset( $this->glances['formidableform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+						// Only show users option if user can edit forms
+						( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ? $html .= '<option value="formidableform" data-dashicon="formidableform" ' . $glancing . '>Formidable Forms</options>' : FALSE;
 					}
 
 					// Set data-glancing attribute

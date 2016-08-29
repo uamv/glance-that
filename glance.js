@@ -13,18 +13,18 @@ jQuery(document).ready(function( $ ) {
 	      cursor: 'move',
 	      cursorAt: { top: 15, left: 15 },
 	    });
-	   
+
 	    $( "#dashboard_right_now .inside .main ul" ).disableSelection();
-	    
+
 	    /* Send ajax after sort change */
 	    $('#dashboard_right_now .inside .main ul').sortable({
-		  update: function(evt, ui) {  
+		  update: function(evt, ui) {
 		    $.post(Glance.ajaxurl, {
 		      action: 'sort_glances',
 		      gt_sort: $('#dashboard_right_now .inside .main ul').sortable('toArray'),
 		      userID: $('#gt-form').data('userid'),
 			}, function (response) {
-				
+
 			});
 		  }
 		});
@@ -36,7 +36,7 @@ jQuery(document).ready(function( $ ) {
 		function() {
 			if( $('#iconlist').is(':visible') ) {
 				$('#iconlist').hide();
-			} else {
+			} else if ( 'formidableform' != $('#gt-item').find(':selected').val() && 'gravityform' != $('#gt-item').find(':selected').val() ) {
 				$('#iconlist').css('display','block');
 				$('#dashboard_right_now .inside').css('overflow','visible');
 			}
@@ -46,7 +46,16 @@ jQuery(document).ready(function( $ ) {
 		function() {
 			$gtselection = $(this).find(':selected');
 
-			if ( '' != $gtselection.attr('data-dashicon') ) {
+			if ( 'formidableform' == $gtselection.attr('data-dashicon') || 'gravityform' == $gtselection.attr('data-dashicon') ) {
+
+				$gticon = $('#iconlist').find('div[data-dashicon="'+$gtselection.attr('data-dashicon')+'"]');
+
+				$('#visible-icon').attr('alt',$gtselection.attr('data-dashicon'));
+				$('#visible-icon').removeClass();
+				$('#visible-icon').addClass($gtselection.attr('data-dashicon'));
+				$('input[data-dashicon="selected"]').attr('value',$gtselection.attr('data-dashicon'));
+
+			} else if ( '' != $gtselection.attr('data-dashicon') ) {
 
 				$gticon = $('#iconlist').find('div[data-dashicon="'+$gtselection.attr('data-dashicon')+'"]');
 
