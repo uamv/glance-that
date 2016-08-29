@@ -84,6 +84,7 @@ Silence is golden.
 = 2.7 =
 * Supports Formidable Forms
 * Use Gravity Form & Formidable Form icons
+* Possibly fixed an issue with Post State Tags integration
 
 = 2.6 =
 * Supports `archive` post status
