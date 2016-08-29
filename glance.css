@@ -91,10 +91,14 @@
 	content: '\f225';
 }
 #dashboard_right_now div.gt-status a.gt-active:before {
-	content: '\f147';
+	content: '\f106';
+	transform: rotate(90deg);
+	position: relative;
+	left: -.15em;
+	top: .1em;
 }
 #dashboard_right_now div.gt-status a.gt-inactive:before {
-	content: '\f460';
+	content: '\f534';
 }
 #dashboard_right_now div.gt-status a.gt-update:before {
 	content: '\f463';
