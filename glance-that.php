@@ -1345,9 +1345,9 @@ class Glance_That {
 
 			foreach ( $post_state_tags_options as $status => $icon ) {
 
-				if ( false !== $icon ) {
+				if ( false !== $icon && '' != $icon ) {
 
-					$html .= "#dashboard_right_now div.gt-status a.gt-" . $status . ":before { content: '\\" . $this->get_dashicon_code( $icon ) . "'; }";
+					$html .= '#dashboard_right_now div.gt-status a.gt-' . $status . ':before { content: \'\\' . $this->get_dashicon_code( $icon ) . '\'; }';
 
 				}
 
