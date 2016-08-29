@@ -2,6 +2,38 @@
 	display: none;
 }
 
+#visible-icon.formidableform,
+#visible-icon.gravityform {
+	display: inline;
+}
+#dashboard_right_now li a[data-gt="formidableform"]:before,
+#visible-icon.formidableform:before {
+	font-family: 's11-fp' !important;
+	content: '\e601' !important;
+}
+#visible-icon.formidableform:before {
+	font: 400 19px/1 s11-fp;
+	padding: 6px 7px 6px 6px;
+	position: relative;
+	top: 5px;
+}
+#dashboard_right_now li a[data-gt="gravityform"]:before,
+#visible-icon.gravityform:before {
+	content: '' !important;
+	background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSItMTUgNzcgNTgxIDY0MCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAtMTUgNzcgNTgxIDY0MCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PGcgaWQ9IkxheWVyXzIiPjxwYXRoIGZpbGw9IiM4Mjg3OGMiIGQ9Ik00ODkuNSwyMjdMNDg5LjUsMjI3TDMxNS45LDEyNi44Yy0yMi4xLTEyLjgtNTguNC0xMi44LTgwLjUsMEw2MS44LDIyN2MtMjIuMSwxMi44LTQwLjMsNDQuMi00MC4zLDY5Ljd2MjAwLjVjMCwyNS42LDE4LjEsNTYuOSw0MC4zLDY5LjdsMTczLjYsMTAwLjJjMjIuMSwxMi44LDU4LjQsMTIuOCw4MC41LDBMNDg5LjUsNTY3YzIyLjItMTIuOCw0MC4zLTQ0LjIsNDAuMy02OS43VjI5Ni44QzUyOS44LDI3MS4yLDUxMS43LDIzOS44LDQ4OS41LDIyN3ogTTQwMSwzMDAuNHY1OS4zSDI0MXYtNTkuM0g0MDF6IE0xNjMuMyw0OTAuOWMtMTYuNCwwLTI5LjYtMTMuMy0yOS42LTI5LjZjMC0xNi40LDEzLjMtMjkuNiwyOS42LTI5LjZzMjkuNiwxMy4zLDI5LjYsMjkuNkMxOTIuOSw0NzcuNiwxNzkuNiw0OTAuOSwxNjMuMyw0OTAuOXogTTE2My4zLDM1OS43Yy0xNi40LDAtMjkuNi0xMy4zLTI5LjYtMjkuNnMxMy4zLTI5LjYsMjkuNi0yOS42czI5LjYsMTMuMywyOS42LDI5LjZTMTc5LjYsMzU5LjcsMTYzLjMsMzU5Ljd6IE0yNDEsNDkwLjl2LTU5LjNoMTYwdjU5LjNIMjQxeiIvPjwvZz48L3N2Zz4=") !important;
+	width: 1em;
+	height: 1em;
+	background: no-repeat;
+	display: inline-block;
+}
+#visible-icon.gravityform:before {
+	width: 1.4em;
+	height: 1.4em;
+	position: relative;
+	top: 6px;
+	margin: 0 6px 0 8px;
+}
+
 .gt-statuses {
 	margin-left: 2.5em;
 }
@@ -66,6 +98,9 @@
 }
 #dashboard_right_now div.gt-status a.gt-update:before {
 	content: '\f463';
+}
+#dashboard_right_now div.gt-status a.gt-template:before {
+	content: '\f538';
 }
 
 #dashboard-widgets-wrap {

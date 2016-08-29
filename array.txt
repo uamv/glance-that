@@ -1,0 +1,11 @@
+$gtitem = array(
+    'name' => ''
+    'icon' => ''
+    'before_css' => ''
+    'status' => array(
+        'published' => array(
+            'capability' => '',
+            'count' => ''
+        )
+    )
+)
