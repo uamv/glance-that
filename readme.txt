@@ -5,7 +5,7 @@ Donate link: http://paypal.me/uamv
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.6
-Stable tag: 2.6
+Stable tag: 2.7
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -20,6 +20,7 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Plugins
 * Users
 * Gravity Forms
+* Formidable Forms
 
 Additionally, Glance That allows you to view the number of items matching the following statuses:
 
@@ -79,6 +80,10 @@ Silence is golden.
 2. Glance That Form
 
 == Changelog ==
+
+= 2.7 =
+* Supports Formidable Forms
+* Use Gravity Form & Formidable Form icons
 
 = 2.6 =
 * Supports `archive` post status
@@ -141,6 +146,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 2.7 =
+* Supports Formidable Forms. Note that v3.0 may remove support for custom icon selection.
 
 = 2.6 =
 * Supports `archive` post status & integrates with Post State Tags icon selection
