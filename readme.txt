@@ -46,7 +46,7 @@ Items with a zero published count can be hid by adding
 `define( 'GT_SHOW_ZERO_COUNT', FALSE );`
 
 Show all dashicons in the icon selector by adding
-`define( 'GT_SHOW_ALL_DASHICONS' );`
+`define( 'GT_SHOW_ALL_DASHICONS', TRUE );`
 
 Restrict modification of visible glances by adding
 `define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
@@ -80,6 +80,11 @@ Silence is golden.
 2. Glance That Form
 
 == Changelog ==
+
+= 2.8 =
+* Fix for documentation on GT_SHOW_ALL_DASHICONS
+* Adds title attribute to links
+* Minor CSS fix in displaying glances
 
 = 2.7 =
 * Supports Formidable Forms

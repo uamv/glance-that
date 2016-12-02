@@ -1,4 +1,4 @@
-.post-count,.page-count,.comment-count {
+.post-count,.page-count,.comment-count,.comment-mod-count {
 	display: none;
 }
 
@@ -55,9 +55,6 @@
 }
 #dashboard_right_now .gt-status.gt-moderate a:before {
 	color: #888;
-}
-.comment-mod-count {
-	display: none;
 }
 
 #dashboard_right_now div.gt-status a:before {
@@ -120,4 +117,7 @@
 }
 .gt-item.gt-editable:hover {
 	cursor: move;
+}
+#dashboard_right_now .ui-sortable li:nth-child(odd) {
+	clear: left;
 }

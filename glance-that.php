@@ -302,12 +302,12 @@ class Glance_That {
 
 									if ( GT_SHOW_ALL_STATUS ) {
 										$statuses = '<div class="gt-statuses">';
-										$statuses .= '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached">' . $unattached . '</a></div>';
+										$statuses .= '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached" title="Unattached Media">' . $unattached . '</a></div>';
 										$statuses .= '</div>';
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that">%2$s</a>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that" title="All Media">%2$s</a>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -323,14 +323,14 @@ class Glance_That {
 									if ( GT_SHOW_ALL_STATUS ) {
 										$moderation = intval( $num_comments->moderated ) > 0 ? 'gt-moderate' : '';
 										$statuses = '<div id="gt-statuses-comments" class="gt-statuses">';
-										$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending">' . $num_comments->moderated . '</a></div>';
-										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=spam" class="gt-spam">' . $num_comments->spam . '</a></div>';
-										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=trash" class="gt-trash">' . $num_comments->trash . '</a></div>';
+										$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending" title="Pending">' . $num_comments->moderated . '</a></div>';
+										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=spam" class="gt-spam" title="Spam">' . $num_comments->spam . '</a></div>';
+										$statuses .= '<div class="gt-status"><a href="edit-comments.php?comment_status=trash" class="gt-trash" title="Trash">' . $num_comments->trash . '</a></div>';
 										$statuses .= '</div>';
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit-comments.php" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit-comments.php" class="glance-that unordered" title="All Comments">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -354,15 +354,15 @@ class Glance_That {
 
 									if ( GT_SHOW_ALL_STATUS ) {
 										$statuses = '<div class="gt-statuses">';
-											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=active" class="gt-active">' . $num_plugins_active . '</a></div>';
-											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=inactive" class="gt-inactive">' . ( $num_plugins - $num_plugins_active ) . '</a></div>';
+											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=active" class="gt-active" title="Active Plugins">' . $num_plugins_active . '</a></div>';
+											$statuses .= '<div class="gt-status"><a href="plugins.php?plugin_status=inactive" class="gt-inactive" title="Inactive Plugins">' . ( $num_plugins - $num_plugins_active ) . '</a></div>';
 											$moderation = intval( $num_plugin_updates ) > 0 ? 'gt-moderate' : '';
-											$statuses .= '<div class="gt-status ' . $moderation . '"><a href="plugins.php?plugin_status=upgrade" class="gt-update">' . $num_plugin_updates . '</a></div>';
+											$statuses .= '<div class="gt-status ' . $moderation . '"><a href="plugins.php?plugin_status=upgrade" class="gt-update" title="Update Available">' . $num_plugin_updates . '</a></div>';
 										$statuses .= '</div>';
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that" title="All Plugins">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 									$elements[] = ob_get_clean();
 								}
 
@@ -376,7 +376,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that">%1$s</a></div>', $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All Users">%1$s</a></div>', $text );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -392,14 +392,14 @@ class Glance_That {
 
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active">' . $num_forms['active'] . '</a></div>';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive">' . $num_forms['inactive'] . '</a></div>';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&trash=1" class="gt-trash">' . $num_forms['trash'] . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive" title="Inactive Forms">' . $num_forms['inactive'] . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&trash=1" class="gt-trash" title="Trash">' . $num_forms['trash'] . '</a></div>';
 											$statuses .= '</div>';
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered" title="All Forms">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -416,14 +416,14 @@ class Glance_That {
 
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template">' . $num_forms->template . '</a></div>';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=draft" class="gt-draft">' . $num_forms->draft . '</a></div>';
-												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=trash" class="gt-trash">' . $num_forms->trash . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template" title="Form Templates">' . $num_forms->template . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=draft" class="gt-draft" title="Drafts">' . $num_forms->draft . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="admin.php?page=formidable&form_type=trash" class="gt-trash" title="Trash">' . $num_forms->trash . '</a></div>';
 											$statuses .= '</div>';
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered" title="All Forms">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -440,29 +440,29 @@ class Glance_That {
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
 											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) ) {
-												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=future" class="gt-future">' . $num_posts->future . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=future" class="gt-future" title="Scheduled">' . $num_posts->future . '</a></div>';
 											}
 											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 												$moderation = intval( $num_posts->pending ) > 0 ? 'gt-moderate' : '';
-												$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit.php?post_type=' . $item . '&post_status=pending" class="gt-pending">' . $num_posts->pending . '</a></div>';
+												$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit.php?post_type=' . $item . '&post_status=pending" class="gt-pending" title="Pending">' . $num_posts->pending . '</a></div>';
 											}
 											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
-												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=draft" class="gt-draft">' . $num_posts->draft . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=draft" class="gt-draft" title="Drafts">' . $num_posts->draft . '</a></div>';
 											}
 											if ( ( ! isset( get_post_type_object( $item )->cap->edit_private_posts ) && current_user_can( 'edit_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->edit_private_posts ) ) {
-												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=private" class="gt-private">' . $num_posts->private . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=private" class="gt-private" title="Private">' . $num_posts->private . '</a></div>';
 											}
 											if ( $this->is_archive_active() && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) ) {
-												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=archive" class="gt-archive">' . $num_posts->archive . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=archive" class="gt-archive" title="Archived">' . $num_posts->archive . '</a></div>';
 											}
 											if ( ( ! isset( get_post_type_object( $item )->cap->delete_posts ) && current_user_can( 'delete_posts' ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) || ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && current_user_can( get_post_type_object( $item )->cap->delete_posts ) ) ) {
-												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=trash" class="gt-trash">' . $num_posts->trash . '</a></div>';
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=trash" class="gt-trash" title="Trash">' . $num_posts->trash . '</a></div>';
 											}
 											$statuses .= '</div>';
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that" title="All %4$s">%2$s</a></div>%3$s</div>', $item, $text, $statuses, get_post_type_object( $item )->labels->name );
 										$elements[] = ob_get_clean();
 									}
 								}
