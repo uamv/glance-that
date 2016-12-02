@@ -85,6 +85,10 @@ Silence is golden.
 * Fix for documentation on GT_SHOW_ALL_DASHICONS
 * Adds title attribute to links
 * Minor CSS fix in displaying glances
+* By default, hide statuses with zero count
+* Adds GT_SHOW_ZERO_COUNT_STATUS constant
+* Adds recently activated plugins
+* Adds option to show must-use and drop-in plugins with GT_SHOW_MUSTUSE and GT_SHOW_DROPINS
 
 = 2.7 =
 * Supports Formidable Forms

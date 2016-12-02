@@ -97,9 +97,20 @@
 #dashboard_right_now div.gt-status a.gt-inactive:before {
 	content: '\f534';
 }
+#dashboard_right_now div.gt-status a.gt-recent:before {
+	content: '\f321';
+}
 #dashboard_right_now div.gt-status a.gt-update:before {
 	content: '\f463';
 }
+#dashboard_right_now div.gt-status a.gt-mustuse:before {
+	content: '\f468';
+}
+#dashboard_right_now div.gt-status a.gt-dropins:before {
+	content: '\f546';
+}
+
+
 #dashboard_right_now div.gt-status a.gt-template:before {
 	content: '\f538';
 }
