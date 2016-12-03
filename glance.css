@@ -36,6 +36,7 @@
 
 .gt-statuses {
 	margin-left: 2.5em;
+	min-height: 11px;
 }
 
 .gt-status {
@@ -98,7 +99,7 @@
 	content: '\f534';
 }
 #dashboard_right_now div.gt-status a.gt-recent:before {
-	content: '\f321';
+	content: '\f469';
 }
 #dashboard_right_now div.gt-status a.gt-update:before {
 	content: '\f463';
@@ -118,6 +119,9 @@
 #dashboard-widgets-wrap {
 	overflow: visible;
 }
+#dashboard_right_now .inside .main ul li:last-child {
+	float: right;
+}
 
 #gt-form input[type="submit"] {
 	display: none;
@@ -129,6 +133,6 @@
 .gt-item.gt-editable:hover {
 	cursor: move;
 }
-#dashboard_right_now .ui-sortable li:nth-child(odd) {
+#dashboard_right_now .ui-sortable:not(.gt-sorting) li:nth-child(odd) {
 	clear: left;
 }

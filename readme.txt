@@ -4,15 +4,15 @@ Contributors: UaMV
 Donate link: http://paypal.me/uamv
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.6
-Stable tag: 2.7
+Tested up to: 4.7
+Stable tag: 2.8
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
 
 == Description ==
 
-Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view items even if zero published posts exist, assign custom dashicons for their display, and sort the order of displayed items using drag & drop. Currently, the following items are supported ...
+Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, and sort the order of displayed items using drag & drop. Display of items respects user capabilities. Currently, the following items are supported ...
 
 * Custom post types
 * Revisions (admins only)
@@ -33,23 +33,32 @@ Additionally, Glance That allows you to view the number of items matching the fo
 * Unattached (Media)
 * Spam (Comments)
 * Active, Inactive (Plugins & Gravity Forms)
-* Updates (Plugins)
+* Recently Active, Updates, Must-Use, Drop-Ins (Plugins)
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
 = Constants =
 
-Statuses can be hid by adding the following to wp-config.php
+Add the following constants to `wp-config.php` to control display of Glance That items
+
+Hide status items
 `define( 'GT_SHOW_ALL_STATUS', FALSE );`
 
-Items with a zero published count can be hid by adding
+Hide glance items with a zero published count
 `define( 'GT_SHOW_ZERO_COUNT', FALSE );`
+
+Show status items with zero count
+`define( 'GT_SHOW_ZERO_COUNT_STATUS', TRUE );`
 
 Show all dashicons in the icon selector by adding
 `define( 'GT_SHOW_ALL_DASHICONS', TRUE );`
 
 Restrict modification of visible glances by adding
 `define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
+
+Show must-use or drop-in plugin status
+define( 'GT_SHOW_MUSTUSE', TRUE );
+define( 'GT_SHOW_DROPINS', TRUE );
 
 = Filters =
 
@@ -82,6 +91,7 @@ Silence is golden.
 == Changelog ==
 
 = 2.8 =
+* Ajaxify the addition & removal of glances
 * Fix for documentation on GT_SHOW_ALL_DASHICONS
 * Adds title attribute to links
 * Minor CSS fix in displaying glances
@@ -156,6 +166,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 2.8 =
+* Glance That now utilizes ajax for easier editing of glances. There is also support for a few additional statuses and some minor style enhancements.
 
 = 2.7 =
 * Supports Formidable Forms. Note that v3.0 may remove support for custom icon selection.

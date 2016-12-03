@@ -53,6 +53,7 @@ jQuery(document).ready(function( $ ) {
 					$.each(response.elements, function( intIndex, e ){
 						glance_list.append($('<li class="ui-sortable-handle">'+e+'</li>'));
 					});
+					glance_list.append($('<li style="display:none;"></li>'));
 
 					var gtitems = $('#dashboard_right_now li:not(\'.post-count,.page-count,.comment-count\')').each(function(index){
 						if ( $(this).find('.gt-item').hasClass('unordered') ) {
@@ -76,6 +77,9 @@ jQuery(document).ready(function( $ ) {
 					$('#visible-icon').removeClass();
 					$('#visible-icon').addClass('dashicon dashicons-marker');
 					$('input[data-dashicon="selected"]').attr('value','f159');
+
+					$('.gt-message').remove();
+					$('#wpbody-content .wrap > h1').after(response.notice);
 
 
 				}

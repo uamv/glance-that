@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://vandercar.net/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 2.7
+ * Version: 2.8
  * Author: UaMV
  * Author URI: http://vandercar.net
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 2.7
+ * @version 2.8
  * @author UaMV
  * @copyright Copyright (c) 2013-2016, UaMV
  * @link http://vandercar.net/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '2.7' );
+define( 'GT_VERSION', '2.8' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -158,7 +158,7 @@ class Glance_That {
 		add_action( 'admin_head', array( $this, 'check_override_status_icons' ) );
 
 		// Load up an administration notice to guide users to the next step
-		add_action( 'admin_notices', array( $this, 'show_notices' ) );
+		// add_action( 'admin_notices', array( $this, 'show_notices' ) );
 
 		// Add post statuses to native types
 		add_action( 'admin_footer', array( $this, 'add_sort_order' ) );
@@ -295,7 +295,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="#" class="glance-that" style="pointer-events:none;color:#444;">%2$s</a></div>', $item, $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="#" class="glance-that" style="pointer-events:none;color:#444;">%2$s</a><div class="gt-statuses"></div></div>', $item, $text );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -403,7 +403,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All Users">%1$s</a></div>', $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All Users">%1$s</a><div class="gt-statuses"></div></div>', $text );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -864,7 +864,7 @@ class Glance_That {
 		}
 
 		// generate the response
-		$response = array( 'success' => $success, 'notice' => $this->notices, 'glance' => $glance, 'elements' => $this->customize_items() );
+		$response = array( 'success' => $success, 'notice' => $this->show_notices(), 'glance' => $glance, 'elements' => $this->customize_items() );
 
 		wp_send_json( $response );
 
@@ -877,16 +877,20 @@ class Glance_That {
 	 */
 	public function show_notices() {
 
+		$message = '';
+
 		if ( ! empty( $this->notices ) ) {
 			foreach ( $this->notices as $key => $notice ) {
 				if ( 'error' == $notice['class'] )
-					_e( '<div class="error"><p><strong>' . $notice['message'] . '</strong></p></div>' );
+					$message = '<div class="error gt-message"><p><strong>' . $notice['message'] . '</strong></p></div>';
 				elseif ( 'update-nag' == $notice['class'] )
-					_e( '<div class="update-nag">' . $notice['message'] . '</div>' );
+					$message = '<div class="update-nag gt-message">' . $notice['message'] . '</div>';
 				else
-					_e( '<div class="updated fade"><p>' . $notice['message'] . '</p></div>' );
+					$message = '<div class="updated fade gt-message"><p>' . $notice['message'] . '</p></div>';
 			}
 		}
+
+		return $message;
 
 	}
 
