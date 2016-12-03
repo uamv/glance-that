@@ -104,6 +104,9 @@
 #dashboard_right_now div.gt-status a.gt-update:before {
 	content: '\f463';
 }
+#dashboard_right_now div.gt-status a.gt-favorites:before {
+	content: '\f155';
+}
 #dashboard_right_now div.gt-status a.gt-mustuse:before {
 	content: '\f468';
 }
