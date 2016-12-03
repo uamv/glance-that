@@ -371,6 +371,23 @@ class Glance_That {
 
 								$plugin_stats['recent'] = count( get_site_option( 'recently_activated', array() ) );
 
+								// Get user favorites
+								include( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+
+								$user = get_user_option( 'wporg_favorites' );
+
+								if ( false !== $user ) {
+									$args = array( 'user' => $user );
+									$args = apply_filters( "install_plugins_table_api_args_favorites", $args );
+
+									$api = plugins_api( 'query_plugins', $args );
+
+									$plugin_stats['favorites'] = count( $api->plugins );
+								} else {
+									$plugin_stats['favorites'] = null;
+								}
+
+								// Display plugin glance
 								if ( ( $plugin_stats['all'] || GT_SHOW_ZERO_COUNT ) && current_user_can( 'activate_plugins' ) ) {
 									$text = _n( '%s Plugin', '%s Plugins', $plugin_stats['all'] );
 
@@ -383,6 +400,7 @@ class Glance_That {
 											$statuses .= ( $plugin_stats['recent'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=recently_activated" class="gt-recent" title="Recently Active">' . $plugin_stats['recent'] . '</a></div>' : FALSE;
 											$moderation = intval( $plugin_stats['update'] ) > 0 ? 'gt-moderate' : '';
 											$statuses .= ( $plugin_stats['update'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status ' . $moderation . '"><a href="plugins.php?plugin_status=upgrade" class="gt-update" title="Update Available">' . $plugin_stats['update'] . '</a></div>' : FALSE;
+											$statuses .= ( null !== $plugin_stats['favorites'] && ( $plugin_stats['favorites'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="plugin-install.php?tab=favorites" class="gt-favorites" title="Favorites: ' . $user . '">' . $plugin_stats['favorites'] . '</a></div>' : FALSE;
 											$statuses .= ( $plugin_stats['mustuse'] > 0 && GT_SHOW_MUSTUSE ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=mustuse" class="gt-mustuse" title="Must-Use">' . $plugin_stats['mustuse'] . '</a></div>' : FALSE;
 											$statuses .= ( $plugin_stats['dropins'] > 0 && GT_SHOW_DROPINS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=dropins" class="gt-dropins" title="Drop-ins">' . $plugin_stats['dropins'] . '</a></div>' : FALSE;
 										$statuses .= '</div>';

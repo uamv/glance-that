@@ -85,8 +85,7 @@ Silence is golden.
 
 == Screenshots ==
 
-1. At a Glance
-2. Glance That Form
+1. Glance That: At a Glance
 
 == Changelog ==
 
