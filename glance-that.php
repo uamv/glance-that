@@ -369,7 +369,7 @@ class Glance_That {
 									$plugin_stats['dropins'] = count( get_dropins() );
 								}
 
-								$plugin_stats['recent'] = count( get_site_option( 'recently_activated', array() ) );
+								$plugin_stats['recent'] = count( get_option( 'recently_activated', array() ) );
 
 								// Get user favorites
 								include( ABSPATH . 'wp-admin/includes/plugin-install.php' );
