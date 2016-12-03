@@ -5,7 +5,7 @@ Donate link: http://paypal.me/uamv
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.7
-Stable tag: 2.8
+Stable tag: 2.9
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -33,7 +33,7 @@ Additionally, Glance That allows you to view the number of items matching the fo
 * Unattached (Media)
 * Spam (Comments)
 * Active, Inactive (Plugins & Gravity Forms)
-* Recently Active, Updates, Must-Use, Drop-Ins (Plugins)
+* Favorites, Recently Active, Updates, Must-Use, Drop-Ins (Plugins)
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
@@ -88,6 +88,9 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 2.9 =
+* Adds user favorite plugins glance
 
 = 2.8 =
 * Ajaxify the addition & removal of glances
