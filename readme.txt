@@ -5,14 +5,14 @@ Donate link: http://paypal.me/uamv
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.7
-Stable tag: 2.9
+Stable tag: 3.0
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
 
 == Description ==
 
-Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, and sort the order of displayed items using drag & drop. Display of items respects user capabilities. Currently, the following items are supported ...
+Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, sort the order of displayed items using drag & drop, and quick link to the Add New content screens. Display of items respects user capabilities. Currently, the following items are supported ...
 
 * Custom post types
 * Revisions (admins only)
@@ -40,6 +40,9 @@ If you've defined custom post state icons via [Post State Tags](https://wordpres
 = Constants =
 
 Add the following constants to `wp-config.php` to control display of Glance That items
+
+Hide add new icon
+`define( 'GT_SHOW_ADD_NEW', FALSE );`
 
 Hide status items
 `define( 'GT_SHOW_ALL_STATUS', FALSE );`
@@ -88,6 +91,9 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.0 =
+* Adds 'Add New' icon to items for which content can be created
 
 = 2.9 =
 * Adds user favorite plugins glance
