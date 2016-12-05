@@ -32,11 +32,14 @@ define( 'GT_VERSION', '3.0' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
-// Determine whether statuses are to be shown (keep GT_SHOW_ALL for backwards compatibility - pre v2.1)
-( ! defined( 'GT_SHOW_ALL_STATUS' ) || ( defined( 'GT_SHOW_ALL' ) && GT_SHOW_ALL ) ) ? define( 'GT_SHOW_ALL_STATUS', TRUE ) : FALSE;
-
 // Determine whether items with zero published items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT' ) ? define( 'GT_SHOW_ZERO_COUNT', TRUE ) : FALSE;
+
+// Determine wehether add new post item is shown
+! defined( 'GT_SHOW_ADD_NEW') ? define( 'GT_SHOW_ADD_NEW', TRUE ) : FALSE;
+
+// Determine whether statuses are to be shown (keep GT_SHOW_ALL for backwards compatibility - pre v2.1)
+( ! defined( 'GT_SHOW_ALL_STATUS' ) || ( defined( 'GT_SHOW_ALL' ) && GT_SHOW_ALL ) ) ? define( 'GT_SHOW_ALL_STATUS', TRUE ) : FALSE;
 
 // Determine whether statuses with zero items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT_STATUS' ) ? define( 'GT_SHOW_ZERO_COUNT_STATUS', FALSE ) : FALSE;
@@ -50,9 +53,6 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
 // Set a capability required for editing of one's glances
 ! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
-
-// Determine wehether add new post item is shown
-! defined( 'GT_SHOW_ADD_NEW') ? define( 'GT_SHOW_ADD_NEW', TRUE ) : FALSE;
 
 /**
  * Get instance of class if in admin.
@@ -308,20 +308,20 @@ class Glance_That {
 								$unattached = get_posts( array( 'post_type' => 'attachment', 'numberposts' => -1, 'post_status' => NULL, 'post_parent' => 0 ) );
 								$unattached = count( $unattached );
 
-								if ( $num_posts && ( $num_posts->inherit || GT_SHOW_ZERO_COUNT ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
+								if ( $num_posts && ( $num_posts->inherit || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 									$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->inherit );
 
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
-									if ( current_user_can( 'upload_files' ) && GT_SHOW_ADD_NEW ) {
+									if ( current_user_can( 'upload_files' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 										$new_attachment = '<a href="media-new.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Media"></span></a>';
 									} else {
 										$new_attachment = '';
 									}
 
-									if ( GT_SHOW_ALL_STATUS ) {
+									if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 										$statuses = '<div class="gt-statuses">';
-										$statuses .= ( $unattached > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached" title="Unattached Media">' . $unattached . '</a></div>' : FALSE;
+										$statuses .= ( $unattached > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached" title="Unattached Media">' . $unattached . '</a></div>' : FALSE;
 										$statuses .= '</div>';
 									}
 
@@ -334,17 +334,17 @@ class Glance_That {
 							case 'comment':
 								$num_comments = wp_count_comments();
 
-								if ( ( $num_comments->approved || GT_SHOW_ZERO_COUNT ) && current_user_can( 'moderate_comments' ) && current_user_can( 'edit_posts' ) ) {
+								if ( ( $num_comments->approved || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( 'moderate_comments' ) && current_user_can( 'edit_posts' ) ) {
 									$text = _n( '%s Comment', '%s Comments', $num_comments->approved );
 
 									$text = sprintf( $text, number_format_i18n( $num_comments->approved ) );
 
-									if ( GT_SHOW_ALL_STATUS ) {
+									if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 										$moderation = intval( $num_comments->moderated ) > 0 ? 'gt-moderate' : '';
 										$statuses = '<div id="gt-statuses-comments" class="gt-statuses">';
-										$statuses .= ( $num_comments->moderated > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending" title="Pending">' . $num_comments->moderated . '</a></div>' : FALSE;
-										$statuses .= ( $num_comments->spam > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="edit-comments.php?comment_status=spam" class="gt-spam" title="Spam">' . $num_comments->spam . '</a></div>' : FALSE;
-										$statuses .= ( $num_comments->trash > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="edit-comments.php?comment_status=trash" class="gt-trash" title="Trash">' . $num_comments->trash . '</a></div>' : FALSE;
+										$statuses .= ( $num_comments->moderated > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status ' . $moderation . '"><a href="edit-comments.php?comment_status=moderated" class="gt-pending" title="Pending">' . $num_comments->moderated . '</a></div>' : FALSE;
+										$statuses .= ( $num_comments->spam > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="edit-comments.php?comment_status=spam" class="gt-spam" title="Spam">' . $num_comments->spam . '</a></div>' : FALSE;
+										$statuses .= ( $num_comments->trash > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="edit-comments.php?comment_status=trash" class="gt-trash" title="Trash">' . $num_comments->trash . '</a></div>' : FALSE;
 										$statuses .= '</div>';
 									}
 
@@ -396,28 +396,28 @@ class Glance_That {
 									$plugin_stats['favorites'] = null;
 								}
 
-								if ( current_user_can( 'install_plugins' ) && GT_SHOW_ADD_NEW ) {
+								if ( current_user_can( 'install_plugins' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 									$new_plugin = '<a href="plugin-install.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Plugin"></span></a>';
 								} else {
 									$new_plugin = '';
 								}
 
 								// Display plugin glance
-								if ( ( $plugin_stats['all'] || GT_SHOW_ZERO_COUNT ) && current_user_can( 'activate_plugins' ) ) {
+								if ( ( $plugin_stats['all'] || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( 'activate_plugins' ) ) {
 									$text = _n( '%s Plugin', '%s Plugins', $plugin_stats['all'] );
 
 									$text = sprintf( $text, number_format_i18n( $plugin_stats['all'] ) );
 
-									if ( GT_SHOW_ALL_STATUS ) {
+									if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 										$statuses = '<div class="gt-statuses">';
-											$statuses .= ( $plugin_stats['active'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=active" class="gt-active" title="Active">' . $plugin_stats['active'] . '</a></div>' : FALSE;
-											$statuses .= ( $plugin_stats['inactive'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=inactive" class="gt-inactive" title="Inactive">' . $plugin_stats['inactive'] . '</a></div>' : FALSE;
-											$statuses .= ( $plugin_stats['recent'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=recently_activated" class="gt-recent" title="Recently Active">' . $plugin_stats['recent'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['active'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=active" class="gt-active" title="Active">' . $plugin_stats['active'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['inactive'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=inactive" class="gt-inactive" title="Inactive">' . $plugin_stats['inactive'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['recent'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=recently_activated" class="gt-recent" title="Recently Active">' . $plugin_stats['recent'] . '</a></div>' : FALSE;
 											$moderation = intval( $plugin_stats['update'] ) > 0 ? 'gt-moderate' : '';
-											$statuses .= ( $plugin_stats['update'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status ' . $moderation . '"><a href="plugins.php?plugin_status=upgrade" class="gt-update" title="Update Available">' . $plugin_stats['update'] . '</a></div>' : FALSE;
-											$statuses .= ( null !== $plugin_stats['favorites'] && ( $plugin_stats['favorites'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="plugin-install.php?tab=favorites" class="gt-favorites" title="Favorites: ' . $user . '">' . $plugin_stats['favorites'] . '</a></div>' : FALSE;
-											$statuses .= ( $plugin_stats['mustuse'] > 0 && GT_SHOW_MUSTUSE ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=mustuse" class="gt-mustuse" title="Must-Use">' . $plugin_stats['mustuse'] . '</a></div>' : FALSE;
-											$statuses .= ( $plugin_stats['dropins'] > 0 && GT_SHOW_DROPINS ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=dropins" class="gt-dropins" title="Drop-ins">' . $plugin_stats['dropins'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['update'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status ' . $moderation . '"><a href="plugins.php?plugin_status=upgrade" class="gt-update" title="Update Available">' . $plugin_stats['update'] . '</a></div>' : FALSE;
+											$statuses .= ( null !== $plugin_stats['favorites'] && ( $plugin_stats['favorites'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) ? '<div class="gt-status"><a href="plugin-install.php?tab=favorites" class="gt-favorites" title="Favorites: ' . $user . '">' . $plugin_stats['favorites'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['mustuse'] > 0 && apply_filters( 'gt_show_mustuse', GT_SHOW_MUSTUSE ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=mustuse" class="gt-mustuse" title="Must-Use">' . $plugin_stats['mustuse'] . '</a></div>' : FALSE;
+											$statuses .= ( $plugin_stats['dropins'] > 0 && apply_filters( 'gt_show_', GT_SHOW_DROPINS ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=dropins" class="gt-dropins" title="Drop-ins">' . $plugin_stats['dropins'] . '</a></div>' : FALSE;
 										$statuses .= '</div>';
 									}
 
@@ -431,7 +431,7 @@ class Glance_That {
 							case 'user':
 								$num_users = count_users();
 
-								if ( current_user_can( 'create_users' ) && GT_SHOW_ADD_NEW ) {
+								if ( current_user_can( 'create_users' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 									$new_user = '<a href="user-new.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New User"></span></a>';
 								} else {
 									$new_user = '';
@@ -452,22 +452,22 @@ class Glance_That {
 								if ( class_exists( 'RGFormsModel' ) ) {
 									$num_forms = RGFormsModel::get_form_count();
 
-									if ( ( $num_forms['total'] || GT_SHOW_ZERO_COUNT ) && ( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ) {
+									if ( ( $num_forms['total'] || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && ( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ) {
 										$text = _n( '%s Form', '%s Forms', $num_forms['total'] );
 
 										$text = sprintf( $text, number_format_i18n( $num_forms['total'] ) );
 
-										if ( ( current_user_can( 'gravityforms_create_form' ) || current_user_can( 'update_core' ) ) && GT_SHOW_ADD_NEW ) {
+										if ( ( current_user_can( 'gravityforms_create_form' ) || current_user_can( 'update_core' ) ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 											$new_gravityform = '<a href="admin.php?page=gf_new_form" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Form"></span></a>';
 										} else {
 											$new_gravityform = '';
 										}
 
-										if ( GT_SHOW_ALL_STATUS ) {
+										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses">';
-												$statuses .= ( $num_forms['active'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms['inactive'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive" title="Inactive Forms">' . $num_forms['inactive'] . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms['trash'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&trash=1" class="gt-trash" title="Trash">' . $num_forms['trash'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['active'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['inactive'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive" title="Inactive Forms">' . $num_forms['inactive'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['trash'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&trash=1" class="gt-trash" title="Trash">' . $num_forms['trash'] . '</a></div>' : FALSE;
 											$statuses .= '</div>';
 										}
 
@@ -482,22 +482,22 @@ class Glance_That {
 								if ( class_exists( 'FrmForm' ) ) {
 									$num_forms = FrmForm::get_count();
 
-									if ( ( $num_forms->published || GT_SHOW_ZERO_COUNT ) && ( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ) {
+									if ( ( $num_forms->published || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && ( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ) {
 										$text = _n( '%s Form', '%s Forms', $num_forms->published );
 
 										$text = sprintf( $text, number_format_i18n( $num_forms->published ) );
 
-										if ( current_user_can( 'frm_edit_forms' ) && GT_SHOW_ADD_NEW ) {
+										if ( current_user_can( 'frm_edit_forms' ) && apply_filters( 'gt_show_zero_add_new', GT_SHOW_ADD_NEW ) ) {
 											$new_formidableform = '<a href="admin.php?page=formidable&frm_action=new" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Form"></span></a>';
 										} else {
 											$new_formidableform = '';
 										}
 
-										if ( GT_SHOW_ALL_STATUS ) {
+										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses">';
-												$statuses .= ( $num_forms->template > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template" title="Form Templates">' . $num_forms->template . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms->draft > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=draft" class="gt-draft" title="Drafts">' . $num_forms->draft . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms->trash > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=trash" class="gt-trash" title="Trash">' . $num_forms->trash . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms->template > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template" title="Form Templates">' . $num_forms->template . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms->draft > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=draft" class="gt-draft" title="Drafts">' . $num_forms->draft . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms->trash > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=trash" class="gt-trash" title="Trash">' . $num_forms->trash . '</a></div>' : FALSE;
 											$statuses .= '</div>';
 										}
 
@@ -511,36 +511,36 @@ class Glance_That {
 							default:
 								if ( post_type_exists( $item ) ) {
 									$num_posts = wp_count_posts( $item );
-									if ( $num_posts && ( $num_posts->publish || GT_SHOW_ZERO_COUNT ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
+									if ( $num_posts && ( $num_posts->publish || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 										$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->publish );
 
 										$text = sprintf( $text, number_format_i18n( $num_posts->publish ) );
 
-										if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && GT_SHOW_ADD_NEW ) {
+										if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 											$new_post = '<a href="post-new.php?post_type=' . $item . '" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . get_post_type_object( $item )->labels->singular_name . '"></span></a>';
 										} else {
 											$new_post = '';
 										}
 
-										if ( GT_SHOW_ALL_STATUS ) {
+										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses">';
-											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) && ( $num_posts->future > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) && ( $num_posts->future > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=future" class="gt-future" title="Scheduled">' . $num_posts->future . '</a></div>';
 											}
-											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $num_posts->pending > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $num_posts->pending > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$moderation = intval( $num_posts->pending ) > 0 ? 'gt-moderate' : '';
 												$statuses .= '<div class="gt-status ' . $moderation . '"><a href="edit.php?post_type=' . $item . '&post_status=pending" class="gt-pending" title="Pending">' . $num_posts->pending . '</a></div>';
 											}
-											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts && ( $num_posts->draft > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
+											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts && ( $num_posts->draft > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=draft" class="gt-draft" title="Drafts">' . $num_posts->draft . '</a></div>';
 											}
-											if ( ( ( ! isset( get_post_type_object( $item )->cap->edit_private_posts ) && current_user_can( 'edit_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->edit_private_posts ) ) && ( $num_posts->private > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											if ( ( ( ! isset( get_post_type_object( $item )->cap->edit_private_posts ) && current_user_can( 'edit_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->edit_private_posts ) ) && ( $num_posts->private > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=private" class="gt-private" title="Private">' . $num_posts->private . '</a></div>';
 											}
-											if ( $this->is_archive_active() && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) && ( $num_posts->archive > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											if ( $this->is_archive_active() && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) && ( $num_posts->archive > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=archive" class="gt-archive" title="Archived">' . $num_posts->archive . '</a></div>';
 											}
-											if ( ( ( ! isset( get_post_type_object( $item )->cap->delete_posts ) && current_user_can( 'delete_posts' ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) || ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && current_user_can( get_post_type_object( $item )->cap->delete_posts ) ) ) && ( $num_posts->trash > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											if ( ( ( ! isset( get_post_type_object( $item )->cap->delete_posts ) && current_user_can( 'delete_posts' ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) || ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && current_user_can( get_post_type_object( $item )->cap->delete_posts ) ) ) && ( $num_posts->trash > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=trash" class="gt-trash" title="Trash">' . $num_posts->trash . '</a></div>';
 											}
 											$statuses .= '</div>';
@@ -597,7 +597,7 @@ class Glance_That {
 			global $current_user;
 			wp_get_current_user();
 
-			if ( ! GT_SHOW_ALL_DASHICONS ) {
+			if ( ! apply_filters( 'gt_show_all_dashicons', GT_SHOW_ALL_DASHICONS ) ) {
 				// Define dashicon fields allowable icons
 				$iconset = array(
 					'admin-site',
