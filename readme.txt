@@ -77,6 +77,18 @@ $gt_default_glances = array(
 	);
 `
 
+The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
+
+`
+gt_show_zero_count
+gt_show_add_new
+gt_show_all_status
+gt_show_zero_count_status
+gt_show_mustuse
+gt_show_dropins
+gt_show_all_dashicons
+`
+
 == Installation ==
 
 1. Upload the `glance-that` directory to `/wp-content/plugins/`
@@ -94,6 +106,7 @@ Silence is golden.
 
 = 3.0 =
 * Adds 'Add New' icon to items for which content can be created
+* Adds filters for most constants
 
 = 2.9 =
 * Adds user favorite plugins glance
@@ -174,6 +187,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 3.0 =
+* Adds 'Add New' quick links and filtering of constants
 
 = 2.8 =
 * Glance That now utilizes ajax for easier editing of glances. There is also support for a few additional statuses and some minor style enhancements.

@@ -32,11 +32,14 @@ define( 'GT_VERSION', '3.0' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
-// Determine whether statuses are to be shown (keep GT_SHOW_ALL for backwards compatibility - pre v2.1)
-( ! defined( 'GT_SHOW_ALL_STATUS' ) || ( defined( 'GT_SHOW_ALL' ) && GT_SHOW_ALL ) ) ? define( 'GT_SHOW_ALL_STATUS', TRUE ) : FALSE;
-
 // Determine whether items with zero published items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT' ) ? define( 'GT_SHOW_ZERO_COUNT', TRUE ) : FALSE;
+
+// Determine wehether add new post item is shown
+! defined( 'GT_SHOW_ADD_NEW') ? define( 'GT_SHOW_ADD_NEW', TRUE ) : FALSE;
+
+// Determine whether statuses are to be shown (keep GT_SHOW_ALL for backwards compatibility - pre v2.1)
+( ! defined( 'GT_SHOW_ALL_STATUS' ) || ( defined( 'GT_SHOW_ALL' ) && GT_SHOW_ALL ) ) ? define( 'GT_SHOW_ALL_STATUS', TRUE ) : FALSE;
 
 // Determine whether statuses with zero items are shown
 ! defined( 'GT_SHOW_ZERO_COUNT_STATUS' ) ? define( 'GT_SHOW_ZERO_COUNT_STATUS', FALSE ) : FALSE;
@@ -50,9 +53,6 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
 // Set a capability required for editing of one's glances
 ! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
-
-// Determine wehether add new post item is shown
-! defined( 'GT_SHOW_ADD_NEW') ? define( 'GT_SHOW_ADD_NEW', TRUE ) : FALSE;
 
 /**
  * Get instance of class if in admin.
