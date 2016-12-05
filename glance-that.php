@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://vandercar.net/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 2.9
+ * Version: 3.0
  * Author: UaMV
  * Author URI: http://vandercar.net
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 2.9
+ * @version 3.0
  * @author UaMV
  * @copyright Copyright (c) 2013-2016, UaMV
  * @link http://vandercar.net/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '2.9' );
+define( 'GT_VERSION', '3.0' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -50,6 +50,9 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
 // Set a capability required for editing of one's glances
 ! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
+
+// Determine wehether add new post item is shown
+! defined( 'GT_SHOW_ADD_NEW') ? define( 'GT_SHOW_ADD_NEW', TRUE ) : FALSE;
 
 /**
  * Get instance of class if in admin.
@@ -310,6 +313,12 @@ class Glance_That {
 
 									$text = sprintf( $text, number_format_i18n( $num_posts->inherit ) );
 
+									if ( current_user_can( 'upload_files' ) && GT_SHOW_ADD_NEW ) {
+										$new_attachment = '<a href="media-new.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Media"></span></a>';
+									} else {
+										$new_attachment = '';
+									}
+
 									if ( GT_SHOW_ALL_STATUS ) {
 										$statuses = '<div class="gt-statuses">';
 										$statuses .= ( $unattached > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="upload.php?detached=1" class="gt-unattached" title="Unattached Media">' . $unattached . '</a></div>' : FALSE;
@@ -317,7 +326,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that" title="All Media">%2$s</a>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that" title="All Media">%2$s</a>%4$s%3$s</div>', $item, $text, $statuses, $new_attachment );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -325,7 +334,7 @@ class Glance_That {
 							case 'comment':
 								$num_comments = wp_count_comments();
 
-								if ( ( $num_comments->approved || GT_SHOW_ZERO_COUNT ) && current_user_can( 'moderate_comments' ) ) {
+								if ( ( $num_comments->approved || GT_SHOW_ZERO_COUNT ) && current_user_can( 'moderate_comments' ) && current_user_can( 'edit_posts' ) ) {
 									$text = _n( '%s Comment', '%s Comments', $num_comments->approved );
 
 									$text = sprintf( $text, number_format_i18n( $num_comments->approved ) );
@@ -369,7 +378,7 @@ class Glance_That {
 									$plugin_stats['dropins'] = count( get_dropins() );
 								}
 
-								$plugin_stats['recent'] = count( get_option( 'recently_activated', array() ) );
+								$plugin_stats['recent'] = count( get_site_option( 'recently_activated', array() ) );
 
 								// Get user favorites
 								include( ABSPATH . 'wp-admin/includes/plugin-install.php' );
@@ -385,6 +394,12 @@ class Glance_That {
 									$plugin_stats['favorites'] = count( $api->plugins );
 								} else {
 									$plugin_stats['favorites'] = null;
+								}
+
+								if ( current_user_can( 'install_plugins' ) && GT_SHOW_ADD_NEW ) {
+									$new_plugin = '<a href="plugin-install.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Plugin"></span></a>';
+								} else {
+									$new_plugin = '';
 								}
 
 								// Display plugin glance
@@ -407,7 +422,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that" title="All Plugins">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="plugins.php" class="glance-that" title="All Plugins">%2$s</a>%4$s</div>%3$s</div>', $item, $text, $statuses, $new_plugin );
 									$elements[] = ob_get_clean();
 								}
 
@@ -415,13 +430,20 @@ class Glance_That {
 
 							case 'user':
 								$num_users = count_users();
+
+								if ( current_user_can( 'create_users' ) && GT_SHOW_ADD_NEW ) {
+									$new_user = '<a href="user-new.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New User"></span></a>';
+								} else {
+									$new_user = '';
+								}
+
 								if ( current_user_can( 'list_users' ) ) {
 									$text = _n( '%s User', '%s Users', $num_users['total_users'] );
 
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All Users">%1$s</a><div class="gt-statuses"></div></div>', $text );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All Users">%1$s</a>%2$s<div class="gt-statuses"></div></div>', $text, $new_user );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -435,6 +457,12 @@ class Glance_That {
 
 										$text = sprintf( $text, number_format_i18n( $num_forms['total'] ) );
 
+										if ( ( current_user_can( 'gravityforms_create_form' ) || current_user_can( 'update_core' ) ) && GT_SHOW_ADD_NEW ) {
+											$new_gravityform = '<a href="admin.php?page=gf_new_form" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Form"></span></a>';
+										} else {
+											$new_gravityform = '';
+										}
+
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
 												$statuses .= ( $num_forms['active'] > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>' : FALSE;
@@ -444,7 +472,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered" title="All Forms">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=gf_edit_forms" class="glance-that unordered" title="All Forms">%2$s</a>%4$s</div>%3$s</div>', $item, $text, $statuses, $new_gravityform );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -459,6 +487,12 @@ class Glance_That {
 
 										$text = sprintf( $text, number_format_i18n( $num_forms->published ) );
 
+										if ( current_user_can( 'frm_edit_forms' ) && GT_SHOW_ADD_NEW ) {
+											$new_formidableform = '<a href="admin.php?page=formidable&frm_action=new" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New Form"></span></a>';
+										} else {
+											$new_formidableform = '';
+										}
+
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
 												$statuses .= ( $num_forms->template > 0 || GT_SHOW_ZERO_COUNT_STATUS ) ? '<div class="gt-status"><a href="admin.php?page=formidable&form_type=template" class="gt-template" title="Form Templates">' . $num_forms->template . '</a></div>' : FALSE;
@@ -468,7 +502,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered" title="All Forms">%2$s</a></div>%3$s</div>', $item, $text, $statuses );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered" title="All Forms">%2$s</a>%4$s</div>%3$s</div>', $item, $text, $statuses, $new_formidableform );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -481,6 +515,12 @@ class Glance_That {
 										$text = _n( '%s ' . get_post_type_object( $item )->labels->singular_name, '%s ' . get_post_type_object( $item )->labels->name, $num_posts->publish );
 
 										$text = sprintf( $text, number_format_i18n( $num_posts->publish ) );
+
+										if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && GT_SHOW_ADD_NEW ) {
+											$new_post = '<a href="post-new.php?post_type=' . $item . '" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . get_post_type_object( $item )->labels->singular_name . '"></span></a>';
+										} else {
+											$new_post = '';
+										}
 
 										if ( GT_SHOW_ALL_STATUS ) {
 											$statuses = '<div class="gt-statuses">';
@@ -507,7 +547,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that" title="All %4$s">%2$s</a></div>%3$s</div>', $item, $text, $statuses, get_post_type_object( $item )->labels->name );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that" title="All %4$s">%2$s</a>%5$s</div>%3$s</div>', $item, $text, $statuses, get_post_type_object( $item )->labels->name, $new_post );
 										$elements[] = ob_get_clean();
 									}
 								}
