@@ -465,9 +465,9 @@ class Glance_That {
 
 										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses">';
-												$statuses .= ( $num_forms['active'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=1" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms['inactive'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&active=0" class="gt-inactive" title="Inactive Forms">' . $num_forms['inactive'] . '</a></div>' : FALSE;
-												$statuses .= ( $num_forms['trash'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&trash=1" class="gt-trash" title="Trash">' . $num_forms['trash'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['active'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&filter=active" class="gt-active" title="Active Forms">' . $num_forms['active'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['inactive'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&filter=inactive" class="gt-inactive" title="Inactive Forms">' . $num_forms['inactive'] . '</a></div>' : FALSE;
+												$statuses .= ( $num_forms['trash'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status"><a href="admin.php?page=gf_edit_forms&filter=trash" class="gt-trash" title="Trash">' . $num_forms['trash'] . '</a></div>' : FALSE;
 											$statuses .= '</div>';
 										}
 
