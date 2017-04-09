@@ -3,8 +3,8 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.0
- * Author: UaMV
+ * Version: 3.1
+ * Author: uamv
  * Author URI: http://vandercar.net
  *
  * The Glance That plugin was created to extend At A Glance.
@@ -312,9 +312,9 @@ class Glance_That {
 	public function label( $item, $label, $singular = false ) {
 
 		if ( $singular ) {
-			return esc_html( apply_filters( 'gt_glance_label_singular', $label, $item ) );
+			return esc_html( apply_filters( 'gt_label_singular', $label, $item ) );
 		} else {
-			return esc_html( apply_filters( 'gt_glance_label', $label, $item ) );
+			return esc_html( apply_filters( 'gt_label', $label, $item ) );
 		}
 
 	}
