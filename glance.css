@@ -3,7 +3,8 @@
 }
 
 #visible-icon.formidableform,
-#visible-icon.gravityform {
+#visible-icon.gravityform,
+#visible-icon.give {
 	display: inline;
 }
 #dashboard_right_now li a[data-gt="formidableform"]:before,
@@ -32,6 +33,17 @@
 	position: relative;
 	top: 6px;
 	margin: 0 6px 0 8px;
+}
+#dashboard_right_now li a[data-gt="give_forms"]:before,
+#visible-icon.give:before {
+	font: 400 17px/1 give-icomoon !important;
+	content: '\e800' !important;
+	padding-right: 8px;
+}
+#visible-icon.give:before {
+	padding: 6px 7px 6px 6px;
+	position: relative;
+	top: 5px;
 }
 
 #dashboard_right_now li a.gt-add-new:before {
