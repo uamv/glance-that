@@ -1,11 +1,11 @@
 === Glance That ===
 
 Contributors: UaMV
-Donate link: http://paypal.me/uamv
+Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.7
-Stable tag: 3.0
+Stable tag: 3.1
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -21,8 +21,9 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Users
 * Gravity Forms
 * Formidable Forms
+* Give Forms
 
-Additionally, Glance That allows you to view the number of items matching the following statuses:
+Additionally, Glance That allows you to toggle view of the number of items matching the following statuses:
 
 * Scheduled
 * Pending
@@ -84,6 +85,8 @@ gt_show_zero_count
 gt_show_add_new
 gt_show_all_status
 gt_show_zero_count_status
+gt_label
+gt_label_singular
 gt_show_mustuse
 gt_show_dropins
 gt_show_all_dashicons
@@ -103,6 +106,12 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.1 =
+* Allows toggling of status visibility
+* Add glance label filters: gt_glance_label and gt_glance_label_singular
+* Support Give forms as glances
+* Update status links for Gravity Form items
 
 = 3.0 =
 * Adds 'Add New' icon to items for which content can be created
