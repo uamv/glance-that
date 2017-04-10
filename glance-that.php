@@ -154,14 +154,8 @@ class Glance_That {
 		// Add custom post types to end of At A Glance table
 		add_filter( 'dashboard_glance_items', array( $this, 'customize_items' ), 10, 1 );
 
-		// Process the form
-		// add_action( 'admin_init', array( $this, 'process_form' ) );
-
 		// Account for icons selected via Post State Tags plugin
 		add_action( 'admin_head', array( $this, 'check_override_status_icons' ) );
-
-		// Load up an administration notice to guide users to the next step
-		// add_action( 'admin_notices', array( $this, 'show_notices' ) );
 
 		// Add post statuses to native types
 		add_action( 'admin_footer', array( $this, 'add_sort_order' ) );
@@ -264,7 +258,7 @@ class Glance_That {
 	} // end add_statuses
 
 	/**
-	 * Adds order to list item for use by sortable
+	 * Adds status visibility control script
 	 *
 	 * @since    1.4
 	 */
@@ -279,7 +273,11 @@ class Glance_That {
 			<script type="text/javascript" language="javascript">
 				jQuery(document).ready(function($) {
 
-					$('#dashboard_right_now .handlediv').after('<button id="gt-toggle-status" type="button" class="button-link" data-statuses="<?php echo $visibility; ?>"><span class="dashicons dashicons-visibility" data-action="hide" <?php echo 'hidden' == $visibility ? 'style="display: none;"' : '' ?>></span><span class="dashicons dashicons-hidden" data-action="show" <?php echo 'visibility' == $visibility ? 'style="display: none;"' : '' ?>></span></button>');
+					$('#dashboard_right_now .handlediv').after('<button id="gt-toggle-status" type="button" class="button-link" data-statuses="<?php echo $visibility; ?>"><span class="dashicons dashicons-visibility" data-action="show" <?php echo 'visibility' == $visibility ? 'style="display: none;"' : '' ?> title="Click to Reveal More Glances"></span><span class="dashicons dashicons-hidden" data-action="hide" <?php echo 'hidden' == $visibility ? 'style="display: none;"' : '' ?> title="Click to Hide"></span></button>');
+
+					<?php if ( ! $this->get_user_status_visibility() ) { ?>
+						$('#dashboard_right_now .inside .main ul li:last-child').hide();
+					<?php } ?>
 
 					$('#gt-toggle-status span').click(
 						function() {
@@ -292,6 +290,7 @@ class Glance_That {
 
 									$('.gt-statuses').toggle();
 									$('#gt-toggle-status .dashicons').toggle();
+									$('#dashboard_right_now .inside .main ul li:last-child').toggle();
 
 								}
 							}
@@ -302,7 +301,7 @@ class Glance_That {
 
 		}
 
-	} // end add_statuses
+	} // end status_visibility
 
 	/**
 	 * Return glance labels
@@ -317,27 +316,7 @@ class Glance_That {
 			return esc_html( apply_filters( 'gt_label', $label, $item ) );
 		}
 
-	}
-
-	/**
-	 * Return status visbility
-	 *
-	 * @since    1.0
-	 */
-	// public function statuses() {
-	//
-	// 	global $current_user;
-	// 	wp_get_current_user();
-	//
-	// 	$status_visibility = get_user_meta( $current_user->ID, 'glance_that_status_visibility', true );
-	//
-	// 	if ( $status_visibility && apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
-	// 		return true;
-	// 	} else {
-	// 		return false;
-	// 	}
-	//
-	// }
+	} // end label
 
 	/**
 	 * Adds custom post types to the end of At a Glance table
@@ -652,7 +631,7 @@ class Glance_That {
 
 		return $elements;
 
-	}
+	} // end customize_items
 
 	/**
 	 * Adds a link to the At a Glance to show Add/Remove form
@@ -675,7 +654,7 @@ class Glance_That {
 
 		return $elements;
 
-	}
+	} // end add_form_activation_link
 
 	/**
 	 * Adds a form for adding/removing custom post types from the At A Glance
@@ -920,7 +899,7 @@ class Glance_That {
 
 		}
 
-	}
+	} // end add_form
 
 	/**
 	 * Remove post types from option list
@@ -934,7 +913,7 @@ class Glance_That {
 
 		return $post_types;
 
-	}
+	} // end remove_post_type_options
 
 	/**
 	 * Process any responses to the displayed notices.
@@ -1034,7 +1013,7 @@ class Glance_That {
 
 		wp_send_json( $response );
 
-	} // end process_notice_response
+	} // end process_form
 
 	/**
 	 * Process any responses to the displayed notices.
@@ -1058,7 +1037,7 @@ class Glance_That {
 
 		return $message;
 
-	}
+	} // end show_notices
 
 	/**
 	 * Assembles a form field for dashicon selection.
@@ -1165,7 +1144,7 @@ class Glance_That {
 
 		return $html;
 
-	}
+	} // end get_dashicon_field
 
 	/**
 	 * Get the categorized array of dashicons.
@@ -1440,7 +1419,7 @@ class Glance_That {
 			)
 		);
 
-	}
+	} // end get_dashicons
 
 	/**
 	 * Process any responses to the displayed notices.
@@ -1470,7 +1449,7 @@ class Glance_That {
 			return false;
 		}
 
-	}
+	} // end get_user_status_visibility
 
 	/**
 	 * Process any responses to the displayed notices.
@@ -1511,7 +1490,7 @@ class Glance_That {
 				);
 		}
 
-	}
+	} // end get_users_glances
 
 	/**
 	 * Action target that sorts glances
@@ -1551,7 +1530,7 @@ class Glance_That {
 
 		wp_send_json( $response );
 
-	}
+	} // end sort_glances
 
 	/**
 	 * Action target that sorts glances
@@ -1585,7 +1564,7 @@ class Glance_That {
 
 		wp_send_json( $response );
 
-	}
+	} // end toggle_status_visibility
 
 	/**
 	 * Overrides status icons if defined by Post State Tags plugin
@@ -1624,7 +1603,7 @@ class Glance_That {
 
 		}
 
-	}
+	} // end check_override_status_icons
 
 	/**
 	 * Checks whether Archived Post Status plugin is active
@@ -1635,7 +1614,7 @@ class Glance_That {
 
 		return is_plugin_active( 'archived-post-status/archived-post-status.php' );
 
-	}
+	} // end is_archive_active
 
 	/**
 	 * Retrieve dashicon character code from dashicon name
@@ -1656,7 +1635,7 @@ class Glance_That {
 			}
 		}
 
-	}
+	} // end get_dashicon_code
 
 } // end class
 
