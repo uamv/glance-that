@@ -361,6 +361,25 @@ class Glance_That {
 						$options = $data['data'];
 
 						switch ( $item ) {
+							case 'theme':
+								$num_themes = count( get_themes() );
+								if ( $num_themes && current_user_can( 'switch_themes' ) ) {
+									$text = _n( '%s ' . $this->label( $item, 'Theme', true ), '%s ' . $this->label( $item, 'Themes' ), $num_themes );
+
+									$text = sprintf( $text, number_format_i18n( $num_themes ) );
+
+									if ( current_user_can( 'install_themes' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
+										$new_theme = '<a href="theme-install.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, 'Theme', true ) . '"></span></a>';
+									} else {
+										$new_theme = '';
+									}
+
+									ob_start();
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="themes.php" class="glance-that" title="All ' . $this->label( $item, 'Themes' ) . '">%2$s</a>%3$s</div>', $item, $text, $new_theme );
+									$elements[] = ob_get_clean();
+								}
+								break;
+
 							case 'revision':
 								$num_posts = wp_count_posts( $item );
 								if ( $num_posts && $num_posts->inherit && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
@@ -679,6 +698,7 @@ class Glance_That {
 					'marker',
 					'admin-page',
 					'admin-comments',
+					'admin-appearance',
 					'admin-plugins',
 					'admin-users',
 					'admin-tools',
@@ -885,6 +905,12 @@ class Glance_That {
 
 					// Only show plugins optino if user can activate plugins
 					current_user_can( 'activate_plugins' ) ? $html .= '<option value="plugin" data-dashicon="admin-plugins" ' . $glancing . '>' . $this->label( 'plugin', 'Plugins' ) . '</options>' : FALSE;
+
+					// Set data-glancing attribute
+					$glancing = isset( $this->glances['theme'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+					// Only show themes option if user can switch themes
+					current_user_can( 'switch_themes' ) ? $html .= '<option value="theme" data-dashicon="admin-appearance" ' . $glancing . '>' . $this->label( 'theme', 'Themes' ) . '</options>' : FALSE;
 
 				$html .= '</select>';
 
