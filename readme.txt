@@ -5,7 +5,7 @@ Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.7
-Stable tag: 3.1
+Stable tag: 3.2
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -18,6 +18,7 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Revisions (admins only)
 * Media
 * Plugins
+* Themes
 * Users
 * Gravity Forms
 * Formidable Forms
@@ -78,6 +79,9 @@ $gt_default_glances = array(
 	);
 `
 
+The `gt_labels` filter can be used to custom labels for glances.
+`apply_filters( 'gt_labels', str $label, str $glance, int $count );`
+
 The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
 
 `
@@ -85,8 +89,6 @@ gt_show_zero_count
 gt_show_add_new
 gt_show_all_status
 gt_show_zero_count_status
-gt_label
-gt_label_singular
 gt_show_mustuse
 gt_show_dropins
 gt_show_all_dashicons
@@ -106,6 +108,11 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.2 =
+* Adds `gt_labels` filter
+* Removes `gt_label` and  `gt_label_singular` filters
+* Adds support for themes
 
 = 3.1 =
 * Allows toggling of status visibility
@@ -196,6 +203,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 3.2 =
+* Modifies label filters and adds glancing of themes.
 
 = 3.0 =
 * Adds 'Add New' quick links and filtering of constants
