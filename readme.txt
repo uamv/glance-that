@@ -35,7 +35,8 @@ Additionally, Glance That allows you to toggle view of the number of items match
 * Unattached (Media)
 * Spam (Comments)
 * Active, Inactive (Plugins & Gravity Forms)
-* Favorites, Recently Active, Updates, Must-Use, Drop-Ins (Plugins)
+* Updates (Plugins & Themes)
+* Favorites, Recently Active, Must-Use, Drop-Ins (Plugins)
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
@@ -112,6 +113,7 @@ Silence is golden.
 
 = 3.3 =
 * Fix layout bug when no posts or no pages.
+* Adds status for available theme updates
 
 = 3.2 =
 * Adds `gt_labels` filter
@@ -210,6 +212,7 @@ Silence is golden.
 
 = 3.3 =
 * Fixes layout bug when no posts or no pages.
+* Adds status for available theme updates
 
 = 3.2 =
 * Modifies label filters and adds glancing of themes.
