@@ -370,8 +370,15 @@ class Glance_That {
 										$new_theme = '';
 									}
 
+									if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
+										$statuses = '<div class="gt-statuses"' . $status_visibility . '>';
+											$moderation = count( get_theme_updates() ) > 0 ? 'gt-moderate' : '';
+											$statuses .= ( count( get_theme_updates() ) > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status ' . $moderation . '"><a href="update-core.php#update-themes-table" class="gt-update" title="Update Available">' . count( get_theme_updates() ) . '</a></div>' : FALSE;
+										$statuses .= '</div>';
+									}
+
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="themes.php" class="glance-that" title="All ' . $this->label( $item, 'Themes', 2 ) . '">%2$s</a>%3$s</div>', $item, $text, $new_theme );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="themes.php" class="glance-that" title="All ' . $this->label( $item, 'Themes', 2 ) . '">%2$s</a>%3$s%4$s</div>', $item, $text, $new_theme, $statuses );
 									$elements[] = ob_get_clean();
 								}
 								break;
