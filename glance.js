@@ -3,6 +3,9 @@
  */
 jQuery(document).ready(function( $ ) {
 
+	// Hide native glance items
+	$('#dashboard_right_now .post-count,#dashboard_right_now .page-count,#dashboard_right_now .comment-count,#dashboard_right_now .comment-mod-count').remove();
+
 	function addSortable() {
 
 	    $( "#dashboard_right_now .inside .main ul" ).sortable({
