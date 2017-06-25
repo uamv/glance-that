@@ -2,6 +2,7 @@
 	float: right;
 	width: 36px;
 	height: 36px;
+	text-align: center;
 	padding-top: 3px;
 }
 #gt-toggle-status .dashicons {

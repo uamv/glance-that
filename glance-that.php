@@ -428,7 +428,7 @@ class Glance_That {
 								$num_comments = wp_count_comments();
 
 								if ( ( $num_comments->approved || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( 'moderate_comments' ) && current_user_can( 'edit_posts' ) ) {
-									$text = _n( '%s' . $this->label( $item, 'Comment', $num_comments->approved ), '%s ' . $this->label( $item, 'Comments', $num_comments->approved ), $num_comments->approved );
+									$text = _n( '%s ' . $this->label( $item, 'Comment', $num_comments->approved ), '%s ' . $this->label( $item, 'Comments', $num_comments->approved ), $num_comments->approved );
 
 									$text = sprintf( $text, number_format_i18n( $num_comments->approved ) );
 
