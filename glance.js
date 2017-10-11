@@ -149,10 +149,4 @@ jQuery(document).ready(function( $ ) {
 			$('#iconlist').hide();
 		});
 
-	$('#show-gt-form').click(
-		function() {
-			$('#gt-form').css('display','block');
-			$(this).css('display','none');
-		});
-
 });

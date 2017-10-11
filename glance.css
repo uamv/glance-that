@@ -1,12 +1,29 @@
-#gt-toggle-status {
-	float: right;
-	width: 36px;
-	height: 36px;
-	text-align: center;
-	padding-top: 3px;
+#gt-defaults button.button-link {
+	text-decoration: none;
+	line-height: 1.5;
+	margin-left: 1em;
 }
-#gt-toggle-status .dashicons {
+#gt-defaults button span {
+	margin-right: .15em;
+}
+
+#dashboard_right_now.closed #gt-settings-wrapper,
+#dashboard_right_now.closed #gt-show-settings {
+	display: none !important;
+}
+#dashboard_right_now .gt-settings {
+	float: right;
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	padding-top: 2px;
+	margin: 8px 0 8px 7px;
+}
+#dashboard_right_now .gt-settings .dashicons {
 	font-size: 16px;
+}
+#gt-settings-wrapper {
+	display: none;
 }
 
 .post-count,.page-count,.comment-count,.comment-mod-count {
@@ -154,17 +171,12 @@
 #dashboard_right_now div.gt-status a.gt-dropins:before {
 	content: '\f546';
 }
-
-
 #dashboard_right_now div.gt-status a.gt-template:before {
 	content: '\f538';
 }
 
 #dashboard-widgets-wrap {
 	overflow: visible;
-}
-#dashboard_right_now .inside .main ul li:last-child {
-	float: right;
 }
 
 #gt-form input[type="submit"] {

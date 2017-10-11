@@ -5,14 +5,14 @@ Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.8
-Stable tag: 3.3
+Stable tag: 3.5
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
 
 == Description ==
 
-Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, sort the order of displayed items using drag & drop, and quick link to the Add New content screens. Display of items respects user capabilities. Currently, the following items are supported ...
+Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, sort the order of displayed items using drag & drop, and quick link to the Add New content screens. Display of items respects user capabilities. Administrators can apply a glance configuration site-wide to all users or to new users. Currently, the following items are supported ...
 
 * Custom post types
 * Revisions (admins only)
@@ -45,26 +45,38 @@ If you've defined custom post state icons via [Post State Tags](https://wordpres
 Add the following constants to `wp-config.php` to control display of Glance That items
 
 Hide add new icon
+
 `define( 'GT_SHOW_ADD_NEW', FALSE );`
 
 Hide status items
+
 `define( 'GT_SHOW_ALL_STATUS', FALSE );`
 
 Hide glance items with a zero published count
+
 `define( 'GT_SHOW_ZERO_COUNT', FALSE );`
 
 Show status items with zero count
+
 `define( 'GT_SHOW_ZERO_COUNT_STATUS', TRUE );`
 
 Show all dashicons in the icon selector by adding
+
 `define( 'GT_SHOW_ALL_DASHICONS', TRUE );`
 
 Restrict modification of visible glances by adding
+
 `define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
 
+Restrict application of default glances by adding
+
+`define( 'GT_ADMIN_GLANCES', 'capability_required_to_admin' );`
+
 Show must-use or drop-in plugin status
+`
 define( 'GT_SHOW_MUSTUSE', TRUE );
 define( 'GT_SHOW_DROPINS', TRUE );
+`
 
 = Filters =
 
@@ -110,6 +122,14 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.5 =
+* Fixes bug preventing access to Glanc That settings in some browsers.
+
+= 3.4 =
+* Allow application of current glance configuration to all existing and new users.
+* Change UI of adding/removing glances
+* Few small bug fixes
 
 = 3.3 =
 * Fix layout bug when no posts or no pages.
@@ -209,6 +229,14 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 3.5 =
+* Fixes bug preventing access to Glanc That settings in some browsers.
+
+= 3.4 =
+* Allow application of current glance configuration to all existing and new users.
+* Change UI of adding/removing glances
+* Few small bug fixes
 
 = 3.3 =
 * Fixes layout bug when no posts or no pages.

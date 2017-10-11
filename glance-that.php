@@ -3,9 +3,9 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.3
+ * Version: 3.5
  * Author: uamv
- * Author URI: http://vandercar.net
+ * Author URI: http://typewheel.xyz
  *
  * The Glance That plugin was created to extend At A Glance.
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 3.3
+ * @version 3.5
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '3.3' );
+define( 'GT_VERSION', '3.5' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -51,8 +51,9 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 // Determine whether all dashicons are to be shown (otherwise un-post-type-like icons are removed)
 ! defined( 'GT_SHOW_ALL_DASHICONS' ) ? define( 'GT_SHOW_ALL_DASHICONS', FALSE ) : FALSE;
 
-// Set a capability required for editing of one's glances
+// Set a capability required for editing of one's glances and admining all glances
 ! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
+! defined( 'GT_ADMIN_GLANCES' ) ? define( 'GT_ADMIN_GLANCES', 'edit_dashboard' ) : FALSE;
 
 /**
  * Get instance of class if in admin.
@@ -132,6 +133,15 @@ class Glance_That {
 	 */
 	protected $editable;
 
+	/**
+	 * editable
+	 *
+	 * @since    2.4
+	 *
+	 * @var      array
+	 */
+	protected $adminable;
+
 	/*---------------------------------------------------------------------------------*
 	 * Consturctor
 	 *---------------------------------------------------------------------------------*/
@@ -161,10 +171,7 @@ class Glance_That {
 		add_action( 'admin_footer', array( $this, 'add_sort_order' ) );
 
 		// Add post status visibility control
-		add_action( 'admin_footer', array( $this, 'status_visibility' ) );
-
-		// Add form activation to end of At A Glance table
-		add_filter( 'dashboard_glance_items', array( $this, 'add_form_activation_link' ), 80, 1 );
+		add_action( 'admin_footer', array( $this, 'settings_control' ) );
 
 		// Filter post type available in drop down to account for certain plugins that add unneccesarily viewable types
 		add_filter( 'gt_post_type_selection', array( $this, 'remove_post_type_options' ), 20, 1 );
@@ -174,6 +181,9 @@ class Glance_That {
 
 		// Add ajax call to modify sort order
 		add_action( 'wp_ajax_sort_glances', array( $this, 'sort_glances' ) );
+
+		// Add ajax call to modify sort order
+		add_action( 'wp_ajax_default_glances', array( $this, 'default_glances' ) );
 
 		// Add ajax call to toggle visibility
 		add_action( 'wp_ajax_toggle_status_visibility', array( $this, 'toggle_status_visibility' ) );
@@ -206,13 +216,14 @@ class Glance_That {
 	} // end get_instance
 
 	/**
-	 * Registers the plugin's administrative stylesheets and JavaScript
+	 * Set user capabilities for the plugin
 	 *
 	 * @since    1.0
 	 */
 	public function check_user_cap() {
 
 		$this->editable = current_user_can( GT_EDIT_GLANCES ) ? TRUE : FALSE;
+		$this->adminable = current_user_can( GT_ADMIN_GLANCES ) ? TRUE : FALSE;
 
 	} // end check_user_cap
 
@@ -222,14 +233,10 @@ class Glance_That {
 	 * @since    1.0
 	 */
 	public function add_stylesheets_and_javascript() {
+
 		wp_enqueue_style( 'glance', GT_DIR_URL . 'glance.css', array(), GT_VERSION );
-
-		if ( $this->editable ) {
-
-			wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
-			wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
-
-		}
+		wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
+		wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 	} // end add_stylesheets_and_javascript
 
@@ -258,28 +265,46 @@ class Glance_That {
 	} // end add_statuses
 
 	/**
-	 * Adds status visibility control script
+	 * Adds settings control script
 	 *
 	 * @since    1.4
 	 */
-	public function status_visibility() {
+	public function settings_control() {
 
 		if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 
-			$visibility = $this->get_user_status_visibility() ? 'visibility' : 'hidden';
+			$visibility_action = $this->get_user_status_visibility() ? 'hide' : 'show';
+			$visibility_style = $this->get_user_status_visibility() ? 'style="display:none;"' : '';
+			$hidden_style = ! $this->get_user_status_visibility() ? 'style="display:none;"' : '';
+
+			$buttons = '<div id="gt-settings-wrapper"><button id="gt-toggle-status" type="button" class="button-link gt-settings" data-action="' . $visibility_action . '"><span class="dashicons dashicons-visibility" ' . $visibility_style . ' title="Click to Reveal More Glances"></span><span class="dashicons dashicons-hidden" ' . $hidden_style . ' title="Click to Hide"></span></button>';
+
+			if ( $this->editable || $this->adminable ) {
+				$buttons .= '<button id="gt-toggle-form" type="button" class="button-link gt-settings" data-gt-form="closed"><span class="dashicons dashicons-filter" title="Click to Add or Remove Glances"></span></button>';
+			}
+
+			if ( $this->adminable ) {
+				$buttons .= '<button id="gt-save-defaults" type="button" class="button-link gt-settings"><span class="dashicons dashicons-migrate" title="Save as Default Setup for All Users"></span></button>';
+			}
+
+			$buttons .= '</div>';
 
 			?>
 
 			<script type="text/javascript" language="javascript">
 				jQuery(document).ready(function($) {
 
-					$('#dashboard_right_now .handlediv').after('<button id="gt-toggle-status" type="button" class="button-link" data-statuses="<?php echo $visibility; ?>"><span class="dashicons dashicons-visibility" data-action="show" <?php echo 'visibility' == $visibility ? 'style="display: none;"' : '' ?> title="Click to Reveal More Glances"></span><span class="dashicons dashicons-hidden" data-action="hide" <?php echo 'hidden' == $visibility ? 'style="display: none;"' : '' ?> title="Click to Hide"></span></button>');
+					$('#dashboard_right_now .handlediv').after('<button id="gt-show-settings" type="button" class="button-link gt-settings" data-action="show"><span class="dashicons dashicons-admin-settings" title="Click to Reveal Glance That Actions"></span></button>');
 
-					<?php if ( ! $this->get_user_status_visibility() ) { ?>
-						$('#dashboard_right_now .inside .main ul li:last-child').hide();
-					<?php } ?>
+					$('#dashboard_right_now .handlediv').after('<?php echo $buttons; ?>');
 
-					$('#gt-toggle-status span').click(
+					$('#gt-show-settings').hover(
+						function() {
+							$('#gt-show-settings').hide();
+							$('#gt-settings-wrapper').show();
+						});
+
+					$('#gt-toggle-status').click(
 						function() {
 							$.post(Glance.ajaxurl, {
 								action: 'toggle_status_visibility',
@@ -290,11 +315,44 @@ class Glance_That {
 
 									$('.gt-statuses').toggle();
 									$('#gt-toggle-status .dashicons').toggle();
-									$('#dashboard_right_now .inside .main ul li:last-child').toggle();
+									if ( 'show' == $(this).data('action') ) {
+										$(this).data('action','hide');
+									} else {
+										$(this).data('action','show');
+									}
 
 								}
 							}
 					)});
+
+					$('#wpbody-content .wrap > h1').after('<div id="gt-defaults" class="notice notice-info" style="display:none;"><p>To whom would you like to apply the current glance configuration? <button id="gt-save-defaults-all" type="button" class="button-link" data-action="all"><span class="dashicons dashicons-groups" title="Apply to all existing users"></span>All Users</button> <button id="gt-save-defaults-new" type="button" class="button-link" data-action="new"><span class="dashicons dashicons-admin-users" title="Apply to all new users"></span>New Users</button></p></div>');
+
+					$('#gt-save-defaults').click(
+						function() {
+							$('.gt-message').remove();
+							$('#gt-defaults').show();
+						});
+
+					$('button[id^="gt-save-defaults-"]').click(
+						function() {
+							$.post(Glance.ajaxurl, {
+								action: 'default_glances',
+								gt_action: $(this).data('action'),
+							}, function (response) {
+
+								if ( response.success ) {
+
+									$('#gt-defaults').hide();
+									$('#wpbody-content .wrap > h1').after(response.notice);
+
+								}
+							}
+					)});
+
+					$('#gt-toggle-form').click(
+						function() {
+							$('#gt-form').toggle();
+						});
 				});
 			</script>
 			<?php
@@ -334,7 +392,7 @@ class Glance_That {
 		if ( '' != $this->glances_indexed ) {
 
 			// Set classes for glanced items
-			$classes = $this->editable ? 'gt-item gt-editable unordered' : 'gt-item unordered';
+			$classes = ( $this->editable || $this->adminable ) ? 'gt-item gt-editable unordered' : 'gt-item unordered';
 
 			// Sort array of glanced items for display
 			$order = array();
@@ -536,7 +594,7 @@ class Glance_That {
 									$text = sprintf( $text, number_format_i18n( $num_users['total_users'] ) );
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All ' . $this->label( $item, 'Users', 2 ) . '">%1$s</a>%2$s<div class="gt-statuses"></div></div>', $text, $new_user );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="user"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="user" href="users.php" class="glance-that" title="All ' . $this->label( $item, 'Users', 2 ) . '">%1$s</a>%2$s</div>', $text, $new_user );
 									$elements[] = ob_get_clean();
 								}
 								break;
@@ -656,36 +714,13 @@ class Glance_That {
 	} // end customize_items
 
 	/**
-	 * Adds a link to the At a Glance to show Add/Remove form
-	 *
-	 * @since    1.0
-	 */
-	public function add_form_activation_link( $elements ) {
-
-		if ( $this->editable ) {
-
-			// Define a link handled by jquery to show the form
-			$html = '<a href="#" id="show-gt-form"';
-			$html .= ( isset( $_GET['action'] ) && ( 'add-gt-item' == $_GET['action'] || 'remove-gt-item' == $_GET['action'] ) ) ? ' style="display:none;">' : '>';
-			$html .= 'Add/Remove Item</a>';
-
-			// Add it to the At A Glance elements array and return results
-			$elements[] = $html;
-
-		}
-
-		return $elements;
-
-	} // end add_form_activation_link
-
-	/**
 	 * Adds a form for adding/removing custom post types from the At A Glance
 	 *
 	 * @since    1.2
 	 */
 	public function add_form() {
 
-		if ( $this->editable ) {
+		if ( $this->editable || $this->adminable ) {
 
 			global $current_user;
 			wp_get_current_user();
@@ -951,7 +986,7 @@ class Glance_That {
 	 */
 	public function process_form() {
 
-		if ( $this->editable ) {
+		if ( $this->editable || $this->adminable ) {
 
 			// Get current user
 			$current_user = wp_get_current_user();
@@ -984,15 +1019,15 @@ class Glance_That {
 
 					// Display notices
 					if ( in_array( $glance, $post_types ) ) {
-						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name, 2 ) . '</strong> were successfully added to your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name, 2 ) . '</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'user' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully added to your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'plugin' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully added to your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'comment' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Comments</strong> were successfully added to your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Comments</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'gravityform' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'success' );
 					}
 
 					$success = true;
@@ -1018,15 +1053,15 @@ class Glance_That {
 
 					// Display notices
 					if ( in_array( $glance, $post_types ) ) {
-						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name, 2 ) . '</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>' . esc_html( get_post_type_object( $glance )->labels->name, 2 ) . '</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'user' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Users</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'plugin' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'comment' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'gravityform' == $glance ) {
-						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'updated' );
+						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
 					}
 
 					$success = true;
@@ -1056,11 +1091,13 @@ class Glance_That {
 		if ( ! empty( $this->notices ) ) {
 			foreach ( $this->notices as $key => $notice ) {
 				if ( 'error' == $notice['class'] )
-					$message = '<div class="error gt-message"><p><strong>' . $notice['message'] . '</strong></p></div>';
-				elseif ( 'update-nag' == $notice['class'] )
-					$message = '<div class="update-nag gt-message">' . $notice['message'] . '</div>';
+					$message = '<div class="notice notice-error gt-message"><p><strong>' . $notice['message'] . '</strong></p></div>';
+				elseif ( 'warning' == $notice['class'] )
+					$message = '<div class="notice notice-warning gt-message">' . $notice['message'] . '</div>';
+				elseif ( 'info' == $notice['class'] )
+					$message = '<div class="notice notice-info gt-message">' . $notice['message'] . '</div>';
 				else
-					$message = '<div class="updated fade gt-message"><p>' . $notice['message'] . '</p></div>';
+					$message = '<div class="notice notice-success fade gt-message"><p>' . $notice['message'] . '</p></div>';
 			}
 		}
 
@@ -1495,12 +1532,20 @@ class Glance_That {
 		// If user has no glances set
 		if ( empty( $this->glances ) ) {
 
-			// Define standard defaults
-			$gt_default_glances = array(
-				'post' => array( 'icon' => 'f109', 'sort' => 1 ),
-				'page' => array( 'icon' => 'f105', 'sort' => 2 ),
-				'comment' => array( 'icon' => 'f101', 'sort' => 3 ),
-				);
+			if ( get_option( 'glance_that_default' ) === false ) {
+
+				// Define standard defaults
+				$gt_default_glances = array(
+					'post' => array( 'icon' => 'f109', 'sort' => 1 ),
+					'page' => array( 'icon' => 'f105', 'sort' => 2 ),
+					'comment' => array( 'icon' => 'f101', 'sort' => 3 ),
+					);
+
+			} else {
+
+				$gt_default_glances = get_option( 'glance_that_default' );
+
+			}
 
 			// Set default glances
 			$this->glances = apply_filters( 'gt_default_glances', $gt_default_glances, $current_user->ID );
@@ -1522,6 +1567,50 @@ class Glance_That {
 	} // end get_users_glances
 
 	/**
+	 * Action target that disperses default glances
+	 *
+	 * @since    1.8
+	 */
+	public function default_glances() {
+
+		global $current_user;
+		wp_get_current_user();
+
+		// Get default set action
+		$action = $_POST['gt_action'];
+
+		$glances = get_user_meta( $current_user->ID, 'glance_that', TRUE );
+
+		// Set default glances
+		update_option( 'glance_that_default', $glances );
+
+		if ( 'all' == $action ) {
+
+			$users = get_users();
+
+			foreach ( $users as $user ) {
+
+				// Update the option
+				update_user_meta( $user->ID, 'glance_that', $glances );
+
+			}
+
+			$this->notices[] = array( 'message' => 'Current glance configuration has been successfully applied to all existing and new users.', 'class' => 'success' );
+
+		} else {
+
+			$this->notices[] = array( 'message' => 'Current glance configuration will be applied to new users.', 'class' => 'success' );
+
+		}
+
+		// generate the response
+		$response = array( 'success' => true, 'notice' => $this->show_notices() );
+
+		wp_send_json( $response );
+
+	} // end sort_glances
+
+	/**
 	 * Action target that sorts glances
 	 *
 	 * @since    1.8
@@ -1541,7 +1630,6 @@ class Glance_That {
 		// Rekey the array
 		$order = array_values( $order );
 
-		//
 		foreach ( $order as $key => $gt_index ) {
 			foreach ( $this->glances_indexed as $index => $data ) {
 				$gt_index = str_replace( 'gt_', '', $gt_index );
