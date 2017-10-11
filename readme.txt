@@ -5,7 +5,7 @@ Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.8
-Stable tag: 3.5
+Stable tag: 3.6
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -42,55 +42,17 @@ If you've defined custom post state icons via [Post State Tags](https://wordpres
 
 = Constants =
 
-Add the following constants to `wp-config.php` to control display of Glance That items
+Add the following constants to `wp-config.php` to control Glance That capabilities
 
-Hide add new icon
-
-`define( 'GT_SHOW_ADD_NEW', FALSE );`
-
-Hide status items
-
-`define( 'GT_SHOW_ALL_STATUS', FALSE );`
-
-Hide glance items with a zero published count
-
-`define( 'GT_SHOW_ZERO_COUNT', FALSE );`
-
-Show status items with zero count
-
-`define( 'GT_SHOW_ZERO_COUNT_STATUS', TRUE );`
-
-Show all dashicons in the icon selector by adding
-
-`define( 'GT_SHOW_ALL_DASHICONS', TRUE );`
-
-Restrict modification of visible glances by adding
+Restrict modification of visible glances (default: read) by adding
 
 `define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
 
-Restrict application of default glances by adding
+Restrict application of default glances (default: edit_dashboard) by adding
 
 `define( 'GT_ADMIN_GLANCES', 'capability_required_to_admin' );`
 
-Show must-use or drop-in plugin status
-`
-define( 'GT_SHOW_MUSTUSE', TRUE );
-define( 'GT_SHOW_DROPINS', TRUE );
-`
-
 = Filters =
-
-The `gt_default_glances` filter can be used to define glances that should be visible to a user upon first visiting their dashboard.
-`apply_filters( 'gt_default_glances', array $default_glances, int $user_ID );`
-where the $default_glances parameter is prepopulated as
-`
-// Define standard defaults
-$gt_default_glances = array(
-	'post' => array( 'icon' => 'f109', 'sort' => 1 ),
-	'page' => array( 'icon' => 'f105', 'sort' => 2 ),
-	'comment' => array( 'icon' => 'f101', 'sort' => 3 ),
-	);
-`
 
 The `gt_labels` filter can be used to custom labels for glances.
 
@@ -122,6 +84,10 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.6 =
+* Fix: Allow sorting on last glance item
+* Readme: Removes documentation of some constants and filters
 
 = 3.5 =
 * Fixes bug preventing access to Glanc That settings in some browsers.
@@ -230,8 +196,12 @@ Silence is golden.
 
 == Upgrade Notice ==
 
+= 3.6 =
+* Fix: Allow sorting on last glance item
+* Readme: Removes documentation of some constants and filters
+
 = 3.5 =
-* Fixes bug preventing access to Glanc That settings in some browsers.
+* Fixes bug preventing access to Glance That settings in some browsers.
 
 = 3.4 =
 * Allow application of current glance configuration to all existing and new users.

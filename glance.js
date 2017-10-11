@@ -11,7 +11,6 @@ jQuery(document).ready(function( $ ) {
 	    $( "#dashboard_right_now .inside .main ul" ).sortable({
 	      placeholder: "element-holder",
 	      forcePlaceholderSize: true,
-	      cancel: '#dashboard_right_now .inside .main ul li:last-child',
 	      containment: 'parent',
 	      cursor: 'move',
 	      cursorAt: { top: 15, left: 15 },
