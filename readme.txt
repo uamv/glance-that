@@ -4,8 +4,8 @@ Contributors: UaMV
 Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.8
-Stable tag: 3.6
+Tested up to: 4.9.2
+Stable tag: 3.7
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -23,6 +23,8 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Gravity Forms
 * Formidable Forms
 * Give Forms
+* Sliced Invoices & Estimates
+* ProjectHuddle Sites & Mockups
 
 Additionally, Glance That allows you to toggle view of the number of items matching the following statuses:
 
@@ -84,6 +86,10 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.7 =
+* Support Sliced Invoices & Estimates
+* Support ProjectHuddle
 
 = 3.6 =
 * Fix: Allow sorting on last glance item
@@ -195,6 +201,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+= 3.7 =
+* Supports Sliced Invoices & Estimates
+* Supports ProjectHuddle
 
 = 3.6 =
 * Fix: Allow sorting on last glance item

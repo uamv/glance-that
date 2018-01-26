@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.6
+ * Version: 3.7
  * Author: uamv
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 3.6
+ * @version 3.7
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '3.6' );
+define( 'GT_VERSION', '3.7' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -190,6 +190,9 @@ class Glance_That {
 
 		// Process the form
 		add_action( 'wp_ajax_add_remove_glance', array( $this, 'process_form' ) );
+
+		// Set custom labels
+		add_filter( 'gt_labels', array( $this, 'customize_labels' ), 10, 3 );
 
 	} // end constructor
 
@@ -713,6 +716,24 @@ class Glance_That {
 
 	} // end customize_items
 
+	public function customize_labels( $label, $glance, $count ) {
+
+		switch ( $glance ) {
+			case 'ph-website':
+				$label = ( $count > 1 || $count == 0 )  ? 'PH Sites' : 'PH Site';
+				break;
+			case 'ph-project':
+				$label = ( $count > 1 || $count == 0 )  ? 'PH Mockups' : 'PH Mockup';
+				break;
+			default:
+				$label = $label;
+				break;
+		}
+
+		return $label;
+
+	}
+
 	/**
 	 * Adds a form for adding/removing custom post types from the At A Glance
 	 *
@@ -974,6 +995,11 @@ class Glance_That {
 
 		unset( $post_types['give_payment'] );
 		unset( $post_types['give_log'] );
+		unset( $post_types['oembed_cache'] );
+		unset( $post_types['phw_comment_loc'] );
+		unset( $post_types['ph-webpage'] );
+		unset( $post_types['ph_comment_location'] );
+		unset( $post_types['project_image'] );
 
 		return $post_types;
 

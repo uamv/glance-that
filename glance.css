@@ -32,8 +32,21 @@
 
 #visible-icon.formidableform,
 #visible-icon.gravityform,
-#visible-icon.give {
+#visible-icon.give,
+#visible-icon.sliced {
 	display: inline;
+}
+#dashboard_right_now li a[data-gt="sliced_quote"]:before,
+#dashboard_right_now li a[data-gt="sliced_invoice"]:before,
+#visible-icon.sliced:before {
+	font-family: 'Slicedicon' !important;
+	content: '\e000' !important;
+}
+#visible-icon.sliced:before {
+	font: 400 17px/1 Slicedicon;
+	padding: 6px 7px 6px 6px;
+	position: relative;
+	top: 3px;
 }
 #dashboard_right_now li a[data-gt="formidableform"]:before,
 #visible-icon.formidableform:before {

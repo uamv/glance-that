@@ -98,7 +98,9 @@ jQuery(document).ready(function( $ ) {
 				$('#iconlist').hide();
 			} else if ( 'formidableform' != $('#gt-item').find(':selected').val()
 						&& 'gravityform' != $('#gt-item').find(':selected').val()
-						&& 'give_forms' != $('#gt-item').find(':selected').val() ) {
+						&& 'give_forms' != $('#gt-item').find(':selected').val()
+						&& 'sliced_quote' != $('#gt-item').find(':selected').val()
+						&& 'sliced_invoice' != $('#gt-item').find(':selected').val() ) {
 				$('#iconlist').css('display','block');
 				$('#dashboard_right_now .inside').css('overflow','visible');
 			}
@@ -109,8 +111,10 @@ jQuery(document).ready(function( $ ) {
 			$gtselection = $(this).find(':selected');
 
 			if ( 'formidableform' == $gtselection.attr('data-dashicon')
-				 || 'gravityform' == $gtselection.attr('data-dashicon')
-			 	 || 'give' == $gtselection.attr('data-dashicon') ) {
+				|| 'gravityform' == $gtselection.attr('data-dashicon')
+			 	|| 'give' == $gtselection.attr('data-dashicon')
+			 	|| 'sliced' == $gtselection.attr('data-dashicon')
+		 		|| 'sliced' == $gtselection.attr('data-dashicon') ) {
 
 				$gticon = $('#iconlist').find('div[data-dashicon="'+$gtselection.attr('data-dashicon')+'"]');
 
