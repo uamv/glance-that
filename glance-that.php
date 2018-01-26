@@ -1782,5 +1782,92 @@ class Glance_That {
 
 } // end class
 
+/**** DECLARE TYPEWHEEL NOTICES ****/
+require_once( 'typewheel-notice/class-typewheel-notice.php' );
 
-?>
+if ( apply_filters( 'glance_that_notices', true ) ) {
+	add_action( 'admin_notices', 'typewheel_glance_that_notices' );
+	/**
+	 * Displays a plugin notices
+	 *
+	 * @since    1.0
+	 */
+	function typewheel_glance_that_notices() {
+
+		$prefix = str_replace( '-', '_', dirname( plugin_basename(__FILE__) ) );
+
+		if ( ! get_option( $prefix . '_activated' ) ) {
+
+			// Notice to show on plugin activation
+			$html = '<div class="updated" style="background-image:linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) );">';
+				$html .= '<p style="display: inline-block">';
+					$html .= __( '<strong>Glance That</strong> is now active. Head on over to <a href="/wp-admin/index.php" style="text-decoration:none;"><i class="dashicons dashicons-dashboard"></i> your dashboard</a> to improve your glancing experience.', 'typewheel' );
+				$html .= '</p>';
+			$html .= '</div><!-- /.updated -->';
+
+			echo $html;
+
+			// Define the notices
+			$typewheel_notices = array(
+				$prefix . '-tutorial' => array(
+					'trigger' => true,
+					'time' => time() - 5,
+					'dismiss' => array( 'week' ),
+					'type' => '',
+					'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users.',
+					// 'icon' => 'heart',
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0', 'max-width' => '700px', 'padding' => '.5em 2em' ),
+					'location' => array( 'index.php' ),
+					'capability' => GT_ADMIN_GLANCES,
+				),
+				$prefix . '-review' => array(
+					'trigger' => true,
+					'time' => time() + 604800,
+					'dismiss' => array( 'week', 'month' ),
+					'type' => '',
+					'content' => 'How are you liking <strong>Glance That</strong>? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank">giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank">tweeting your support</a>.',
+					'icon' => 'star-filled',
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0' ),
+					'location' => array( 'index.php' ),
+					'capability' => GT_ADMIN_GLANCES,
+				),
+				$prefix . '-give' => array(
+					'trigger' => true,
+					'time' => time() + 2592000,
+					'dismiss' => array( 'month' ),
+					'type' => '',
+					'content' => 'Is <strong>Glance That</strong> still working well for you?  Please consider a <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank">small donation</a> to encourage further development.',
+					'icon' => 'heart',
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0' ),
+					'location' => array( 'index.php' ),
+					'capability' => GT_ADMIN_GLANCES,
+				),
+			);
+
+			// get the notice class
+			$notices = new Typewheel_Notice( $prefix, $typewheel_notices );
+
+			update_option( $prefix . '_activated', true );
+
+		} else {
+
+			$notices = new Typewheel_Notice( $prefix );
+
+		}
+
+	} // end display_plugin_notices
+}
+
+/**
+ * Deletes activation marker so it can be displayed when the plugin is reinstalled or reactivated
+ *
+ * @since    1.0
+ */
+function typewheel_glance_that_remove_activation_marker() {
+
+	$prefix = str_replace( '-', '_', dirname( plugin_basename(__FILE__) ) );
+
+	delete_option( $prefix . '_activated' );
+
+}
+register_deactivation_hook( dirname(__FILE__) . '/glance-that.php', 'typewheel_glance_that_remove_activation_marker' );
