@@ -90,6 +90,8 @@ Silence is golden.
 = 3.7 =
 * Support Sliced Invoices & Estimates
 * Support ProjectHuddle
+* Add activation notice and tutorial
+* Add delayed notices for review and donation
 
 = 3.6 =
 * Fix: Allow sorting on last glance item
@@ -204,6 +206,8 @@ Silence is golden.
 = 3.7 =
 * Supports Sliced Invoices & Estimates
 * Supports ProjectHuddle
+* Adds activation notice and tutorial
+* Adds delayed notices for review and donation
 
 = 3.6 =
 * Fix: Allow sorting on last glance item
