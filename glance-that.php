@@ -1799,8 +1799,8 @@ if ( apply_filters( 'glance_that_notices', true ) ) {
 		if ( ! get_option( $prefix . '_activated' ) ) {
 
 			// Notice to show on plugin activation
-			$html = '<div class="updated" style="background-image:linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) );">';
-				$html .= '<p style="display: inline-block">';
+			$html = '<div class="updated" style="background-image:linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) );border-left-color:#3F3F3F;">';
+				$html .= '<p style="display: inline-block;">';
 					$html .= __( '<strong>Glance That</strong> is now active. Head on over to <a href="/wp-admin/index.php" style="text-decoration:none;"><i class="dashicons dashicons-dashboard"></i> your dashboard</a> to improve your glancing experience.', 'typewheel' );
 				$html .= '</p>';
 			$html .= '</div><!-- /.updated -->';
@@ -1812,22 +1812,22 @@ if ( apply_filters( 'glance_that_notices', true ) ) {
 				$prefix . '-tutorial' => array(
 					'trigger' => true,
 					'time' => time() - 5,
-					'dismiss' => array( 'week' ),
+					'dismiss' => array(),
 					'type' => '',
-					'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users.',
+					'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users. Let me know if you have any questions. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
 					// 'icon' => 'heart',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0', 'max-width' => '700px', 'padding' => '.5em 2em' ),
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F', 'max-width' => '700px', 'padding' => '.5em 2em' ),
 					'location' => array( 'index.php' ),
 					'capability' => GT_ADMIN_GLANCES,
 				),
 				$prefix . '-review' => array(
 					'trigger' => true,
 					'time' => time() + 604800,
-					'dismiss' => array( 'week', 'month' ),
+					'dismiss' => array( 'month' ),
 					'type' => '',
-					'content' => 'How are you liking <strong>Glance That</strong>? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank">giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank">tweeting your support</a>.',
-					'icon' => 'star-filled',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0' ),
+					'content' => 'How are you liking the <strong>Glance That</strong> plugin? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> tweeting your support</a>. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
+					'icon' => 'share-alt',
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
 					'location' => array( 'index.php' ),
 					'capability' => GT_ADMIN_GLANCES,
 				),
@@ -1836,9 +1836,9 @@ if ( apply_filters( 'glance_that_notices', true ) ) {
 					'time' => time() + 2592000,
 					'dismiss' => array( 'month' ),
 					'type' => '',
-					'content' => 'Is <strong>Glance That</strong> still working well for you?  Please consider a <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank">small donation</a> to encourage further development.',
+					'content' => 'Is <strong>Glance That</strong> still working well for you? Please consider a <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank">small donation</a> to encourage further development. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
 					'icon' => 'heart',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left' => '0' ),
+					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
 					'location' => array( 'index.php' ),
 					'capability' => GT_ADMIN_GLANCES,
 				),

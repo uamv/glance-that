@@ -162,6 +162,9 @@ if ( ! class_exists( 'Typewheel_Notice' ) ) {
 			}
 
 			$html = '<style>
+							.typewheel-notice a {
+								text-decoration: none;
+							}
                             .typewheel-notice i.dashicons.featured-icon {
                                 margin: 0 9px 0 -3px;
                             }
