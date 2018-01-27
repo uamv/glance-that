@@ -1785,7 +1785,7 @@ class Glance_That {
 /**** DECLARE TYPEWHEEL NOTICES ****/
 require_once( 'typewheel-notice/class-typewheel-notice.php' );
 
-if ( apply_filters( 'glance_that_notices', true ) ) {
+if ( apply_filters( 'gt_show_notices', true ) ) {
 	add_action( 'admin_notices', 'typewheel_glance_that_notices' );
 	/**
 	 * Displays a plugin notices

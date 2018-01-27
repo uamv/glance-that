@@ -70,6 +70,7 @@ gt_show_zero_count_status
 gt_show_mustuse
 gt_show_dropins
 gt_show_all_dashicons
+gt_show_notices
 `
 
 == Installation ==

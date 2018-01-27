@@ -226,7 +226,7 @@ if ( ! class_exists( 'Typewheel_Notice' ) ) {
 				}
 			}
 
-			$html .= __( '<i class="dashicons dashicons-no" data-user="' . $this->user['ID'] . '" data-plugin="' . $this->prefix . '" data-notice="' . $notice . '" data-dismissal-duration="forever" title="Hide forever"></i>', 'typewheel-locale' );
+			$html .= __( '<i class="dashicons dashicons-dismiss" data-user="' . $this->user['ID'] . '" data-plugin="' . $this->prefix . '" data-notice="' . $notice . '" data-dismissal-duration="forever" title="Hide forever" style="font-size: 15px; position: relative; top: 3px;"></i>', 'typewheel-locale' );
 
 			$html .= '</span>';
 
