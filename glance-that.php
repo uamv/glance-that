@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.7
+ * Version: 3.8
  * Author: uamv
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 3.7
+ * @version 3.8
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '3.7' );
+define( 'GT_VERSION', '3.8' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -1796,16 +1796,13 @@ if ( apply_filters( 'gt_show_notices', true ) ) {
 
 		$prefix = str_replace( '-', '_', dirname( plugin_basename(__FILE__) ) );
 
-		if ( ! get_option( $prefix . '_activated' ) ) {
-
 			// Notice to show on plugin activation
-			$html = '<div class="updated" style="background-image:linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) );border-left-color:#3F3F3F;">';
-				$html .= '<p style="display: inline-block;">';
-					$html .= __( '<strong>Glance That</strong> is now active. Head on over to <a href="/wp-admin/index.php" style="text-decoration:none;"><i class="dashicons dashicons-dashboard"></i> your dashboard</a> to improve your glancing experience.', 'typewheel' );
-				$html .= '</p>';
-			$html .= '</div><!-- /.updated -->';
-
-			echo $html;
+			$activation_notice = array(
+				'icon'       => '',
+				'content'    => '<strong>Glance That</strong> is now active. Head on over to <a href="/wp-admin/index.php" style="text-decoration:none;"><i class="dashicons dashicons-dashboard"></i> your dashboard</a> to improve your glancing experience.',
+				'style'      => array( 'border-left-color' => '#3F3F3F', 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )' ),
+				'capability' => 'activate_plugins',
+			);
 
 			// Define the notices
 			$typewheel_notices = array(
@@ -1845,15 +1842,7 @@ if ( apply_filters( 'gt_show_notices', true ) ) {
 			);
 
 			// get the notice class
-			$notices = new Typewheel_Notice( $prefix, $typewheel_notices );
-
-			update_option( $prefix . '_activated', true );
-
-		} else {
-
-			$notices = new Typewheel_Notice( $prefix );
-
-		}
+			new Typewheel_Notice( $prefix, $typewheel_notices, $activation_notice );
 
 	} // end display_plugin_notices
 }
