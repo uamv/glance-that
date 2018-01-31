@@ -5,7 +5,7 @@ Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.9.2
-Stable tag: 3.7
+Stable tag: 3.8
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -86,6 +86,9 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 3.8 =
+* Updating Typewheel notice library
 
 = 3.7 =
 * Support Sliced Invoices & Estimates
@@ -203,6 +206,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+= 3.8 =
+* Updating Typewheel Notice library
+
 = 3.7 =
 * Supports Sliced Invoices & Estimates
 * Supports ProjectHuddle
