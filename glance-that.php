@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.8
+ * Version: 3.9
  * Author: uamv
  * Author URI: http://typewheel.xyz
  *
