@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 3.8
+ * @version 3.9
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '3.8' );
+define( 'GT_VERSION', '3.9' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -678,6 +678,25 @@ class Glance_That {
 
 										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses"' . $status_visibility . '>';
+
+											// get my post count
+											$exclude_states   = get_post_stati( array(
+												'show_in_admin_all_list' => false,
+											) );
+											global $wpdb;
+											$author = get_current_user_id();
+											$user_num_posts = intval( $wpdb->get_var( $wpdb->prepare( "
+												SELECT COUNT( 1 )
+												FROM $wpdb->posts
+												WHERE post_type = %s
+												AND post_status NOT IN ( '" . implode( "','", $exclude_states ) . "' )
+												AND post_author = %d
+											", $item, $author ) ) );
+
+
+											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $user_num_posts > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) && apply_filters( 'gt_show_mine', true ) ) {
+												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&author=' . $author . '" class="gt-mine" title="Mine">' . $user_num_posts . '</a></div>';
+											}
 											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) && ( $num_posts->future > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=future" class="gt-future" title="Scheduled">' . $num_posts->future . '</a></div>';
 											}
@@ -1807,34 +1826,34 @@ if ( apply_filters( 'glance_that_notices', true ) ) {
 
 			// Define the notices
 			$typewheel_notices = array(
-				$prefix . '-tutorial' => array(
-					'trigger' => true,
-					'time' => time() - 5,
-					'dismiss' => array(),
-					'type' => '',
-					'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users. Let me know if you have any questions. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
-					// 'icon' => 'heart',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F', 'max-width' => '700px', 'padding' => '.5em 2em' ),
-					'location' => array( 'index.php' ),
-					'capability' => GT_ADMIN_GLANCES,
-				),
-				$prefix . '-review' => array(
-					'trigger' => true,
-					'time' => time() + 604800,
-					'dismiss' => array( 'month' ),
-					'type' => '',
-					'content' => 'How are you liking the <strong>Glance That</strong> plugin? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> tweeting your support</a>. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
-					'icon' => 'share-alt',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
-					'location' => array( 'index.php' ),
-					'capability' => GT_ADMIN_GLANCES,
-				),
+				// $prefix . '-tutorial' => array(
+				// 	'trigger' => true,
+				// 	'time' => time() - 5,
+				// 	'dismiss' => array(),
+				// 	'type' => '',
+				// 	'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users. Let me know if you have any questions. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
+				// 	// 'icon' => 'heart',
+				// 	'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F', 'max-width' => '700px', 'padding' => '.5em 2em' ),
+				// 	'location' => array( 'index.php' ),
+				// 	'capability' => GT_ADMIN_GLANCES,
+				// ),
+				// $prefix . '-review' => array(
+				// 	'trigger' => true,
+				// 	'time' => time() + 604800,
+				// 	'dismiss' => array( 'month' ),
+				// 	'type' => '',
+				// 	'content' => 'How are you liking the <strong>Glance That</strong> plugin? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> tweeting your support</a>. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
+				// 	'icon' => 'share-alt',
+				// 	'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
+				// 	'location' => array( 'index.php' ),
+				// 	'capability' => GT_ADMIN_GLANCES,
+				// ),
 				$prefix . '-give' => array(
 					'trigger' => true,
 					'time' => time() + 2592000,
 					'dismiss' => array( 'month' ),
 					'type' => '',
-					'content' => 'Is <strong>Glance That</strong> still working well for you? Please consider a <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank">small donation</a> to encourage further development. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
+					'content' => 'Is <strong>Glance That</strong> working well for you? Please consider giving <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> a review</a>, <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> a tweet</a> or <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank"><i class="dashicons dashicons-heart"></i> a donation</a> to encourage further development. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
 					'icon' => 'heart',
 					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
 					'location' => array( 'index.php' ),

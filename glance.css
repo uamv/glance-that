@@ -134,7 +134,9 @@
 	margin: 1px 0 0;
 	padding-right: .25em;
 }
-
+#dashboard_right_now div.gt-status a.gt-mine:before {
+	content: "\f511";
+}
 #dashboard_right_now div.gt-status a.gt-future:before {
 	content: '\f145';
 }

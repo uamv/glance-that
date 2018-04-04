@@ -86,7 +86,8 @@ if ( ! class_exists( 'Typewheel_Notice' ) ) {
 
 			} else {
 
-				$this->notices = get_option( $this->prefix . '_typewheel_notices', array() );
+				$this->notices = $notices;
+				update_option( $this->prefix . '_typewheel_notices', $this->notices );
 
 				$this->process_user();
 
@@ -118,6 +119,17 @@ if ( ! class_exists( 'Typewheel_Notice' ) ) {
 			if ( '' == $this->user['notices'] ) {
 				add_user_meta( $this->user['ID'], $this->prefix . '_typewheel_notices', array(), true );
 				$this->user['notices'] = array();
+			}
+
+			// If notices exist for user, but no longer defined by the plugin, remove them
+			foreach ( $this->user['notices'] as $notice => $args ) {
+
+				if ( ! isset( $this->notices[ $notice ] ) ) {
+
+					unset( $this->user['notices'][ $notice ] );
+
+				}
+
 			}
 
  			// Create specific notices if they do not exist, otherwise set to current notice state

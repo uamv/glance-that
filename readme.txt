@@ -5,7 +5,7 @@ Donate link: http://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.9.2
-Stable tag: 3.8
+Stable tag: 3.9
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -28,6 +28,7 @@ Glance That allows users to customize the content viewable in At a Glance on the
 
 Additionally, Glance That allows you to toggle view of the number of items matching the following statuses:
 
+* Mine
 * Scheduled
 * Pending
 * Draft
@@ -63,6 +64,7 @@ The `gt_labels` filter can be used to custom labels for glances.
 The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
 
 `
+gt_show_mine
 gt_show_zero_count
 gt_show_add_new
 gt_show_all_status
@@ -87,6 +89,10 @@ Silence is golden.
 
 == Changelog ==
 
+= 3.9 =
+* Add link to Mine posts list w/ filter
+* Remove obnoxious admin notices
+
 = 3.8 =
 * Updating Typewheel notice library
 
@@ -101,7 +107,7 @@ Silence is golden.
 * Readme: Removes documentation of some constants and filters
 
 = 3.5 =
-* Fixes bug preventing access to Glanc That settings in some browsers.
+* Fixes bug preventing access to Glance That settings in some browsers.
 
 = 3.4 =
 * Allow application of current glance configuration to all existing and new users.
