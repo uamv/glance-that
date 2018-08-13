@@ -61,6 +61,10 @@ The `gt_labels` filter can be used to custom labels for glances.
 
 `apply_filters( 'gt_labels', str $label, str $glance, int $count );`
 
+The `gt_option_icons` filter can be used to customize default icon for a specific glance when selected from the dropdown.
+
+`apply_filters( 'gt_option_icons', str $icon, str $post_type );`
+
 The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
 
 `
@@ -89,6 +93,10 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 4.0 =
+* Add `gt_option_icons` filter
+* Filter out unnecessary types from ACF,
 
 = 3.9 =
 * Add link to Mine posts list w/ filter

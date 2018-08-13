@@ -176,6 +176,9 @@ class Glance_That {
 		// Filter post type available in drop down to account for certain plugins that add unneccesarily viewable types
 		add_filter( 'gt_post_type_selection', array( $this, 'remove_post_type_options' ), 20, 1 );
 
+		// Filter post type default icon displayed when drop down option is selected
+		add_filter( 'gt_post_type_icon', array( $this, 'customize_post_type_icon' ), 10, 2 );
+
 		// Add form to end of At A Glance
 		add_action( 'activity_box_end', array( $this, 'add_form' ) );
 
@@ -930,7 +933,7 @@ class Glance_That {
 						}
 
 						// Only show post types on which user has edit permissions (also disallow some Formidable Form types)
-						elseif ( current_user_can( $post_type->cap->edit_posts ) && 'nav_menu_item' != $post_type->name && 'frm_styles' != $post_type->name && 'frm_form_actions' != $post_type->name && 'custom_css' != $post_type->name && 'customize_changeset' != $post_type->name ) {
+						elseif ( current_user_can( $post_type->cap->edit_posts ) ) {
 							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="';
 							// add default dashicons for post types
 							if ( 'post' == $post_type->name ) {
@@ -940,9 +943,9 @@ class Glance_That {
 							} elseif ( 'attachment' == $post_type->name ) {
 								$html .= 'admin-media';
 							} elseif ( ! empty( $post_type->menu_icon  ) ) {
-								$html .= esc_attr( str_replace( 'dashicons-', '', $post_type->menu_icon ) );
+								$html .= esc_attr( str_replace( 'dashicons-', '', apply_filters( 'gt_option_icons', $post_type->menu_icon, $post_type->name ) ) );
 							} else {
-								$html .= 'marker';
+								$html .= apply_filters( 'gt_option_icons', 'marker', $post_type->name );
 							}
 							$html .= '" ' . $glancing . '>' . $this->label( $post_type->name, $post_type->labels->name, 2 ) . '</option>';
 
@@ -1019,10 +1022,36 @@ class Glance_That {
 		unset( $post_types['ph-webpage'] );
 		unset( $post_types['ph_comment_location'] );
 		unset( $post_types['project_image'] );
+		unset( $post_types['nav_menu_item'] );
+		unset( $post_types['customize_changeset'] );
+		unset( $post_types['custom_css'] );
+		unset( $post_types['frm_form_actions'] );
+		unset( $post_types['frm_styles'] );
+		unset( $post_types['acf-field'] );
+
 
 		return $post_types;
 
 	} // end remove_post_type_options
+
+	/**
+	 * Customize default post type icon when option is selected
+	 *
+	 * @since    2.1.0
+	 */
+	public function customize_post_type_icon( $icon, $post_type ) {
+
+		switch ( $post_type ) {
+			case 'acf-field-group':
+				return 'welcome-widgets-menus';
+				break;
+
+			default:
+				return $icon;
+				break;
+		}
+
+	} // end customize_post_type_icon
 
 	/**
 	 * Process any responses to the displayed notices.
