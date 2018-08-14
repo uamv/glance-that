@@ -98,6 +98,7 @@ jQuery(document).ready(function( $ ) {
 				$('#iconlist').hide();
 			} else if ( 'formidableform' != $('#gt-item').find(':selected').val()
 						&& 'gravityform' != $('#gt-item').find(':selected').val()
+						&& 'gravityview' != $('#gt-item').find(':selected').val()
 						&& 'give_forms' != $('#gt-item').find(':selected').val()
 						&& 'sliced_quote' != $('#gt-item').find(':selected').val()
 						&& 'sliced_invoice' != $('#gt-item').find(':selected').val() ) {
@@ -112,6 +113,7 @@ jQuery(document).ready(function( $ ) {
 
 			if ( 'formidableform' == $gtselection.attr('data-dashicon')
 				|| 'gravityform' == $gtselection.attr('data-dashicon')
+				|| 'gravityview' == $gtselection.attr('data-dashicon')
 			 	|| 'give' == $gtselection.attr('data-dashicon')
 			 	|| 'sliced' == $gtselection.attr('data-dashicon')
 		 		|| 'sliced' == $gtselection.attr('data-dashicon') ) {

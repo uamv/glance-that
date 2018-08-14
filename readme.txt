@@ -1,11 +1,11 @@
 === Glance That ===
 
 Contributors: UaMV
-Donate link: http://typewheel.xyz/give
+Donate link: https://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.9.2
-Stable tag: 3.9
+Stable tag: 4.0
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -21,6 +21,7 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Themes
 * Users
 * Gravity Forms
+* Gravity View
 * Formidable Forms
 * Give Forms
 * Sliced Invoices & Estimates
@@ -36,6 +37,7 @@ Additionally, Glance That allows you to toggle view of the number of items match
 * Archived (via [Archived Post Status](https://wordpress.org/plugins/archived-post-status/))
 * Trash
 * Unattached (Media)
+* Confirmed, Failed, Complete (User Data Requests)
 * Spam (Comments)
 * Active, Inactive (Plugins & Gravity Forms)
 * Updates (Plugins & Themes)
@@ -76,7 +78,7 @@ gt_show_zero_count_status
 gt_show_mustuse
 gt_show_dropins
 gt_show_all_dashicons
-gt_show_notices
+gt_show_applause
 `
 
 == Installation ==
@@ -96,7 +98,10 @@ Silence is golden.
 
 = 4.0 =
 * Add `gt_option_icons` filter
-* Filter out unnecessary types from ACF,
+* Filter out unnecessary types from ACF, WP
+* Add WP user_request CPT w/ request types (export & erasure)
+* Support GravityView icon
+* Add inline applause actions & remove admin notices
 
 = 3.9 =
 * Add link to Mine posts list w/ filter
@@ -221,6 +226,14 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.0 =
+* Adds `gt_option_icons` filter
+* Filters unnecessary types from ACF, WP
+* Adds WP user_request CPT w/ request types (export & erasure)
+* Supports GravityView icon
+* Adds inline applause actions & remove admin notices
+
 = 3.8 =
 * Updating Typewheel Notice library
 

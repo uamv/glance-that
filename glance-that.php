@@ -3,8 +3,8 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 3.9
- * Author: uamv
+ * Version: 4.0
+ * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
  * The Glance That plugin was created to extend At A Glance.
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 3.9
+ * @version 4.0
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '3.9' );
+define( 'GT_VERSION', '4.0' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -197,6 +197,9 @@ class Glance_That {
 		// Set custom labels
 		add_filter( 'gt_labels', array( $this, 'customize_labels' ), 10, 3 );
 
+		// Set custom labels
+		add_filter( 'gt_option_icons', array( $this, 'customize_post_type_icon' ), 10, 3 );
+
 	} // end constructor
 
 	/*---------------------------------------------------------------------------------*
@@ -293,6 +296,15 @@ class Glance_That {
 				$buttons .= '<button id="gt-save-defaults" type="button" class="button-link gt-settings"><span class="dashicons dashicons-migrate" title="Save as Default Setup for All Users"></span></button>';
 			}
 
+			if ( $this->adminable && apply_filters( 'gt_show_applause', TRUE ) && apply_filters( 'gt_show_notices', TRUE ) ) {
+				$buttons .= '<button id="gt-show-applause" type="button" class="button-link gt-applause" data-action="show"><span class="dashicons dashicons-awards" title="Click to Reveal Applause Actions"></span></button>';
+				$buttons .= '<div id="gt-applause-wrapper">';
+				$buttons .= '<a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank" class="gt-applause"><icon title="Applaud the Author (Donation)" class="dashicons dashicons-heart"></icon></a>';
+				$buttons .= '<a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank" class="gt-applause"><icon title="Applaud the Author (Review)" class="dashicons dashicons-star-filled"></icon></a>';
+				$buttons .= '<a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank" class="gt-applause"><icon title="Applaud the Author (Tweet)" class="dashicons dashicons-twitter"></icon></a>';
+				$buttons .= '</div>';
+			}
+
 			$buttons .= '</div>';
 
 			?>
@@ -308,6 +320,17 @@ class Glance_That {
 						function() {
 							$('#gt-show-settings').hide();
 							$('#gt-settings-wrapper').show();
+						});
+
+					$('#gt-show-applause').click(
+						function() {
+							// $('#gt-show-applause').hide();
+							$('#gt-applause-wrapper').toggle();
+							if ( 'show' == $(this).data('action') ) {
+								$(this).data('action','hide');
+							} else {
+								$(this).data('action','show');
+							}
 						});
 
 					$('#gt-toggle-status').click(
@@ -485,6 +508,65 @@ class Glance_That {
 									ob_start();
 										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><a data-gt="%1$s" href="upload.php" class="glance-that" title="All ' . $this->label( $item, get_post_type_object( $item )->labels->name, 2 ) . '">%2$s</a>%4$s%3$s</div>', $item, $text, $statuses, $new_attachment );
 									$elements[] = ob_get_clean();
+								}
+								break;
+
+							case 'user_request-export_personal_data':
+							case 'user_request-remove_personal_data':
+
+								// WP uses the `user_request` post type for both Data Export Requests and Data Erasure Requests – weird.
+								$request_type = str_replace( 'user_request-', '', $item );
+
+								global $wpdb;
+								$query = "
+									SELECT post_status, COUNT( * ) AS num_posts
+									FROM {$wpdb->posts}
+									WHERE post_type = %s
+									AND post_name = %s
+									GROUP BY post_status";
+								$requests = (array) $wpdb->get_results( $wpdb->prepare( $query, 'user_request', $request_type ), ARRAY_A );
+								$num_requests  = array_fill_keys( get_post_stati(), 0 );
+								foreach ( $requests as $row ) {
+									$num_requests[ $row['post_status'] ] = $row['num_posts'];
+								}
+
+								if ( $num_requests && ( ( $num_requests['request-pending'] + $num_requests['request-confirmed'] > 0 ) || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && current_user_can( 'manage_options' ) ) {
+									$text = _n( '%s ' . $this->label( $item, $request_type, $num_requests['request-pending'] + $num_requests['request-confirmed'] ), '%s ' . $this->label( $item, $request_type, $num_requests['request-pending'] + $num_requests['request-confirmed'] ), $num_requests['request-pending'] + $num_requests['request-confirmed'] );
+
+									$text = sprintf( $text, number_format_i18n( $num_requests['request-pending'] + $num_requests['request-confirmed'] ) );
+
+									if ( apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
+										$new_post = '<a href="/wp-admin/tools.php?page=' . $request_type . '" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, $request_type, 1 ) . '"></span></a>';
+									} else {
+										$new_post = '';
+									}
+
+									if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
+										$statuses = '<div class="gt-statuses"' . $status_visibility . '>';
+
+										if ( $num_requests['request-pending'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											$statuses .= '<div class="gt-status"><a href="/wp-admin/tools.php?page=' . $request_type . '&filter-status=request-pending" class="gt-pending" title="Pending">' . $num_requests['request-pending'] . '</a></div>';
+										}
+										if ( $num_requests['request-confirmed'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											$moderation = intval( $num_requests['request-confirmed'] ) > 0 ? 'gt-moderate' : '';
+											$statuses .= '<div class="gt-status ' . $moderation . '"><a href="/wp-admin/tools.php?page=' . $request_type . '&filter-status=request-confirmed" class="gt-confirmed" title="Confirmed">' . $num_requests['request-confirmed'] . '</a></div>';
+										}
+										if ( $num_requests['request-failed'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											$statuses .= '<div class="gt-status"><a href="/wp-admin/tools.php?page=' . $request_type . '&filter-status=request-failed" class="gt-failed" title="Failed">' . $num_requests['request-failed'] . '</a></div>';
+										}
+										if ( $num_requests['request-completed'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) {
+											$statuses .= '<div class="gt-status"><a href="/wp-admin/tools.php?page=' . $request_type . '&filter-status=request-completed" class="gt-completed" title="Completed">' . $num_requests['request-completed'] . '</a></div>';
+										}
+
+										$statuses .= '</div>';
+									}
+
+
+									ob_start();
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '" data-glance="' . $item . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="tools.php?page=%1$s" class="glance-that" title="All %4$s">%2$s</a>%5$s</div>%3$s</div>', $request_type, $text, $statuses, $this->label( $item, $request_type, 2 ), $new_post );
+									$elements[] = ob_get_clean();
+
+
 								}
 								break;
 
@@ -741,11 +823,20 @@ class Glance_That {
 	public function customize_labels( $label, $glance, $count ) {
 
 		switch ( $glance ) {
+			case 'user_request-export_personal_data':
+				$label = ( $count > 1 || $count == 0 )  ? 'Data Export Requests' : 'Data Export Request';
+				break;
+			case 'user_request-remove_personal_data':
+				$label = ( $count > 1 || $count == 0 )  ? 'Data Erasure Requests' : 'Data Erasure Request';
+				break;
 			case 'ph-website':
 				$label = ( $count > 1 || $count == 0 )  ? 'PH Sites' : 'PH Site';
 				break;
 			case 'ph-project':
 				$label = ( $count > 1 || $count == 0 )  ? 'PH Mockups' : 'PH Mockup';
+				break;
+			case 'gravityview':
+				$label = ( $count > 1 || $count == 0 )  ? 'Gravity Views' : 'Gravity View';
 				break;
 			default:
 				$label = $label;
@@ -816,6 +907,7 @@ class Glance_That {
 					'image-rotate',
 					'image-filter',
 					'editor-quote',
+					'editor-removeformatting',
 					'editor-help',
 					'lock',
 					'calendar',
@@ -993,6 +1085,18 @@ class Glance_That {
 					// Only show themes option if user can switch themes
 					current_user_can( 'switch_themes' ) ? $html .= '<option value="theme" data-dashicon="admin-appearance" ' . $glancing . '>' . $this->label( 'theme', 'Themes', 2 ) . '</options>' : FALSE;
 
+					// Set data-glancing attribute
+					$glancing = isset( $this->glances['user_request-export_personal_data'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+					// Only show data export request option if user can manage privacy options
+					current_user_can( 'manage_options' ) ? $html .= '<option value="user_request-export_personal_data" data-dashicon="download" ' . $glancing . '>' . $this->label( 'user_request-export_personal_data', '', 2 ) . '</options>' : FALSE;
+
+					// Set data-glancing attribute
+					$glancing = isset( $this->glances['user_request-remove_personal_data'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+					// Only show data export request option if user can manage privacy options
+					current_user_can( 'manage_options' ) ? $html .= '<option value="user_request-remove_personal_data" data-dashicon="editor-removeformatting" ' . $glancing . '>' . $this->label( 'user_request-remove_personal_data', '', 2 ) . '</options>' : FALSE;
+
 				$html .= '</select>';
 
 				// Set the submission buttons which are handled via jquery
@@ -1028,7 +1132,8 @@ class Glance_That {
 		unset( $post_types['frm_form_actions'] );
 		unset( $post_types['frm_styles'] );
 		unset( $post_types['acf-field'] );
-
+		unset( $post_types['user_request'] );
+		unset( $post_types['wp_block'] );
 
 		return $post_types;
 
@@ -1045,7 +1150,9 @@ class Glance_That {
 			case 'acf-field-group':
 				return 'welcome-widgets-menus';
 				break;
-
+			case 'gravityview':
+				return 'gravityview';
+				break;
 			default:
 				return $icon;
 				break;
@@ -1829,82 +1936,3 @@ class Glance_That {
 	} // end get_dashicon_code
 
 } // end class
-
-/**** DECLARE TYPEWHEEL NOTICES ****/
-require_once( 'typewheel-notice/class-typewheel-notice.php' );
-
-if ( apply_filters( 'gt_show_notices', true ) ) {
-	add_action( 'admin_notices', 'typewheel_glance_that_notices' );
-	/**
-	 * Displays a plugin notices
-	 *
-	 * @since    1.0
-	 */
-	function typewheel_glance_that_notices() {
-
-		$prefix = str_replace( '-', '_', dirname( plugin_basename(__FILE__) ) );
-
-			// Notice to show on plugin activation
-			$activation_notice = array(
-				'icon'       => '',
-				'content'    => '<strong>Glance That</strong> is now active. Head on over to <a href="/wp-admin/index.php" style="text-decoration:none;"><i class="dashicons dashicons-dashboard"></i> your dashboard</a> to improve your glancing experience.',
-				'style'      => array( 'border-left-color' => '#3F3F3F', 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )' ),
-				'capability' => 'activate_plugins',
-			);
-
-			// Define the notices
-			$typewheel_notices = array(
-				// $prefix . '-tutorial' => array(
-				// 	'trigger' => true,
-				// 	'time' => time() - 5,
-				// 	'dismiss' => array(),
-				// 	'type' => '',
-				// 	'content' => '<h2 style="margin:0;"><i class="dashicons dashicons-welcome-learn-more"></i> Glance That Tutorial</h2><br />Allow me to give you a brief run down on your <strong>Glance That</strong> options. You can hover over the <i class="dashicons dashicons-admin-settings"></i> settings icon at the top-right of <strong>At A Glance</strong> to reveal your controls. Clicking the <i class="dashicons dashicons-filter"></i> filter will allow you to add and remove items. You can also control <i class="dashicons dashicons-visibility"></i> visibility of available statuses for each item. Rearrange items by <i class="dashicons dashicons-move"></i> dragging them. Then, you can <i class="dashicons dashicons-migrate"></i> push your setup to other users. Let me know if you have any questions. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
-				// 	// 'icon' => 'heart',
-				// 	'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F', 'max-width' => '700px', 'padding' => '.5em 2em' ),
-				// 	'location' => array( 'index.php' ),
-				// 	'capability' => GT_ADMIN_GLANCES,
-				// ),
-				// $prefix . '-review' => array(
-				// 	'trigger' => true,
-				// 	'time' => time() + 604800,
-				// 	'dismiss' => array( 'month' ),
-				// 	'type' => '',
-				// 	'content' => 'How are you liking the <strong>Glance That</strong> plugin? Help spread the word by <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> giving a review</a> or <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> tweeting your support</a>. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
-				// 	'icon' => 'share-alt',
-				// 	'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
-				// 	'location' => array( 'index.php' ),
-				// 	'capability' => GT_ADMIN_GLANCES,
-				// ),
-				$prefix . '-give' => array(
-					'trigger' => true,
-					'time' => time() + 2592000,
-					'dismiss' => array( 'month' ),
-					'type' => '',
-					'content' => 'Is <strong>Glance That</strong> working well for you? Please consider giving <a href="https://wordpress.org/support/plugin/glance-that/reviews/?rate=5#new-post" target="_blank"><i class="dashicons dashicons-star-filled"></i> a review</a>, <a href="https://twitter.com/intent/tweet/?url=https%3A%2F%2Fwordpress.org%2Fplugins%2Fglance-that%2F" target="_blank"><i class="dashicons dashicons-twitter"></i> a tweet</a> or <a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank"><i class="dashicons dashicons-heart"></i> a donation</a> to encourage further development. Thanks! <a href="https://twitter.com/uamv/">@uamv</a>',
-					'icon' => 'heart',
-					'style' => array( 'background-image' => 'linear-gradient( to bottom right, rgb(215, 215, 215), rgb(231, 211, 186) )', 'border-left-color' => '#3F3F3F' ),
-					'location' => array( 'index.php' ),
-					'capability' => GT_ADMIN_GLANCES,
-				),
-			);
-
-			// get the notice class
-			new Typewheel_Notice( $prefix, $typewheel_notices, $activation_notice );
-
-	} // end display_plugin_notices
-}
-
-/**
- * Deletes activation marker so it can be displayed when the plugin is reinstalled or reactivated
- *
- * @since    1.0
- */
-function typewheel_glance_that_remove_activation_marker() {
-
-	$prefix = str_replace( '-', '_', dirname( plugin_basename(__FILE__) ) );
-
-	delete_option( $prefix . '_activated' );
-
-}
-register_deactivation_hook( dirname(__FILE__) . '/glance-that.php', 'typewheel_glance_that_remove_activation_marker' );

@@ -8,10 +8,12 @@
 }
 
 #dashboard_right_now.closed #gt-settings-wrapper,
+#dashboard_right_now.closed #gt-applause-wrapper,
 #dashboard_right_now.closed #gt-show-settings {
 	display: none !important;
 }
-#dashboard_right_now .gt-settings {
+#dashboard_right_now .gt-settings,
+#dashboard_right_now .gt-applause {
 	float: right;
 	width: 20px;
 	height: 20px;
@@ -19,11 +21,29 @@
 	padding-top: 2px;
 	margin: 8px 0 8px 7px;
 }
-#dashboard_right_now .gt-settings .dashicons {
+#dashboard_right_now .gt-settings .dashicons,
+#dashboard_right_now .gt-applause .dashicons {
 	font-size: 16px;
 }
-#gt-settings-wrapper {
+#gt-settings-wrapper,
+#gt-applause-wrapper {
 	display: none;
+}
+
+.gt-applause .dashicons-twitter {
+	color: #55acee;
+}
+.gt-applause .dashicons-star-filled {
+	color: #E1B653;
+}
+.gt-applause .dashicons-heart {
+	color: #C73916;
+}
+a.gt-applause {
+	opacity: .8;
+}
+a.gt-applause:hover {
+	opacity: 1;
 }
 
 .post-count,.page-count,.comment-count,.comment-mod-count {
@@ -32,6 +52,7 @@
 
 #visible-icon.formidableform,
 #visible-icon.gravityform,
+#visible-icon.gravityview,
 #visible-icon.give,
 #visible-icon.sliced {
 	display: inline;
@@ -75,6 +96,18 @@
 	top: 6px;
 	margin: 0 6px 0 8px;
 }
+#dashboard_right_now li a[data-gt="gravityview"]:before,
+#visible-icon.gravityview:before {
+	font: 400 17px/1 gravityview !important;
+	content: 'a' !important;
+	padding-right: 8px;
+}
+#visible-icon.gravityview:before {
+	padding: 6px 7px 6px 6px;
+	position: relative;
+	top: 5px;
+}
+
 #dashboard_right_now li a[data-gt="give_forms"]:before,
 #visible-icon.give:before {
 	font: 400 17px/1 give-icomoon !important;
@@ -142,6 +175,18 @@
 }
 #dashboard_right_now div.gt-status a.gt-pending:before {
 	content: '\f227';
+}
+#dashboard_right_now div[data-glance*="user_request"] div.gt-status a.gt-pending:before {
+	content: '\f469';
+}
+#dashboard_right_now div.gt-status a.gt-confirmed:before {
+	content: '\f227';
+}
+#dashboard_right_now div.gt-status a.gt-failed:before {
+	content: '\f534';
+}
+#dashboard_right_now div.gt-status a.gt-completed:before {
+	content: '\f147';
 }
 #dashboard_right_now div.gt-status a.gt-draft:before {
 	content: '\f339';
