@@ -5,7 +5,7 @@ Donate link: https://typewheel.xyz/give
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 4.9.2
-Stable tag: 4.0
+Stable tag: 4.1
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -95,6 +95,12 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 4.1 =
+* Add link to front-end post archive if it exists
+* Add `gt_show_archive` filter w/ default true
+* Add some missing notices
+* Add icon support for WP Show Posts
 
 = 4.0 =
 * Add `gt_option_icons` filter
@@ -226,6 +232,12 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.1 =
+* Add link to front-end post archive if it exists
+* Add `gt_show_archive` filter w/ default true
+* Add some missing notices
+* Add icon support for WP Show Posts
 
 = 4.0 =
 * Adds `gt_option_icons` filter

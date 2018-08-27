@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.0
+ * Version: 4.1
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.0
+ * @version 4.1
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.0' );
+define( 'GT_VERSION', '4.1' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -761,6 +761,12 @@ class Glance_That {
 											$new_post = '';
 										}
 
+										if ( get_post_type_archive_link( $item ) && apply_filters( 'gt_show_archive', true ) ) {
+											$archive = '<a href="' . get_post_type_archive_link( $item ) . '" class="gt-view-archive"><span class="dashicons dashicons-external" title="View ' . $this->label( $item, get_post_type_object( $item )->labels->singular_name, 1 ) . ' Archive"></span></a>';
+										} else {
+											$archive = '';
+										}
+
 										if ( apply_filters( 'gt_show_all_status', GT_SHOW_ALL_STATUS ) ) {
 											$statuses = '<div class="gt-statuses"' . $status_visibility . '>';
 
@@ -805,7 +811,7 @@ class Glance_That {
 										}
 
 										ob_start();
-											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that" title="All %4$s">%2$s</a>%5$s</div>%3$s</div>', $item, $text, $statuses, $this->label( $item, get_post_type_object( $item )->labels->name, 2 ), $new_post );
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="edit.php?post_type=%1$s" class="glance-that" title="All %4$s">%2$s</a>%5$s%6$s</div>%3$s</div>', $item, $text, $statuses, $this->label( $item, get_post_type_object( $item )->labels->name, 2 ), $new_post, $archive );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -906,6 +912,7 @@ class Glance_That {
 					'controls-volumeon',
 					'image-rotate',
 					'image-filter',
+					'editor-ul',
 					'editor-quote',
 					'editor-removeformatting',
 					'editor-help',
@@ -1150,6 +1157,9 @@ class Glance_That {
 			case 'acf-field-group':
 				return 'welcome-widgets-menus';
 				break;
+			case 'wp_show_posts':
+				return 'editor-ul';
+				break;
 			case 'gravityview':
 				return 'gravityview';
 				break;
@@ -1207,8 +1217,14 @@ class Glance_That {
 						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'comment' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Comments</strong> were successfully added to your glances.', 'class' => 'success' );
+					} elseif ( 'user_request-export_personal_data' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Data Export Requests</strong> were successfully added to your glances.', 'class' => 'success' );
+					} elseif ( 'user_request-remove_personal_data' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Data Erasure Requests</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'gravityform' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'success' );
+					} elseif ( 'formidableform' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Formidable Forms</strong> were successfully added to your glances.', 'class' => 'success' );
 					}
 
 					$success = true;
@@ -1241,8 +1257,14 @@ class Glance_That {
 						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'comment' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Plugins</strong> were successfully removed from your glances.', 'class' => 'success' );
+					} elseif ( 'user_request-export_personal_data' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Data Export Requests</strong> were successfully removed from your glances.', 'class' => 'success' );
+					} elseif ( 'user_request-remove_personal_data' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Data Erasure Requests</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'gravityform' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
+					} elseif ( 'formidableform' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Formidable Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
 					}
 
 					$success = true;
