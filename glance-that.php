@@ -726,7 +726,7 @@ class Glance_That {
 
 										$text = sprintf( $text, number_format_i18n( $num_forms->published ) );
 
-										if ( current_user_can( 'frm_edit_forms' ) && apply_filters( 'gt_show_zero_add_new', GT_SHOW_ADD_NEW ) ) {
+										if ( current_user_can( 'frm_edit_forms' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 											$new_formidableform = '<a href="admin.php?page=formidable&frm_action=new" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, 'Form', 1 ) . '"></span></a>';
 										} else {
 											$new_formidableform = '';
@@ -742,6 +742,30 @@ class Glance_That {
 
 										ob_start();
 											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=formidable" class="glance-that unordered" title="All ' . $this->label( $item, 'Forms', 2 ) . '">%2$s</a>%4$s</div>%3$s</div>', $item, $text, $statuses, $new_formidableform );
+										$elements[] = ob_get_clean();
+									}
+								}
+								break;
+
+							case 'ninjaform':
+								if ( class_exists( 'Ninja_Forms' ) ) {
+									$ninjaforms = Ninja_Forms()->form()->get_forms();
+
+									$num_forms = count($ninjaforms);
+
+									if ( ( $num_forms || apply_filters( 'gt_show_zero_count', GT_SHOW_ZERO_COUNT ) ) && ( current_user_can( apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ) ) ) ) {
+										$text = _n( '%s ' . $this->label( $item, 'Form', $num_forms ), '%s ' . $this->label( $item, 'Forms', $num_forms ), $num_forms );
+
+										$text = sprintf( $text, number_format_i18n( $num_forms ) );
+
+										if ( current_user_can( apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ) ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
+											$new_ninjaform = '<a href="admin.php?page=ninja-forms#new-form" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, 'Form', 1 ) . '"></span></a>';
+										} else {
+											$new_ninjaform = '';
+										}
+
+										ob_start();
+											printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="admin.php?page=ninja-forms" class="glance-that unordered" title="All ' . $this->label( $item, 'Forms', 2 ) . '">%2$s</a>%3$s</div></div>', $item, $text, $new_ninjaform );
 										$elements[] = ob_get_clean();
 									}
 								}
@@ -1068,6 +1092,14 @@ class Glance_That {
 						( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ? $html .= '<option value="formidableform" data-dashicon="formidableform" ' . $glancing . '>' . $this->label( 'formidableform', 'Formidable Forms', 2 ) . '</options>' : FALSE;
 					}
 
+					if ( class_exists( 'Ninja_Forms' ) ) {
+						// Set data-glancing attribute
+						$glancing = isset( $this->glances['ninjaform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+						// Only show users option if user can edit forms
+						current_user_can( apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ) ) ? $html .= '<option value="ninjaform" data-dashicon="feedback" ' . $glancing . '>' . $this->label( 'ninjaform', 'Ninja Forms', 2 ) . '</options>' : FALSE;
+					}
+
 					// Set data-glancing attribute
 					$glancing = isset( $this->glances['comment'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
@@ -1225,6 +1257,8 @@ class Glance_That {
 						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully added to your glances.', 'class' => 'success' );
 					} elseif ( 'formidableform' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Formidable Forms</strong> were successfully added to your glances.', 'class' => 'success' );
+					} elseif ( 'ninjaform' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Ninja Forms</strong> were successfully added to your glances.', 'class' => 'success' );
 					}
 
 					$success = true;
@@ -1265,6 +1299,8 @@ class Glance_That {
 						$this->notices[] = array( 'message' => '<strong>Gravity Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
 					} elseif ( 'formidableform' == $glance ) {
 						$this->notices[] = array( 'message' => '<strong>Formidable Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
+					} elseif ( 'ninjaform' == $glance ) {
+						$this->notices[] = array( 'message' => '<strong>Ninja Forms</strong> were successfully removed from your glances.', 'class' => 'success' );
 					}
 
 					$success = true;

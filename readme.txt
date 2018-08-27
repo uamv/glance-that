@@ -23,6 +23,7 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Gravity Forms
 * Gravity View
 * Formidable Forms
+* Ninja Forms
 * Give Forms
 * Sliced Invoices & Estimates
 * ProjectHuddle Sites & Mockups
@@ -101,6 +102,7 @@ Silence is golden.
 * Add `gt_show_archive` filter w/ default true
 * Add some missing notices
 * Add icon support for WP Show Posts
+* Support Ninja Forms
 
 = 4.0 =
 * Add `gt_option_icons` filter
@@ -232,6 +234,13 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.1 =
+* Adds link to front-end post archive if it exists
+* Adds `gt_show_archive` filter w/ default true
+* Adds some missing notices
+* Adds icon support for WP Show Posts
+* Supports Ninja Forms
 
 = 4.1 =
 * Add link to front-end post archive if it exists

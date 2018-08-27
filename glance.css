@@ -50,6 +50,10 @@ a.gt-applause:hover {
 	display: none;
 }
 
+#dashboard_right_now li a:before, #dashboard_right_now li>span:before {
+	padding-right: 7px;
+}
+
 #visible-icon.formidableform,
 #visible-icon.gravityform,
 #visible-icon.gravityview,
