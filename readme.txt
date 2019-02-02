@@ -1,11 +1,11 @@
 === Glance That ===
 
 Contributors: UaMV
-Donate link: https://typewheel.xyz/give
+Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 4.9.2
-Stable tag: 4.1
+Tested up to: 5.0.3
+Stable tag: 4.2
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -68,6 +68,10 @@ The `gt_option_icons` filter can be used to customize default icon for a specifi
 
 `apply_filters( 'gt_option_icons', str $icon, str $post_type );`
 
+The `gt_view_at_a_glance` filter is used to allow users viewing of the At a Glance metabox. By default this is limited to those able to `edit_posts`.
+
+`apply_filters( 'gt_view_at_a_glance', str $capability );`
+
 The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
 
 `
@@ -96,6 +100,10 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 4.2 =
+* Allows other capabilities to view At a Glances
+* Switch `gt_show_mine` to default `false`.
 
 = 4.1 =
 * Add link to front-end post archive if it exists
@@ -234,6 +242,10 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.2 =
+* Allows other capabilities to view At a Glances
+* Switches `gt_show_mine` to default `false`.
 
 = 4.1 =
 * Adds link to front-end post archive if it exists

@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/wp/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.1
+ * Version: 4.2
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.1
+ * @version 4.2
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/wp/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.1' );
+define( 'GT_VERSION', '4.2' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -200,6 +200,9 @@ class Glance_That {
 		// Set custom labels
 		add_filter( 'gt_option_icons', array( $this, 'customize_post_type_icon' ), 10, 3 );
 
+		// Modify capability for viewing At a Glance
+		add_action( 'wp_dashboard_setup', array( $this, 'at_a_glance' ) );
+
 	} // end constructor
 
 	/*---------------------------------------------------------------------------------*
@@ -248,6 +251,21 @@ class Glance_That {
 		wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 	} // end add_stylesheets_and_javascript
+
+	/**
+	 * Extends capability for those able to view At a Glance
+	 *
+	 * @since    4.2
+	 */
+	function at_a_glance() {
+
+		if ( is_blog_admin() && current_user_can( apply_filters( 'gt_view_at_a_glance', 'edit_posts' ) ) ) {
+
+			wp_add_dashboard_widget( 'dashboard_right_now', __( 'At a Glance' ), 'wp_dashboard_right_now' );
+
+		}
+
+	}
 
 	/**
 	 * Adds order to list item for use by sortable
@@ -809,7 +827,7 @@ class Glance_That {
 											", $item, $author ) ) );
 
 
-											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $user_num_posts > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) && apply_filters( 'gt_show_mine', true ) ) {
+											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $user_num_posts > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) && apply_filters( 'gt_show_mine', false ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&author=' . $author . '" class="gt-mine" title="Mine">' . $user_num_posts . '</a></div>';
 											}
 											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) && ( $num_posts->future > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
