@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Glance That
- * Plugin URI: http://typewheel.xyz/wp/
+ * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
  * Version: 4.2
  * Author: Typewheel
@@ -20,7 +20,7 @@
  * @version 4.2
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
- * @link http://typewheel.xyz/wp/
+ * @link http://typewheel.xyz/
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 
