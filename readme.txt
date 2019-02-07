@@ -5,7 +5,7 @@ Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
 Tested up to: 5.0.3
-Stable tag: 4.2
+Stable tag: 4.3
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -100,6 +100,9 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 4.3 =
+* Add reusable block post type
 
 = 4.2 =
 * Allows other capabilities to view At a Glances
@@ -242,6 +245,9 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.3 =
+* Adds reusable block post type
 
 = 4.2 =
 * Allows other capabilities to view At a Glances

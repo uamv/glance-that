@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.2
+ * Version: 4.3
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.2
+ * @version 4.3
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.2' );
+define( 'GT_VERSION', '4.3' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -202,6 +202,19 @@ class Glance_That {
 
 		// Modify capability for viewing At a Glance
 		add_action( 'wp_dashboard_setup', array( $this, 'at_a_glance' ) );
+
+		// Modify block label
+		add_filter( 'gt_labels', function( $label, $item, $count ) {
+
+			if ( $item == 'wp_block' && $count == 1 ) {
+				return 'Reusable Block';
+			} else if ( $item == 'wp_block' ) {
+				return 'Reusable Blocks';
+			} else {
+				return $label;
+			}
+
+		}, 10, 3 );
 
 	} // end constructor
 
@@ -1190,7 +1203,6 @@ class Glance_That {
 		unset( $post_types['frm_styles'] );
 		unset( $post_types['acf-field'] );
 		unset( $post_types['user_request'] );
-		unset( $post_types['wp_block'] );
 
 		return $post_types;
 
@@ -1212,6 +1224,9 @@ class Glance_That {
 				break;
 			case 'gravityview':
 				return 'gravityview';
+				break;
+			case 'wp_block':
+				return 'layout';
 				break;
 			default:
 				return $icon;
