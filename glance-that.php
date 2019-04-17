@@ -229,6 +229,7 @@ class Glance_That {
 
 		wp_enqueue_style( 'glance', GT_DIR_URL . 'glance.css', array(), GT_VERSION );
 		wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
+		wp_enqueue_script( 'glance-that-dashicon-picker', GT_DIR_URL . 'dashicon-picker.js', array( 'jquery' ), GT_VERSION );
 		wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 	} // end add_stylesheets_and_javascript
@@ -1439,7 +1440,7 @@ class Glance_That {
 			</style>';
 
 		// Set the visible icon according to default icon
-		$html .= '<div id="visible-icon" alt="' . esc_attr( $default_code ) . '" class="dashicon dashicons-' . esc_attr( $default ) . '"></div>';
+		$html .= '<div id="visible-icon" alt="' . esc_attr( $default_code ) . '" class="dashicon dashicons-' . esc_attr( $default ) . ' dashicons-picker"></div>';
 
 		// Set the hidden form field according to provided id and default icon
 		$html .= '<input id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" type="hidden" data-dashicon="selected" value="' . esc_attr( $default_code ) . '" />';
