@@ -98,6 +98,13 @@ class Glance_That {
 	protected $glances;
 
 	/**
+	 * notices.
+	 *
+	 * @var      array
+	 */
+	protected $notices;
+
+	/**
 	 * glances.
 	 *
 	 * @var      array
