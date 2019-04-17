@@ -67,7 +67,7 @@ add_action( 'plugins_loaded', function() {
 		Glance_That::get_instance();
 	}
 
-});
+}, 10 );
 
 /**
  * Glance That Class
@@ -127,7 +127,7 @@ class Glance_That {
 	 */
 	private function __construct() {
 
-		add_action( 'plugins_loaded', array( $this, 'check_user_cap' ) );
+		add_action( 'plugins_loaded', array( $this, 'check_user_cap' ), 20 );
 
 		// Process the form
 		add_action( 'init', array( $this, 'get_users_glances' ) );
