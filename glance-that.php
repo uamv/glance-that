@@ -84,36 +84,14 @@ class Glance_That {
 	 *---------------------------------------------------------------------------------*/
 
 	/**
-	 * Plugin version, used for cache-busting of style and script file references.
-	 *
-	 * @since   1.0
-	 *
-	 * @var     string
-	 */
-	protected $version = GT_VERSION;
-
-	/**
 	 * Instance of this class.
-	 *
-	 * @since    1.0
 	 *
 	 * @var      object
 	 */
 	protected static $instance = null;
 
 	/**
-	 * Notices.
-	 *
-	 * @since    1.0
-	 *
-	 * @var      array
-	 */
-	protected $notices;
-
-	/**
 	 * glances.
-	 *
-	 * @since    1.0
 	 *
 	 * @var      array
 	 */
@@ -122,8 +100,6 @@ class Glance_That {
 	/**
 	 * glances.
 	 *
-	 * @since    1.0
-	 *
 	 * @var      array
 	 */
 	protected $glances_indexed;
@@ -131,16 +107,12 @@ class Glance_That {
 	/**
 	 * editable
 	 *
-	 * @since    2.4
-	 *
 	 * @var      array
 	 */
 	protected $editable;
 
 	/**
 	 * editable
-	 *
-	 * @since    2.4
 	 *
 	 * @var      array
 	 */
@@ -152,8 +124,6 @@ class Glance_That {
 
 	/**
 	 * Initialize the plugin by setting localization, filters, and administration functions.
-	 *
-	 * @since     1.0
 	 */
 	private function __construct() {
 
@@ -229,8 +199,6 @@ class Glance_That {
 	/**
 	 * Return an instance of this class.
 	 *
-	 * @since     1.0
-	 *
 	 * @return    object    A single instance of this class.
 	 */
 	public static function get_instance() {
@@ -246,8 +214,6 @@ class Glance_That {
 
 	/**
 	 * Set user capabilities for the plugin
-	 *
-	 * @since    1.0
 	 */
 	public function check_user_cap() {
 
@@ -258,8 +224,6 @@ class Glance_That {
 
 	/**
 	 * Registers the plugin's administrative stylesheets and JavaScript
-	 *
-	 * @since    1.0
 	 */
 	public function add_stylesheets_and_javascript() {
 
@@ -271,8 +235,6 @@ class Glance_That {
 
 	/**
 	 * Extends capability for those able to view At a Glance
-	 *
-	 * @since    4.2
 	 */
 	function at_a_glance() {
 
@@ -286,8 +248,6 @@ class Glance_That {
 
 	/**
 	 * Adds order to list item for use by sortable
-	 *
-	 * @since    1.4
 	 */
 	public function add_sort_order() { ?>
 
@@ -310,8 +270,6 @@ class Glance_That {
 
 	/**
 	 * Adds settings control script
-	 *
-	 * @since    1.4
 	 */
 	public function settings_control() {
 
@@ -427,8 +385,6 @@ class Glance_That {
 
 	/**
 	 * Return glance labels
-	 *
-	 * @since    1.0
 	 */
 	public function label( $item, $label, $count ) {
 
@@ -438,8 +394,6 @@ class Glance_That {
 
 	/**
 	 * Adds custom post types to the end of At a Glance table
-	 *
-	 * @since    1.0
 	 */
 	public function customize_items( $elements = array() ) {
 
@@ -881,7 +835,7 @@ class Glance_That {
 											if ( ( ( ! isset( get_post_type_object( $item )->cap->edit_private_posts ) && current_user_can( 'edit_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->edit_private_posts ) ) && ( $num_posts->private > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=private" class="gt-private" title="Private">' . $num_posts->private . '</a></div>';
 											}
-											if ( $this->is_archive_active() && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) && ( $num_posts->archive > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
+											if ( is_plugin_active( 'archived-post-status/archived-post-status.php' ) && ( ( ! isset( get_post_type_object( $item )->cap->read_private_posts ) && current_user_can( 'read_private_posts' ) ) || current_user_can( get_post_type_object( $item )->cap->read_private_posts ) ) && ( $num_posts->archive > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&post_status=archive" class="gt-archive" title="Archived">' . $num_posts->archive . '</a></div>';
 											}
 											if ( ( ( ! isset( get_post_type_object( $item )->cap->delete_posts ) && current_user_can( 'delete_posts' ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) || ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && current_user_can( get_post_type_object( $item )->cap->delete_posts ) ) ) && ( $num_posts->trash > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) {
@@ -935,8 +889,6 @@ class Glance_That {
 
 	/**
 	 * Adds a form for adding/removing custom post types from the At A Glance
-	 *
-	 * @since    1.2
 	 */
 	public function add_form() {
 
@@ -1218,8 +1170,6 @@ class Glance_That {
 
 	/**
 	 * Remove post types from option list
-	 *
-	 * @since    2.1.0
 	 */
 	public function remove_post_type_options( $post_types ) {
 
@@ -1244,8 +1194,6 @@ class Glance_That {
 
 	/**
 	 * Customize default post type icon when option is selected
-	 *
-	 * @since    2.1.0
 	 */
 	public function customize_post_type_icon( $icon, $post_type ) {
 
@@ -1271,8 +1219,6 @@ class Glance_That {
 
 	/**
 	 * Process any responses to the displayed notices.
-	 *
-	 * @since    2.1.0
 	 */
 	public function process_form() {
 
@@ -1387,8 +1333,6 @@ class Glance_That {
 
 	/**
 	 * Process any responses to the displayed notices.
-	 *
-	 * @since    1.0
 	 */
 	public function show_notices() {
 
@@ -1413,8 +1357,6 @@ class Glance_That {
 
 	/**
 	 * Assembles a form field for dashicon selection.
-	 *
-	 * @since    1.2
 	 */
 	public function get_dashicon_field( $id = 'dashicon', $default = 'marker', $options = array() ) {
 
@@ -1520,8 +1462,6 @@ class Glance_That {
 
 	/**
 	 * Get the categorized array of dashicons.
-	 *
-	 * @since    2.6
 	 */
 	public function get_dashicons() {
 
@@ -1828,8 +1768,6 @@ class Glance_That {
 
 	/**
 	 * Process any responses to the displayed notices.
-	 *
-	 * @since    1.0
 	 */
 	public function get_user_status_visibility() {
 
@@ -1858,8 +1796,6 @@ class Glance_That {
 
 	/**
 	 * Process any responses to the displayed notices.
-	 *
-	 * @since    1.0
 	 */
 	public function get_users_glances() {
 
@@ -1907,8 +1843,6 @@ class Glance_That {
 
 	/**
 	 * Action target that disperses default glances
-	 *
-	 * @since    1.8
 	 */
 	public function default_glances() {
 
@@ -1951,8 +1885,6 @@ class Glance_That {
 
 	/**
 	 * Action target that sorts glances
-	 *
-	 * @since    1.8
 	 */
 	public function sort_glances() {
 
@@ -1990,8 +1922,6 @@ class Glance_That {
 
 	/**
 	 * Action target that sorts glances
-	 *
-	 * @since    1.8
 	 */
 	public function toggle_status_visibility() {
 
@@ -2024,8 +1954,6 @@ class Glance_That {
 
 	/**
 	 * Overrides status icons if defined by Post State Tags plugin
-	 *
-	 * @since    2.6
 	 */
 	public function check_override_status_icons() {
 
@@ -2062,20 +1990,7 @@ class Glance_That {
 	} // end check_override_status_icons
 
 	/**
-	 * Checks whether Archived Post Status plugin is active
-	 *
-	 * @since    2.6
-	 */
-	public function is_archive_active() {
-
-		return is_plugin_active( 'archived-post-status/archived-post-status.php' );
-
-	} // end is_archive_active
-
-	/**
 	 * Retrieve dashicon character code from dashicon name
-	 *
-	 * @since    2.6
 	 */
 	public function get_dashicon_code( $dashicon ) {
 
