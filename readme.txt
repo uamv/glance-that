@@ -4,8 +4,8 @@ Contributors: UaMV
 Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires at least: 3.1
-Tested up to: 5.0.3
-Stable tag: 4.3
+Tested up to: 5.2
+Stable tag: 4.4
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -43,6 +43,7 @@ Additionally, Glance That allows you to toggle view of the number of items match
 * Active, Inactive (Plugins & Gravity Forms)
 * Updates (Plugins & Themes)
 * Favorites, Recently Active, Must-Use, Drop-Ins (Plugins)
+* Paused Plugins & Themes (when in recovery mode)
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
@@ -100,6 +101,11 @@ Silence is golden.
 1. Glance That: At a Glance
 
 == Changelog ==
+
+= 4.4 =
+* Support multisite sites
+* Add paused plugins & themes while in recovery mode
+* Add new dashicons from WP 5.2
 
 = 4.3 =
 * Add reusable block post type
@@ -245,6 +251,11 @@ Silence is golden.
 * Initial Release
 
 == Upgrade Notice ==
+
+= 4.4 =
+* Supports multisite sites
+* Adds paused plugins & themes while in recovery mode
+* Adds new dashicons from WP 5.2
 
 = 4.3 =
 * Adds reusable block post type

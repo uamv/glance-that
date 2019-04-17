@@ -229,7 +229,7 @@ a.gt-applause:hover {
 	top: .1em;
 }
 #dashboard_right_now div.gt-status a.gt-inactive:before {
-	content: '\f534';
+	content: '\f460';
 }
 #dashboard_right_now div.gt-status a.gt-recent:before {
 	content: '\f469';
@@ -245,6 +245,14 @@ a.gt-applause:hover {
 }
 #dashboard_right_now div.gt-status a.gt-dropins:before {
 	content: '\f546';
+}
+#dashboard_right_now div.gt-status a.gt-paused {
+	color: #db3232;
+	font-weight: bold;
+}
+#dashboard_right_now div.gt-status a.gt-paused:before {
+	content: '\f534';
+	color: #db3232;
 }
 #dashboard_right_now div.gt-status a.gt-template:before {
 	content: '\f538';

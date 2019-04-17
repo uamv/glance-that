@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.3
+ * Version: 4.4
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.3
+ * @version 4.4
  * @author uamv
  * @copyright Copyright (c) 2013-2017, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.3' );
+define( 'GT_VERSION', '4.4' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -59,11 +59,15 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
  * Get instance of class if in admin.
  */
 
-global $pagenow;
+add_action( 'plugins_loaded', function() {
 
-if ( is_admin() && ( 'index.php' == $pagenow || 'admin-ajax.php' == $pagenow ) ) {
-	Glance_That::get_instance();
-}
+	global $pagenow;
+
+	if ( is_admin() && ( 'index.php' == $pagenow || 'admin-ajax.php' == $pagenow ) ) {
+		Glance_That::get_instance();
+	}
+
+});
 
 /**
  * Glance That Class
@@ -476,11 +480,23 @@ class Glance_That {
 
 						switch ( $item ) {
 							case 'theme':
-								$num_themes = count( get_themes() );
-								if ( $num_themes && current_user_can( 'switch_themes' ) ) {
-									$text = _n( '%s ' . $this->label( $item, 'Theme', $num_themes ), '%s ' . $this->label( $item, 'Themes', $num_themes ), $num_themes );
+								$themes = get_themes();
 
-									$text = sprintf( $text, number_format_i18n( $num_themes ) );
+								$theme_stats = array();
+
+								$theme_stats['all'] = count( get_themes() );
+
+								// Get paused themese
+								if ( function_exists( 'wp_is_recovery_mode' ) && wp_is_recovery_mode() ) {
+									$theme_stats['paused'] = count( wp_paused_themes()->get_all() );
+								} else {
+									$theme_stats['paused'] = null;
+								}
+
+								if ( $theme_stats['all'] && current_user_can( 'switch_themes' ) ) {
+									$text = _n( '%s ' . $this->label( $item, 'Theme', $theme_stats['all'] ), '%s ' . $this->label( $item, 'Themes', $theme_stats['all'] ), $theme_stats['all'] );
+
+									$text = sprintf( $text, number_format_i18n( $theme_stats['all'] ) );
 
 									if ( current_user_can( 'install_themes' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 										$new_theme = '<a href="theme-install.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, 'Theme', 1 ) . '"></span></a>';
@@ -492,6 +508,7 @@ class Glance_That {
 										$statuses = '<div class="gt-statuses"' . $status_visibility . '>';
 											$moderation = count( get_theme_updates() ) > 0 ? 'gt-moderate' : '';
 											$statuses .= ( count( get_theme_updates() ) > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ? '<div class="gt-status ' . $moderation . '"><a href="update-core.php#update-themes-table" class="gt-update" title="Update Available">' . count( get_theme_updates() ) . '</a></div>' : FALSE;
+											$statuses .= $theme_stats['paused'] > 0 ? '<div class="gt-status gt-moderate"><a href="themes.php" class="gt-paused" title="Paused">' . $theme_stats['paused'] . '</a></div>' : FALSE;
 										$statuses .= '</div>';
 									}
 
@@ -666,6 +683,13 @@ class Glance_That {
 									$plugin_stats['favorites'] = null;
 								}
 
+								// Get paused plugins
+								if ( function_exists( 'wp_is_recovery_mode' ) && wp_is_recovery_mode() ) {
+									$plugin_stats['paused'] = count( wp_paused_plugins()->get_all() );
+								} else {
+									$plugin_stats['paused'] = null;
+								}
+
 								if ( current_user_can( 'install_plugins' ) && apply_filters( 'gt_show_add_new', GT_SHOW_ADD_NEW ) ) {
 									$new_plugin = '<a href="plugin-install.php" class="gt-add-new"><span class="dashicons dashicons-plus" title="Add New ' . $this->label( $item, 'Plugin', 1 ) . '"></span></a>';
 								} else {
@@ -688,6 +712,7 @@ class Glance_That {
 											$statuses .= ( null !== $plugin_stats['favorites'] && ( $plugin_stats['favorites'] > 0 || apply_filters( 'gt_show_zero_count_status', GT_SHOW_ZERO_COUNT_STATUS ) ) ) ? '<div class="gt-status"><a href="plugin-install.php?tab=favorites" class="gt-favorites" title="Favorites: ' . $user . '">' . $plugin_stats['favorites'] . '</a></div>' : FALSE;
 											$statuses .= ( $plugin_stats['mustuse'] > 0 && apply_filters( 'gt_show_mustuse', GT_SHOW_MUSTUSE ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=mustuse" class="gt-mustuse" title="Must-Use">' . $plugin_stats['mustuse'] . '</a></div>' : FALSE;
 											$statuses .= ( $plugin_stats['dropins'] > 0 && apply_filters( 'gt_show_', GT_SHOW_DROPINS ) ) ? '<div class="gt-status"><a href="plugins.php?plugin_status=dropins" class="gt-dropins" title="Drop-ins">' . $plugin_stats['dropins'] . '</a></div>' : FALSE;
+											$statuses .= $plugin_stats['paused'] > 0 ? '<div class="gt-status gt-moderate"><a href="plugins.php?plugin_status=paused" class="gt-paused" title="Paused">' . $plugin_stats['paused'] . '</a></div>' : FALSE;
 										$statuses .= '</div>';
 									}
 
@@ -924,6 +949,8 @@ class Glance_That {
 				// Define dashicon fields allowable icons
 				$iconset = array(
 					'admin-site',
+					'admin-site-alt',
+					'admin-site-alt2',
 					'dashboard',
 					'admin-post',
 					'admin-media',
@@ -957,6 +984,7 @@ class Glance_That {
 					'format-chat',
 					'format-audio',
 					'camera',
+					'camera-alt',
 					'images-alt',
 					'images-alt2',
 					'video-alt',
@@ -964,10 +992,12 @@ class Glance_That {
 					'video-alt3',
 					'playlist-audio',
 					'playlist-video',
+					'text-page',
 					'controls-volumeon',
 					'image-rotate',
 					'image-filter',
 					'editor-ul',
+					'editor-ol',
 					'editor-quote',
 					'editor-removeformatting',
 					'editor-help',
@@ -986,6 +1016,7 @@ class Glance_That {
 					'email',
 					'email-alt',
 					'facebook-alt',
+					'instagram',
 					'googleplus',
 					'networking',
 					'wordpress-alt',
@@ -1000,6 +1031,7 @@ class Glance_That {
 					'megaphone',
 					'schedule',
 					'pressthis',
+					'rest-api',
 					'update',
 					'screenoptions',
 					'info',
@@ -1011,6 +1043,7 @@ class Glance_That {
 					'category',
 					'archive',
 					'tagcloud',
+					'yes-alt',
 					'marker',
 					'star-filled',
 					'flag',
@@ -1029,6 +1062,7 @@ class Glance_That {
 					'chart-area',
 					'groups',
 					'businessman',
+					'businesswoman',
 					'id-alt',
 					'products',
 					'awards',
@@ -1494,7 +1528,13 @@ class Glance_That {
 		return array(
 			'Admin Menu' => array(
 				'f333' => 'menu',
+				'f228' => 'menu-alt',
+				'f329' => 'menu-alt2',
+				'f349' => 'menu-alt3',
 				'f319' => 'admin-site',
+				'f11d' => 'admin-site-alt',
+				'f11e' => 'admin-site-alt2',
+				'f11f' => 'admin-site-alt3',
 				'f226' => 'dashboard',
 				'f109' => 'admin-post',
 				'f104' => 'admin-media',
@@ -1503,6 +1543,7 @@ class Glance_That {
 				'f101' => 'admin-comments',
 				'f100' => 'admin-appearance',
 				'f106' => 'admin-plugins',
+				'f485' => 'plugins-checked',
 				'f110' => 'admin-users',
 				'f107' => 'admin-tools',
 				'f108' => 'admin-settings',
@@ -1532,6 +1573,7 @@ class Glance_That {
 				'f125' => 'format-chat',
 				'f127' => 'format-audio',
 				'f306' => 'camera',
+				'f129' => 'camera-alt',
 				'f232' => 'images-alt',
 				'f233' => 'images-alt2',
 				'f234' => 'video-alt',
@@ -1559,6 +1601,7 @@ class Glance_That {
 				'f515' => 'controls-repeat',
 				'f521' => 'controls-volumeon',
 				'f520' => 'controls-volumeoff',
+				'f121' => 'text-page',
 			),
 			'Image Editing' => array(
 				'f165' => 'image-crop',
@@ -1576,6 +1619,7 @@ class Glance_That {
 				'f201' => 'editor-italic',
 				'f203' => 'editor-ul',
 				'f204' => 'editor-ol',
+				'f12c' => 'editor-ol-rtl',
 				'f205' => 'editor-quote',
 				'f206' => 'editor-alignleft',
 				'f207' => 'editor-aligncenter',
@@ -1599,6 +1643,7 @@ class Glance_That {
 				'f224' => 'editor-strikethrough',
 				'f225' => 'editor-unlink',
 				'f320' => 'editor-rtl',
+				'f10c' => 'editor-ltr',
 				'f474' => 'editor-break',
 				'f475' => 'editor-code',
 				'f476' => 'editor-paragraph',
@@ -1650,8 +1695,10 @@ class Glance_That {
 				'f303' => 'rss',
 				'f465' => 'email',
 				'f466' => 'email-alt',
+				'f467' => 'email-alt2',
 				'f304' => 'facebook',
 				'f305' => 'facebook-alt',
+				'f12d' => 'instagram',
 				'f462' => 'googleplus',
 				'f325' => 'networking',
 			),
@@ -1670,10 +1717,27 @@ class Glance_That {
 				'f487' => 'heart',
 				'f488' => 'megaphone',
 				'f489' => 'schedule',
+				'f10d' => 'tide',
+				'f124' => 'rest-api',
+				'f13a' => 'code-standards',
+			),
+			'Buddicons' => array(
+				'f452' => 'buddicons-activity',
+				'f12b' => 'buddicons-bbpress-logo',
+				'f448' => 'buddicons-buddpress-logo',
+				'f453' => 'buddicons-community',
+				'f449' => 'buddicons-forums',
+				'f454' => 'buddicons-friends',
+				'f456' => 'buddicons-groups',
+				'f457' => 'buddicons-pm',
+				'f451' => 'buddicons-replies',
+				'f450' => 'buddicons-topics',
+				'f455' => 'buddicons-tracking',
 			),
 			'Products' => array(
 				'f157' => 'pressthis',
 				'f463' => 'update',
+				'f113' => 'update-alt',
 				'f180' => 'screenoptions',
 				'f348' => 'info',
 				'f174' => 'cart',
@@ -1692,6 +1756,7 @@ class Glance_That {
 			),
 			'Notifications' => array(
 				'f147' => 'yes',
+				'f12a' => 'yes-alt',
 				'f158' => 'no',
 				'f335' => 'no-alt',
 				'f132' => 'plus',
@@ -1721,6 +1786,8 @@ class Glance_That {
 				'f239' => 'chart-area',
 				'f307' => 'groups',
 				'f338' => 'businessman',
+				'f12f' => 'businesswoman',
+				'f12e' => 'businessperson',
 				'f336' => 'id',
 				'f337' => 'id-alt',
 				'f312' => 'products',
