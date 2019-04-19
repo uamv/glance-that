@@ -7,6 +7,17 @@
 	margin-right: .15em;
 }
 
+#dashboard_right_now .main {
+	padding-bottom: 0;
+}
+#wp-version-message, #wp-version-message + p {
+	padding-bottom: 1em;
+}
+
+#dashboard_right_now .sub {
+	padding: 0;
+}
+
 #dashboard_right_now.closed #gt-settings-wrapper,
 #dashboard_right_now.closed #gt-applause-wrapper,
 #dashboard_right_now.closed #gt-show-settings {
@@ -261,7 +272,9 @@ a.gt-applause:hover {
 #dashboard-widgets-wrap {
 	overflow: visible;
 }
-
+#gt-form {
+	padding: 10px 12px 10px 12px;
+}
 #gt-form input[type="submit"] {
 	display: none;
 }

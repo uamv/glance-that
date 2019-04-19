@@ -84,7 +84,9 @@ gt_show_zero_count_status
 gt_show_mustuse
 gt_show_dropins
 gt_show_all_dashicons
+gt_show_archive
 gt_show_applause
+gt_show_settings
 `
 
 == Installation ==
@@ -107,6 +109,10 @@ Silence is golden.
 * Add paused plugins & themes while in recovery mode
 * Add new dashicons from WP 5.2
 * Add new searchable icon picker
+* Remove many GLOBAL variables
+* Add `gt_show_settings` filter
+* Ability to toggle visibility of WP info
+* Improved styling
 
 = 4.3 =
 * Add reusable block post type
@@ -258,6 +264,10 @@ Silence is golden.
 * Adds paused plugins & themes while in recovery mode
 * Adds new dashicons from WP 5.2
 * Adds new searchable icon picker
+* Removes many GLOBAL variables
+* Adds `gt_show_settings` filter
+* Ability to toggle visibility of WP info
+* Improves styling
 
 = 4.3 =
 * Adds reusable block post type
