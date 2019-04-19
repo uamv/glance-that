@@ -83,7 +83,6 @@ jQuery(document).ready(function( $ ) {
 					$('.gt-message').remove();
 					$('#wpbody-content .wrap > h1').after(response.notice);
 
-
 				}
 
 			});
@@ -91,48 +90,31 @@ jQuery(document).ready(function( $ ) {
 
 	});
 
-
-	$('#visible-icon').click(
-		function() {
-			if( $('#iconlist').is(':visible') ) {
-				$('#iconlist').hide();
-			} else if ( 'formidableform' != $('#gt-item').find(':selected').val()
-						&& 'gravityform' != $('#gt-item').find(':selected').val()
-						&& 'gravityview' != $('#gt-item').find(':selected').val()
-						&& 'give_forms' != $('#gt-item').find(':selected').val()
-						&& 'sliced_quote' != $('#gt-item').find(':selected').val()
-						&& 'sliced_invoice' != $('#gt-item').find(':selected').val() ) {
-				$('#iconlist').css('display','block');
-				$('#dashboard_right_now .inside').css('overflow','visible');
-			}
-		});
-
 	$('#gt-item').change(
 		function() {
 			$gtselection = $(this).find(':selected');
+			$gticoncode = $gtselection.attr('data-dashicon');
 
-			if ( 'formidableform' == $gtselection.attr('data-dashicon')
-				|| 'gravityform' == $gtselection.attr('data-dashicon')
-				|| 'gravityview' == $gtselection.attr('data-dashicon')
-			 	|| 'give' == $gtselection.attr('data-dashicon')
-			 	|| 'sliced' == $gtselection.attr('data-dashicon')
-		 		|| 'sliced' == $gtselection.attr('data-dashicon') ) {
+			if ( 'formidableform' == $gticoncode
+				|| 'gravityform' == $gticoncode
+				|| 'gravityview' == $gticoncode
+			 	|| 'give' == $gticoncode
+			 	|| 'sliced' == $gticoncode
+		 		|| 'sliced' == $gticoncode ) {
 
-				$gticon = $('#iconlist').find('div[data-dashicon="'+$gtselection.attr('data-dashicon')+'"]');
+				// $gticon = $('#iconlist').find('div[data-dashicon="'+$gticoncode+'"]');
 
-				$('#visible-icon').attr('alt',$gtselection.attr('data-dashicon'));
+				$('#visible-icon').attr('alt',$gticoncode);
 				$('#visible-icon').removeClass();
-				$('#visible-icon').addClass($gtselection.attr('data-dashicon'));
-				$('input[data-dashicon="selected"]').attr('value',$gtselection.attr('data-dashicon'));
+				$('#visible-icon').addClass($gticoncode);
+				$('input[data-dashicon="selected"]').attr('value',$gticoncode);
 
-			} else if ( '' != $gtselection.attr('data-dashicon') ) {
+			} else if ( '' != $gticoncode ) {
 
-				$gticon = $('#iconlist').find('div[data-dashicon="'+$gtselection.attr('data-dashicon')+'"]');
-
-				$('#visible-icon').attr('alt',$gticon.attr('alt'));
+				$('#visible-icon').attr('alt',$gticoncode);
 				$('#visible-icon').removeClass();
-				$('#visible-icon').addClass($gticon.attr('class'));
-				$('input[data-dashicon="selected"]').attr('value',$gticon.attr('alt'));
+				$('#visible-icon').addClass('dashicon dashicons-'+gticons[$gticoncode]); // FIX THIS!!!!!!!!!!!!!!!!!!!!
+				$('input[data-dashicon="selected"]').attr('value',$gticoncode);
 			}
 
 			$('#submit-gt-item').show();
@@ -145,13 +127,118 @@ jQuery(document).ready(function( $ ) {
 
 		});
 
-	$('.dashicon-option').click(
-		function() {
-			$('#visible-icon').attr('alt',$(this).attr('alt'));
-			$('#visible-icon').removeClass();
-			$('#visible-icon').addClass($(this).attr('class'));
-			$('input[data-dashicon="selected"]').attr('value',$(this).attr('alt'));
-			$('#iconlist').hide();
+	/* Dashicons Picker */
+	$.fn.dashiconsPicker = function( options ) {
+
+		return this.each( function() {
+
+			var $button = $(this);
+
+			$button.on('click.dashiconsPicker', function() {
+				if ( 'formidableform' != $('#gt-item').find(':selected').val()
+							&& 'gravityform' != $('#gt-item').find(':selected').val()
+							&& 'gravityview' != $('#gt-item').find(':selected').val()
+							&& 'give_forms' != $('#gt-item').find(':selected').val()
+							&& 'sliced_quote' != $('#gt-item').find(':selected').val()
+							&& 'sliced_invoice' != $('#gt-item').find(':selected').val() ) {
+					createPopup($button);
+				}
+			});
+
+			function createPopup($button) {
+
+				$target = $('#gt-item-icon');
+				current = $target.val();
+
+				$popup = $('<div class="dashicon-picker-container"> \
+						<div class="dashicon-picker-control" /> \
+						<ul class="dashicon-picker-list" /> \
+					</div>')
+					.css({
+						'top': $button.offset().top + 32,
+						'left': $button.offset().left
+					});
+
+				var $list = $popup.find('.dashicon-picker-list');
+				var active = '';
+				// var page = 0;
+				for (var i in gticons) {
+					if (i == current)
+					{
+						active = ' active';
+						// page = i;
+					}
+					else
+					{
+						active = '';
+						// page = 0;
+					}
+					$list.append('<li data-icon="'+gticons[i]+'" class="icon'+active+'"><a href="#" title="'+gticons[i]+'" data-code="'+i+'"><span class="dashicons dashicons-'+gticons[i]+'"></span></a></li>');
+				};
+
+				$('a', $list).click(function(e) {
+					e.preventDefault();
+					var code = $(this).data('code');
+					var title = $(this).attr('title');
+					$target.val(code);
+					$('#visible-icon').attr('alt',code);
+					$('#visible-icon').removeClass().addClass('dashicon dashicons-'+title+' dashicons-picker');
+					removePopup();
+				});
+
+				var $control = $popup.find('.dashicon-picker-control');
+				$control.html('<a data-direction="back" href="#"><span class="dashicons dashicons-arrow-left-alt2"></span></a> \
+				<input type="text" class="" placeholder="Search" /> \
+				<a data-direction="forward" href="#"><span class="dashicons dashicons-arrow-right-alt2"></span></a>');
+
+				$('a', $control).click(function(e) {
+					e.preventDefault();
+					if ($(this).data('direction') === 'back') {
+						//move last 25 elements to front
+						$('li:gt(' + (gticons.length - 26) + ')', $list).each(function() {
+							$(this).prependTo($list);
+						});
+					} else {
+						//move first 25 elements to the end
+						$('li:lt(25)', $list).each(function() {
+							$(this).appendTo($list);
+						});
+					}
+				});
+
+				$popup.appendTo('body').show();
+
+				$('input', $control).on('keyup', function(e) {
+					var search = $(this).val();
+					if (search === '') {
+						//show all again
+						$('li:lt(25)', $list).show();
+					} else {
+						$('li', $list).each(function() {
+							if ($(this).data('icon').toLowerCase().indexOf(search.toLowerCase()) !== -1) {
+								$(this).show();
+							} else {
+								$(this).hide();
+							}
+						});
+					}
+				});
+
+				$(document).mouseup(function (e){
+					if (!$popup.is(e.target) && $popup.has(e.target).length === 0) {
+						removePopup();
+					}
+				});
+			}
+
+			function removePopup(){
+				$(".dashicon-picker-container").remove();
+			}
 		});
+	}
+
+	$(function() {
+		$('.dashicons-picker').dashiconsPicker();
+	});
 
 });

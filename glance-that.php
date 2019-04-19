@@ -19,7 +19,7 @@
  * @package Glance That
  * @version 4.4
  * @author uamv
- * @copyright Copyright (c) 2013-2017, uamv
+ * @copyright Copyright (c) 2013-2019, uamv
  * @link http://typewheel.xyz/
  * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
@@ -47,9 +47,6 @@ define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 // Determine whether advanced plugin statuses are shown
 ! defined( 'GT_SHOW_MUSTUSE' ) ? define( 'GT_SHOW_MUSTUSE', FALSE ) : FALSE;
 ! defined( 'GT_SHOW_DROPINS' ) ? define( 'GT_SHOW_DROPINS', FALSE ) : FALSE;
-
-// Determine whether all dashicons are to be shown (otherwise un-post-type-like icons are removed)
-! defined( 'GT_SHOW_ALL_DASHICONS' ) ? define( 'GT_SHOW_ALL_DASHICONS', FALSE ) : FALSE;
 
 // Set a capability required for editing of one's glances and admining all glances
 ! defined( 'GT_EDIT_GLANCES' ) ? define( 'GT_EDIT_GLANCES', 'read' ) : FALSE;
@@ -112,6 +109,13 @@ class Glance_That {
 	protected $glances_indexed;
 
 	/**
+	 * icons.
+	 *
+	 * @var      array
+	 */
+	protected $icons;
+
+	/**
 	 * editable
 	 *
 	 * @var      array
@@ -134,6 +138,8 @@ class Glance_That {
 	 */
 	private function __construct() {
 
+		$this->icons = $this->get_icons();
+
 		add_action( 'plugins_loaded', array( $this, 'check_user_cap' ), 20 );
 
 		// Process the form
@@ -151,14 +157,14 @@ class Glance_That {
 		// Add post statuses to native types
 		add_action( 'admin_footer', array( $this, 'add_sort_order' ) );
 
+		// Define javascript variable for available dashicons
+		add_action( 'admin_footer', array( $this, 'add_dashicon_var' ) );
+
 		// Add post status visibility control
 		add_action( 'admin_footer', array( $this, 'settings_control' ) );
 
 		// Filter post type available in drop down to account for certain plugins that add unneccesarily viewable types
 		add_filter( 'gt_post_type_selection', array( $this, 'remove_post_type_options' ), 20, 1 );
-
-		// Filter post type default icon displayed when drop down option is selected
-		add_filter( 'gt_post_type_icon', array( $this, 'customize_post_type_icon' ), 10, 2 );
 
 		// Add form to end of At A Glance
 		add_action( 'activity_box_end', array( $this, 'add_form' ) );
@@ -178,7 +184,7 @@ class Glance_That {
 		// Set custom labels
 		add_filter( 'gt_labels', array( $this, 'customize_labels' ), 10, 3 );
 
-		// Set custom labels
+		// Filter post type default icon displayed when drop down option is selected
 		add_filter( 'gt_option_icons', array( $this, 'customize_post_type_icon' ), 10, 3 );
 
 		// Modify capability for viewing At a Glance
@@ -236,7 +242,6 @@ class Glance_That {
 
 		wp_enqueue_style( 'glance', GT_DIR_URL . 'glance.css', array(), GT_VERSION );
 		wp_enqueue_script( 'glance-that', GT_DIR_URL . 'glance.js', array( 'jquery' ), GT_VERSION );
-		wp_enqueue_script( 'glance-that-dashicon-picker', GT_DIR_URL . 'dashicon-picker.js', array( 'jquery' ), GT_VERSION );
 		wp_localize_script( 'glance-that', 'Glance', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
 
 	} // end add_stylesheets_and_javascript
@@ -275,6 +280,26 @@ class Glance_That {
 		<?php
 
 	} // end add_statuses
+	/**
+	 * Adds order to list item for use by sortable
+	 */
+	public function add_dashicon_var() { ?>
+
+		<script type="text/javascript" language="javascript">
+			var gticons = {
+				<?php
+
+					$dashicons = $this->get_dashicons();
+
+					foreach ( $dashicons as $code => $title ) {
+						echo $code . ': \'' . $title . '\',';
+					}
+
+				?>
+			};
+		</script>
+
+	<?php } // end add_statuses
 
 	/**
 	 * Adds settings control script
@@ -905,154 +930,6 @@ class Glance_That {
 			global $current_user;
 			wp_get_current_user();
 
-			if ( ! apply_filters( 'gt_show_all_dashicons', GT_SHOW_ALL_DASHICONS ) ) {
-				// Define dashicon fields allowable icons
-				$iconset = array(
-					'admin-site',
-					'admin-site-alt',
-					'admin-site-alt2',
-					'dashboard',
-					'admin-post',
-					'admin-media',
-					'admin-links',
-					'marker',
-					'admin-page',
-					'admin-comments',
-					'admin-appearance',
-					'admin-plugins',
-					'admin-users',
-					'admin-tools',
-					'admin-settings',
-					'admin-network',
-					'admin-home',
-					'admin-generic',
-					'admin-collapse',
-					'filter',
-					'admin-customizer',
-					'admin-multisite',
-					'welcome-write-blog',
-					'welcome-view-site',
-					'welcome-widgets-menus',
-					'welcome-comments',
-					'welcome-learn-more',
-					'format-aside',
-					'format-image',
-					'format-gallery',
-					'format-video',
-					'format-status',
-					'format-quote',
-					'format-chat',
-					'format-audio',
-					'camera',
-					'camera-alt',
-					'images-alt',
-					'images-alt2',
-					'video-alt',
-					'video-alt2',
-					'video-alt3',
-					'playlist-audio',
-					'playlist-video',
-					'text-page',
-					'controls-volumeon',
-					'image-rotate',
-					'image-filter',
-					'editor-ul',
-					'editor-ol',
-					'editor-quote',
-					'editor-removeformatting',
-					'editor-help',
-					'lock',
-					'calendar',
-					'visibility',
-					'post-status',
-					'edit',
-					'external',
-					'sort',
-					'share',
-					'share-alt',
-					'share-alt2',
-					'twitter',
-					'rss',
-					'email',
-					'email-alt',
-					'facebook-alt',
-					'instagram',
-					'googleplus',
-					'networking',
-					'wordpress-alt',
-					'hammer',
-					'art',
-					'performance',
-					'universal-access',
-					'tickets',
-					'nametag',
-					'clipboard',
-					'heart',
-					'megaphone',
-					'schedule',
-					'pressthis',
-					'rest-api',
-					'update',
-					'screenoptions',
-					'info',
-					'cart',
-					'feedback',
-					'cloud',
-					'translation',
-					'tag',
-					'category',
-					'archive',
-					'tagcloud',
-					'yes-alt',
-					'marker',
-					'star-filled',
-					'flag',
-					'warning',
-					'location',
-					'location-alt',
-					'vault',
-					'shield',
-					'shield-alt',
-					'sos',
-					'search',
-					'slides',
-					'analytics',
-					'chart-pie',
-					'chart-bar',
-					'chart-area',
-					'groups',
-					'businessman',
-					'businesswoman',
-					'id-alt',
-					'products',
-					'awards',
-					'forms',
-					'testimonial',
-					'portfolio',
-					'book-alt',
-					'download',
-					'backup',
-					'clock',
-					'lightbulb',
-					'microphone',
-					'laptop',
-					'phone',
-					'index-card',
-					'carrot',
-					'building',
-					'store',
-					'album',
-					'palmtree',
-					'tickets-alt',
-					'money',
-					'thumbs-up',
-					'layout',
-					'paperclip',
-				);
-			} else {
-				$iconset = array();
-			}
-
 			// Assemble a form for adding/removing post types
 			$html = '<form id="gt-form" method="post" action="#" data-userid="' . $current_user->ID . '"';
 
@@ -1065,101 +942,143 @@ class Glance_That {
 				// Apply filters to available post types
 				$post_types = apply_filters( 'gt_post_type_selection', $post_types );
 
-				// Get the dashicon field
-				$html .= $this->get_dashicon_field( 'gt-item-icon', 'marker', $iconset );
+				// Add styling for iconset
+				$html .= '<style type="text/css">
+					.dashicon{display:inline-block;}
+					.dashicon:before{
+						font: normal 20px/1 \'dashicons\';
+						padding: 6px;
+						left: -1px;
+						position: relative;
+						vertical-align: top;
+						-webkit-font-smoothing: antialiased;
+						-moz-osx-font-smoothing: grayscale;
+						text-decoration: none !important;}
+
+					</style>';
+
+				// Set the visible icon according to default icon
+				$html .= '<div id="visible-icon" alt="' . esc_attr( $this->get_icon_code( 'marker' ) ) . '" class="dashicon dashicons-' . esc_attr( 'marker' ) . ' dashicons-picker"></div>';
+
+				// Set the hidden form field according to provided id and default icon
+				$html .= '<input id="' . esc_attr( 'gt-item-icon' ) . '" name="' . esc_attr( 'gt-item-icon' ) . '" type="hidden" data-dashicon="selected" value="' . esc_attr( $this->get_icon_code( 'marker' ) ) . '" />';
 
 				$html .= ' <select id="gt-item" name="gt-item">';
 					$html .= '<option value""></option>';
-					foreach( $post_types as $index => $post_type ) {
 
-						// Set data-glancing attribute
-						$glancing = isset( $this->glances[ $post_type->name ] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+					// Initialize an options array that we'll later loop through to generate options
+					$options = array(
+						'comment' => array(
+							'glancing'   => isset( $this->glances['comment'] ),
+							'capability' => 'moderate_comments',
+							'icon'       => array( 'admin-comments', 'dashicons' ),
+							'label'      => $this->label( 'comment', 'Comments', 2 ),
+						),
+						'user' => array(
+							'glancing'   => isset( $this->glances['user'] ),
+							'capability' => 'list_users',
+							'icon'       => array( 'admin-users', 'dashicons' ),
+							'label'      => $this->label( 'user', 'Users', 2 ),
+						),
+						'plugin' => array(
+							'glancing'   => isset( $this->glances['plugin'] ),
+							'capability' => 'activate_plugins',
+							'icon'       => array( 'admin-plugins', 'dashicons' ),
+							'label'      => $this->label( 'plugin', 'Plugins', 2 ),
+						),
+						'theme' => array(
+							'glancing'   => isset( $this->glances['theme'] ),
+							'capability' => 'switch_themes',
+							'icon'       => array( 'admin-appearance', 'dashicons' ),
+							'label'      => $this->label( 'theme', 'Themes', 2 ),
+						),
+						'user_request-export_personal_data' => array(
+							'glancing'   => isset( $this->glances['user_request-export_personal_data'] ),
+							'capability' => 'manage_options',
+							'icon'       => array( 'download', 'dashicons' ),
+							'label'      => $this->label( 'user_request-export_personal_data', '', 2 ),
+						),
+						'user_request-remove_personal_data' => array(
+							'glancing'   => isset( $this->glances['ser_request-remove_personal_data'] ),
+							'capability' => 'manage_options',
+							'icon'       => array( 'editor-removeformatting', 'dashicons' ),
+							'label'      => $this->label( 'user_request-remove_personal_data', '', 2 ),
+						)
+					);
+
+					foreach( $post_types as $index => $post_type ) {
 
 						// Only show revisions to admininstrators
 						if ( 'revision' == $post_type->name && current_user_can( 'edit_dashboard' ) ) {
-							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="backup" ' . $glancing . '>' . $this->label( $post_type->name, $post_type->labels->name, 2 ) . '</option>';
-						}
 
-						// Only show post types on which user has edit permissions (also disallow some Formidable Form types)
-						elseif ( current_user_can( $post_type->cap->edit_posts ) ) {
-							$html .= '<option value="' . esc_attr( $post_type->name ) . '" data-dashicon="';
-							// add default dashicons for post types
+							$options['revision'] = array(
+								// 'glance'      => $post_type->name,
+								'glancing'    => isset( $this->glances[ $post_type->name ] ),
+								'capability'  => 'edit_dashboard',
+								'icon'        => array( 'backup', 'dashicons' ),
+								'label'       => $this->label( $post_type->name, $post_type->labels->name, 2 )
+							);
+
+						} else {
+
 							if ( 'post' == $post_type->name ) {
-								$html .= 'admin-post';
+								$icon = 'admin-post';
 							} elseif ( 'page' == $post_type->name ) {
-								$html .= 'admin-page';
+								$icon = 'admin-page';
 							} elseif ( 'attachment' == $post_type->name ) {
-								$html .= 'admin-media';
+								$icon = 'admin-media';
 							} elseif ( ! empty( $post_type->menu_icon  ) ) {
-								$html .= esc_attr( str_replace( 'dashicons-', '', apply_filters( 'gt_option_icons', $post_type->menu_icon, $post_type->name ) ) );
+								$icon = esc_attr( str_replace( 'dashicons-', '', apply_filters( 'gt_option_icons', $post_type->menu_icon, $post_type->name ) ) );
 							} else {
-								$html .= apply_filters( 'gt_option_icons', 'marker', $post_type->name );
+								$icon = apply_filters( 'gt_option_icons', 'marker', $post_type->name );
 							}
-							$html .= '" ' . $glancing . '>' . $this->label( $post_type->name, $post_type->labels->name, 2 ) . '</option>';
+
+							$options[ $post_type->name ] = array(
+								// 'glance'      => $post_type->name,
+								'glancing'    => isset( $this->glances[ $post_type->name ] ),
+								'capability'  => $post_type->cap->edit_posts,
+								'icon'        => array( $icon, 'dashicons' ),
+								'label'       => $this->label( $post_type->name, $post_type->labels->name, 2 )
+							);
 
 						}
 
 					}
 
 					if ( class_exists( 'RGFormsModel' ) ) {
-						// Set data-glancing attribute
-						$glancing = isset( $this->glances['gravityform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-						// Only show users option if user can edit forms
-						( current_user_can( 'gform_full_access' ) || current_user_can( 'gravityforms_edit_forms' ) ) ? $html .= '<option value="gravityform" data-dashicon="gravityform" ' . $glancing . '>' . $this->label( 'gravityform', 'Gravity Forms', 2 ) . '</options>' : FALSE;
+						$options['gravityform'] = array(
+							'glancing'   => isset( $this->glances['gravityform'] ),
+							'capability' => array( 'gform_full_access', 'gravityforms_edit_forms' ),
+							'icon'       => array( 'gravityform', 'custom' ),
+							'label'      => $this->label( 'gravityform', 'Gravity Forms', 2 )
+						);
+
 					}
 
 					if ( class_exists( 'FrmForm' ) ) {
-						// Set data-glancing attribute
-						$glancing = isset( $this->glances['formidableform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-						// Only show users option if user can edit forms
-						( current_user_can( 'frm_view_forms' ) || current_user_can( 'frm_edit_forms' ) ) ? $html .= '<option value="formidableform" data-dashicon="formidableform" ' . $glancing . '>' . $this->label( 'formidableform', 'Formidable Forms', 2 ) . '</options>' : FALSE;
+						$options['formidableform'] = array(
+							'glancing'   => isset( $this->glances['formidableform'] ),
+							'capability' => array( 'frm_view_forms', 'frm_edit_forms' ),
+							'icon'       => array( 'formidableform', 'custom' ),
+							'label'      => $this->label( 'formidableform', 'Formidable Forms', 2 )
+						);
+
 					}
 
 					if ( class_exists( 'Ninja_Forms' ) ) {
-						// Set data-glancing attribute
-						$glancing = isset( $this->glances['ninjaform'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
-						// Only show users option if user can edit forms
-						current_user_can( apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ) ) ? $html .= '<option value="ninjaform" data-dashicon="feedback" ' . $glancing . '>' . $this->label( 'ninjaform', 'Ninja Forms', 2 ) . '</options>' : FALSE;
+						$options['ninjaform'] = array(
+							'glancing'   => isset( $this->glances['ninjaform'] ),
+							'capability' => apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ),
+							'icon'       => array( 'feedback', 'dashicons' ),
+							'label'      => $this->label( 'ninjaform', 'Ninja Forms', 2 ),
+						);
+
 					}
 
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['comment'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show users option if user can list users
-					current_user_can( 'moderate_comments' ) ? $html .= '<option value="comment" data-dashicon="admin-comments" ' . $glancing . '>' . $this->label( 'comment', 'Comments', 2 ) . '</options>' : FALSE;
-
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['user'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show users option if user can list users
-					current_user_can( 'list_users' ) ? $html .= '<option value="user" data-dashicon="admin-users" ' . $glancing . '>' . $this->label( 'user', 'Users', 2 ) . '</options>' : FALSE;
-
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['plugin'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show plugins optino if user can activate plugins
-					current_user_can( 'activate_plugins' ) ? $html .= '<option value="plugin" data-dashicon="admin-plugins" ' . $glancing . '>' . $this->label( 'plugin', 'Plugins', 2 ) . '</options>' : FALSE;
-
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['theme'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show themes option if user can switch themes
-					current_user_can( 'switch_themes' ) ? $html .= '<option value="theme" data-dashicon="admin-appearance" ' . $glancing . '>' . $this->label( 'theme', 'Themes', 2 ) . '</options>' : FALSE;
-
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['user_request-export_personal_data'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show data export request option if user can manage privacy options
-					current_user_can( 'manage_options' ) ? $html .= '<option value="user_request-export_personal_data" data-dashicon="download" ' . $glancing . '>' . $this->label( 'user_request-export_personal_data', '', 2 ) . '</options>' : FALSE;
-
-					// Set data-glancing attribute
-					$glancing = isset( $this->glances['user_request-remove_personal_data'] ) ? 'data-glancing="shown"' : 'data-glancing="hidden"';
-
-					// Only show data export request option if user can manage privacy options
-					current_user_can( 'manage_options' ) ? $html .= '<option value="user_request-remove_personal_data" data-dashicon="editor-removeformatting" ' . $glancing . '>' . $this->label( 'user_request-remove_personal_data', '', 2 ) . '</options>' : FALSE;
+					$html .= $this->assemble_options( $options );
 
 				$html .= '</select>';
 
@@ -1175,6 +1094,37 @@ class Glance_That {
 		}
 
 	} // end add_form
+
+	public function assemble_options( $options ) {
+
+		$html = '';
+
+		foreach ( $options as $glance => $args ) {
+
+			$glancing = $args['glancing'] ? 'data-glancing="shown"' : 'data-glancing="hidden"';
+
+			$has_cap = false;
+
+			if ( is_array( $args['capability'] ) ) {
+
+				foreach ( $args['capability'] as $cap ) {
+					if ( current_user_can( $cap ) ) {
+						$has_cap = true;
+						break;
+					}
+				}
+
+			} else {
+				$has_cap = current_user_can( $args['capability'] );
+			}
+
+			$has_cap ? $html .= '<option value="' . $glance . '" data-dashicon="' . $this->get_icon_code( $args['icon'][0], $args['icon'][1] ) . '" ' . $glancing . '>' . $args['label'] . '</options>' : FALSE;
+
+		}
+
+		return $html;
+
+	}
 
 	/**
 	 * Remove post types from option list
@@ -1364,117 +1314,40 @@ class Glance_That {
 	} // end show_notices
 
 	/**
-	 * Assembles a form field for dashicon selection.
-	 */
-	public function get_dashicon_field( $id = 'dashicon', $default = 'marker', $options = array() ) {
-
-		$dashicons = $this->get_dashicons();
-
-		// Allow users to filter available iconset
-		$options = apply_filters( $id . '_selection', $options );
-
-		// if dashicon set has been provided by user, replace the default dashicon set
-		if ( ! empty( $options ) ) {
-
-			// initialize limited icon array
-			$limited_icons = array();
-
-			foreach ( $dashicons as $category => $group ) {
-				// Loop through all available dashicons
-				foreach ( $group as $code => $icon ) {
-
-					// Loop through user provided iconset
-					foreach ( $options as $option ) {
-
-						// If dashicon is in set, add it to the limited icon array
-						$option == $dashicons[ $category ][ $code ] ? $limited_icons[ $category ][ $code ] = $dashicons[ $category ][ $code ] : FALSE;
-
-					}
-
-				}
-			}
-
-			// Reset the dashicons that will be used
-			$dashicons = $limited_icons;
-
-		}
-
-		// Add registered post type dashicons, if defined
-		$post_types = get_post_types( array(), 'objects' );
-
-		// Loop through registered post types
-		foreach ( $post_types as $post_type => $data ) {
-
-			// If dashicon isset
-			if ( ! is_null( $data->menu_icon ) ) {
-
-				// If not included in options array, add it
-				! in_array( str_replace( 'dashicons-', '', $data->menu_icon ), $options ) ? $options[] = str_replace( 'dashicons-', '', $data->menu_icon ) : FALSE;
-
-			}
-
-		}
-
-		// Set the default icon code from default icon name
-		foreach ( $dashicons as $category => $group ) {
-			foreach ( $group as $code => $icon ) {
-				if ( $default == $icon ) {
-					$default_code = $code;
-					break;
-				}
-			}
-		}
-
-		// Add styling for iconset
-		$html = '<style type="text/css">
-			.dashicon{display:inline-block;}
-			.dashicon:before{
-				font: normal 20px/1 \'dashicons\';
-				padding: 6px;
-				left: -1px;
-				position: relative;
-				vertical-align: top;
-				-webkit-font-smoothing: antialiased;
-				-moz-osx-font-smoothing: grayscale;
-				text-decoration: none !important;}
-			#iconlist{
-				display:none;
-				position:absolute;
-				padding:12px 10px;
-				margin:5px 15px 0 0;
-				z-index:999;
-			}
-			</style>';
-
-		// Set the visible icon according to default icon
-		$html .= '<div id="visible-icon" alt="' . esc_attr( $default_code ) . '" class="dashicon dashicons-' . esc_attr( $default ) . ' dashicons-picker"></div>';
-
-		// Set the hidden form field according to provided id and default icon
-		$html .= '<input id="' . esc_attr( $id ) . '" name="' . esc_attr( $id ) . '" type="hidden" data-dashicon="selected" value="' . esc_attr( $default_code ) . '" />';
-
-		// Container div for iconset
-		$html .= '<div id="iconlist" class="postbox">';
-
-			// Show available icons (selection currently handled by external jquery)
-			foreach ( $dashicons as $category => $group ) {
-				foreach ( $group as $code => $icon ) {
-					$html .= '<div alt="' . $code . '" class="dashicon dashicons-' . $icon . ' dashicon-option" data-dashicon="' . $icon . '" style="padding-top:6px;"></div>';
-				}
-			}
-
-		$html .= '</div>';
-
-		return $html;
-
-	} // end get_dashicon_field
-
-	/**
 	 * Get the categorized array of dashicons.
 	 */
 	public function get_dashicons() {
 
+		// Allow users to filter available iconset
+		$options = apply_filters( 'dashicon_selection', array() );
+
+		// if dashicon set has been provided by user, replace the default dashicon set
+		if ( ! empty( $options ) ) {
+
+			$dashicons = array();
+
+			foreach ( $options as $title ) {
+				$code = $this->get_icon_code( $title );
+				$dashicons[ $code ] = $title;
+			}
+
+			return $dashicons;
+
+		} else {
+
+			return $this->icons['dashicons'];
+
+		}
+
+	} // end get_dashicons
+
+	/**
+	 * Get the icons.
+	 */
+	public function get_icons() {
+
 		return array(
-			'Admin Menu' => array(
+			'dashicons' => array(
 				'f333' => 'menu',
 				'f228' => 'menu-alt',
 				'f329' => 'menu-alt2',
@@ -1502,16 +1375,12 @@ class Glance_That {
 				'f536' => 'filter',
 				'f540' => 'admin-customizer',
 				'f541' => 'admin-multisite',
-			),
-			'Welcome Screen' => array(
 				'f119' => 'welcome-write-blog',
 				'f133' => 'welcome-add-page',
 				'f115' => 'welcome-view-site',
 				'f116' => 'welcome-widgets-menus',
 				'f117' => 'welcome-comments',
 				'f118' => 'welcome-learn-more',
-			),
-			'Post Formats' => array(
 				'f123' => 'format-aside',
 				'f128' => 'format-image',
 				'f161' => 'format-gallery',
@@ -1527,8 +1396,6 @@ class Glance_That {
 				'f234' => 'video-alt',
 				'f235' => 'video-alt2',
 				'f236' => 'video-alt3',
-			),
-			'Media' => array(
 				'f501' => 'media-archive',
 				'f500' => 'media-audio',
 				'f499' => 'media-code',
@@ -1550,8 +1417,6 @@ class Glance_That {
 				'f521' => 'controls-volumeon',
 				'f520' => 'controls-volumeoff',
 				'f121' => 'text-page',
-			),
-			'Image Editing' => array(
 				'f165' => 'image-crop',
 				'f531' => 'image-rotate',
 				'f166' => 'image-rotate-left',
@@ -1561,8 +1426,6 @@ class Glance_That {
 				'f533' => 'image-filter',
 				'f171' => 'undo',
 				'f172' => 'redo',
-			),
-			'TinyMCE' => array(
 				'f200' => 'editor-bold',
 				'f201' => 'editor-italic',
 				'f203' => 'editor-ul',
@@ -1596,8 +1459,6 @@ class Glance_That {
 				'f475' => 'editor-code',
 				'f476' => 'editor-paragraph',
 				'f535' => 'editor-table',
-			),
-			'Posts Screen' => array(
 				'f135' => 'align-left',
 				'f136' => 'align-right',
 				'f134' => 'align-center',
@@ -1612,8 +1473,6 @@ class Glance_That {
 				'f464' => 'edit',
 				'f182' => 'trash',
 				'f537' => 'sticky',
-			),
-			'Sorting' => array(
 				'f504' => 'external',
 				'f142' => 'arrow-up',
 				'f140' => 'arrow-down',
@@ -1634,8 +1493,6 @@ class Glance_That {
 				'f164' => 'exerpt-view',
 				'f509' => 'grid-view',
 				'f545' => 'move',
-			),
-			'Social' => array(
 				'f237' => 'share',
 				'f240' => 'share-alt',
 				'f242' => 'share-alt2',
@@ -1649,8 +1506,6 @@ class Glance_That {
 				'f12d' => 'instagram',
 				'f462' => 'googleplus',
 				'f325' => 'networking',
-			),
-			'WordPress' => array(
 				'f120' => 'wordpress',
 				'f324' => 'wordpress-alt',
 				'f308' => 'hammer',
@@ -1668,11 +1523,9 @@ class Glance_That {
 				'f10d' => 'tide',
 				'f124' => 'rest-api',
 				'f13a' => 'code-standards',
-			),
-			'Buddicons' => array(
 				'f452' => 'buddicons-activity',
 				'f12b' => 'buddicons-bbpress-logo',
-				'f448' => 'buddicons-buddpress-logo',
+				'f448' => 'buddicons-buddypress-logo',
 				'f453' => 'buddicons-community',
 				'f449' => 'buddicons-forums',
 				'f454' => 'buddicons-friends',
@@ -1681,8 +1534,6 @@ class Glance_That {
 				'f451' => 'buddicons-replies',
 				'f450' => 'buddicons-topics',
 				'f455' => 'buddicons-tracking',
-			),
-			'Products' => array(
 				'f157' => 'pressthis',
 				'f463' => 'update',
 				'f113' => 'update-alt',
@@ -1692,17 +1543,11 @@ class Glance_That {
 				'f175' => 'feedback',
 				'f176' => 'cloud',
 				'f326' => 'translation',
-			),
-			'Taxonomies' => array(
 				'f323' => 'tag',
 				'f318' => 'category',
-			),
-			'Widgets' => array(
 				'f480' => 'archive',
 				'f479' => 'tagcloud',
 				'f478' => 'text',
-			),
-			'Notifications' => array(
 				'f147' => 'yes',
 				'f12a' => 'yes-alt',
 				'f158' => 'no',
@@ -1717,8 +1562,6 @@ class Glance_That {
 				'f154' => 'star-empty',
 				'f227' => 'flag',
 				'f534' => 'warning',
-			),
-			'Miscellaneous' => array(
 				'f230' => 'location',
 				'f231' => 'location-alt',
 				'f178' => 'vault',
@@ -1772,7 +1615,7 @@ class Glance_That {
 			)
 		);
 
-	} // end get_dashicons
+	} // end get_icons
 
 	/**
 	 * Process any responses to the displayed notices.
@@ -1983,7 +1826,7 @@ class Glance_That {
 
 				if ( false !== $icon && '' != $icon ) {
 
-					$html .= '#dashboard_right_now div.gt-status a.gt-' . $status . ':before { content: \'\\' . $this->get_dashicon_code( $icon ) . '\'; }';
+					$html .= '#dashboard_right_now div.gt-status a.gt-' . $status . ':before { content: \'\\' . $this->get_dashicon_code( str_replace( 'dashicons-', '', $icon ) ) . '\'; }';
 
 				}
 
@@ -2000,18 +1843,21 @@ class Glance_That {
 	/**
 	 * Retrieve dashicon character code from dashicon name
 	 */
-	public function get_dashicon_code( $dashicon ) {
+	public function get_icon_code( $icon, $family = 'dashicons' ) {
 
-		$dashicons = $this->get_dashicons();
+		if ( $family != 'custom' ) {
 
-		foreach ( $dashicons as $category => $group ) {
-			foreach ( $group as $code => $icon ) {
-				$icon = 'dashicons-' . $icon;
-				if ( $dashicon == $icon ) {
+			foreach ( $this->icons[ $family ] as $code => $title ) {
+				if ( $icon == $title ) {
 					return $code;
 					break;
 				}
 			}
+
+		} else {
+
+			return $icon;
+
 		}
 
 	} // end get_dashicon_code

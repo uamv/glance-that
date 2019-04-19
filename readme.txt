@@ -106,6 +106,7 @@ Silence is golden.
 * Support multisite sites
 * Add paused plugins & themes while in recovery mode
 * Add new dashicons from WP 5.2
+* Add new searchable icon picker
 
 = 4.3 =
 * Add reusable block post type
@@ -256,6 +257,7 @@ Silence is golden.
 * Supports multisite sites
 * Adds paused plugins & themes while in recovery mode
 * Adds new dashicons from WP 5.2
+* Adds new searchable icon picker
 
 = 4.3 =
 * Adds reusable block post type
