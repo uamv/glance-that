@@ -3,6 +3,7 @@
 Contributors: UaMV
 Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
+Requires PHP: 5.6
 Requires at least: 3.1
 Tested up to: 5.2
 Stable tag: 4.4
