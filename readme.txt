@@ -113,6 +113,7 @@ Silence is golden.
 * Add `gt_show_settings` filter
 * Ability to toggle visibility of WP info
 * Improved styling
+* Include visibility when sending settings to other users
 
 = 4.3 =
 * Add reusable block post type
@@ -268,6 +269,7 @@ Silence is golden.
 * Adds `gt_show_settings` filter
 * Ability to toggle visibility of WP info
 * Improves styling
+* Includes visibility when sending settings to other users
 
 = 4.3 =
 * Adds reusable block post type

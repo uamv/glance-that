@@ -93,6 +93,20 @@ class Glance_That {
 	protected $glances_indexed;
 
 	/**
+	 * status_visibility.
+	 *
+	 * @var      array
+	 */
+	protected $status_visibility;
+
+	/**
+	 * info_visibility.
+	 *
+	 * @var      array
+	 */
+	protected $info_visibility;
+
+	/**
 	 * icons.
 	 *
 	 * @var      array
@@ -147,6 +161,8 @@ class Glance_That {
 
 		// Process the form
 		add_action( 'init', array( $this, 'get_users_glances' ) );
+		add_action( 'init', array( $this, 'get_user_status_visibility' ) );
+		add_action( 'init', array( $this, 'get_user_info_visibility' ) );
 
 		// Load the administrative Stylesheets and JavaScript
 		add_action( 'admin_enqueue_scripts', array( $this, 'add_stylesheets_and_javascript' ) );
@@ -300,13 +316,13 @@ class Glance_That {
 
 		if ( $this->options['show_settings'] ) {
 
-			$status_visibility_action = $this->get_user_status_visibility() ? 'hide' : 'show';
-			$status_visibility_style = $this->get_user_status_visibility() ? 'style="display:none;"' : '';
-			$status_hidden_style = ! $this->get_user_status_visibility() ? 'style="display:none;"' : '';
+			$status_visibility_action = $this->status_visibility == 'visible' ? 'hide' : 'show';
+			$status_visibility_style = $this->status_visibility == 'visible' ? 'style="display:none;"' : '';
+			$status_hidden_style = $this->status_visibility != 'visible' ? 'style="display:none;"' : '';
 
-			$info_visibility_action = $this->get_user_info_visibility() ? 'hide' : 'show';
-			$info_visibility_style = $this->get_user_info_visibility() ? 'style="display:none;"' : '';
-			$info_hidden_style = ! $this->get_user_info_visibility() ? 'style="display:none;"' : '';
+			$info_visibility_action = $this->info_visibility == 'visible' ? 'hide' : 'show';
+			$info_visibility_style = $this->info_visibility == 'visible' ? 'style="display:none;"' : '';
+			$info_hidden_style = $this->info_visibility != 'visible' ? 'style="display:none;"' : '';
 
 			$buttons = '<div id="gt-settings-wrapper">';
 
@@ -323,7 +339,7 @@ class Glance_That {
 			}
 
 			$buttons .='<button id="gt-toggle-info" type="button" class="button-link gt-settings" data-action="' . $info_visibility_action . '"><span class="dashicons dashicons-wordpress" ' . $info_visibility_style . ' title="Click to Reveal WP Info"></span><span class="dashicons dashicons-wordpress-alt" ' . $info_hidden_style . ' title="Click to Hide WP Info"></span></button>';
-			if ( $this->get_user_info_visibility() ) { ?>
+			if ( $this->info_visibility != 'visible' ) { ?>
 				<style> #wp-version-message, #wp-version-message + p { display: none; } </style>
 			<?php }
 
@@ -463,7 +479,7 @@ class Glance_That {
 		}
 
 		$this->get_users_glances();
-		$status_visibility = $this->get_user_status_visibility() ? '' : ' style="display: none;"';
+		$status_visibility = $this->status_visibility == 'visible' ? '' : ' style="display: none;"';
 
 		// If not empty, add items
 		if ( '' != $this->glances_indexed ) {
@@ -1670,19 +1686,29 @@ class Glance_That {
 		global $current_user;
 		wp_get_current_user();
 
-		$status_visibility = get_user_meta( $current_user->ID, 'glance_that_status_visibility', true );
+		$this->status_visibility = get_user_meta( $current_user->ID, 'glance_that_status_visibility', true );
 
 		// If user has no glances set
-		if ( empty( $status_visibility ) ) {
+		if ( empty( $this->status_visibility ) ) {
+
+			if ( get_option( 'glance_that_status_visibility_default' ) === false ) {
+
+				$this->status_visibility = 'visible';
+
+			} else {
+
+				$this->status_visibility = get_option( 'glance_that_status_visibility_default' );
+
+			}
 
 			// Update the option
-			update_user_meta( $current_user->ID, 'glance_that_status_visibility', 'visible' );
-
-			$status_visibility = true;
+			update_user_meta( $current_user->ID, 'glance_that_status_visibility', $this->status_visibility );
 
 		}
 
-		if ( 'visible' == $status_visibility && $this->options['show_all_status'] ) {
+		$this->status_visibility = ! isset( $this->status_visibility ) ? 'visible' : $this->status_visibility;
+
+		if ( 'visible' == $this->status_visibility && $this->options['show_all_status'] ) {
 			return true;
 		} else {
 			return false;
@@ -1698,19 +1724,30 @@ class Glance_That {
 		global $current_user;
 		wp_get_current_user();
 
-		$info_visibility = get_user_meta( $current_user->ID, 'glance_that_info_visibility', true );
+		$this->info_visibility = get_user_meta( $current_user->ID, 'glance_that_info_visibility', true );
 
 		// If user has no glances set
-		if ( empty( $info_visibility ) ) {
+		if ( empty( $this->info_visibility ) ) {
+
+			if ( get_option( 'glance_that_info_visibility_default' ) === false ) {
+
+				$this->info_visibility = 'visible';
+
+			} else {
+
+				$this->info_visibility = get_option( 'glance_that_info_visibility_default' );
+
+			}
 
 			// Update the option
-			update_user_meta( $current_user->ID, 'glance_that_info_visibility', 'visible' );
+			update_user_meta( $current_user->ID, 'glance_that_info_visibility', $this->info_visibility );
 
-			$info_visibility = true;
 
 		}
 
-		if ( 'visible' == $info_visibility ) {
+		$this->info_visibility = ! isset( $this->info_visibility ) ? 'visible' : $this->info_visibility;
+
+		if ( 'visible' == $this->info_visibility ) {
 			return true;
 		} else {
 			return false;
@@ -1782,8 +1819,8 @@ class Glance_That {
 
 		// Set default glances
 		update_option( 'glance_that_default', $glances );
-		update_option( 'glance_that_status_visibility', $status_visibility );
-		update_option( 'glance_that_info_visibility', $info_visibility );
+		update_option( 'glance_that_status_visibility_default', $status_visibility );
+		update_option( 'glance_that_info_visibility_default', $info_visibility );
 
 		if ( 'all' == $action ) {
 
@@ -1793,6 +1830,8 @@ class Glance_That {
 
 				// Update the option
 				update_user_meta( $user->ID, 'glance_that', $glances );
+				update_user_meta( $user->ID, 'glance_that_status_visibility', $status_visibility );
+				update_user_meta( $user->ID, 'glance_that_info_visibility', $info_visibility );
 
 			}
 
