@@ -1968,20 +1968,27 @@ class Glance_That {
 			// Add styling for iconset
 			$html = '<style type="text/css">';
 
+			$pst_default = get_option( 'bb-pst-default' );
+			$pst_custom = get_option( 'bb-pst-custom' );
+
 			$post_state_tags_options = array(
-				'future'  => get_option( 'bb-pst-color-future-icon' ),
-				'draft'   => get_option( 'bb-pst-color-draft-icon' ),
-				'pending' => get_option( 'bb-pst-color-pending-icon' ),
-				'private' => get_option( 'bb-pst-color-private-icon' ),
-				'trash'   => get_option( 'bb-pst-color-trash-icon' ),
-				'archive' => get_option( 'bb-pst-color-archive-icon' )
+				'publish' => $pst_default['bb-pst-publish-icon'],
+				'future'  => $pst_default['bb-pst-future-icon'],
+				'draft'   => $pst_default['bb-pst-draft-icon'],
+				'pending' => $pst_default['bb-pst-pending-icon'],
+				'private' => $pst_default['bb-pst-private-icon'],
+				'trash'   => $pst_default['bb-pst-trash-icon'],
 			);
+
+			if ( isset( $pst_custom['bb-pst-archive-icon'] ) ) {
+				$post_state_tags_options['archive'] = $pst_custom['bb-pst-archive-icon'];
+			}
 
 			foreach ( $post_state_tags_options as $status => $icon ) {
 
 				if ( false !== $icon && '' != $icon ) {
 
-					$html .= '#dashboard_right_now div.gt-status a.gt-' . $status . ':before { content: \'\\' . $this->get_dashicon_code( str_replace( 'dashicons-', '', $icon ) ) . '\'; }';
+					$html .= '#dashboard_right_now div.gt-status a.gt-' . $status . ':before { content: \'\\' . $this->get_icon_code( str_replace( 'dashicons-', '', $icon ) ) . '\'; }';
 
 				}
 
