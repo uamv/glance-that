@@ -879,7 +879,7 @@ class Glance_That {
 
 							default:
 								if ( post_type_exists( $item ) ) {
-									$num_posts = wp_count_posts( $item );d($num_posts);
+									$num_posts = wp_count_posts( $item );
 									if ( $num_posts && ( $num_posts->publish || $this->options['show_zero_count'] ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 										$text = _n( '%s ' . $this->label( $item, get_post_type_object( $item )->labels->singular_name, $num_posts->publish ), '%s ' . $this->label( $item, get_post_type_object( $item )->labels->name, $num_posts->publish ), $num_posts->publish );
 
