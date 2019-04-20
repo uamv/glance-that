@@ -12,7 +12,7 @@ Adds content control to At a Glance on the Dashboard
 
 == Description ==
 
-Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Users can add/remove items from At a Glance, view statuses of posts, assign custom dashicons for their display, sort the order of displayed items using drag & drop, and quick link to the Add New content screens. Display of items respects user capabilities. Administrators can apply a glance configuration site-wide to all users or to new users. Currently, the following items are supported ...
+Glance That allows users to customize the content viewable in At a Glance on the WordPress Dashboard. Add/remove items from At a Glance, view status of items, assign custom dashicons, sort the order of glanced items, and quick link to both the Add New content screens and front end post archives. Display of items respects user capabilities. Administrators can apply a glance configuration site-wide to all users or only to new users. Currently, the following items are supported ...
 
 * Custom post types
 * Revisions (admins only)
@@ -47,34 +47,21 @@ Additionally, Glance That allows you to toggle view of the number of items match
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 
-= Constants =
-
-Add the following constants to `wp-config.php` to control Glance That capabilities
-
-Restrict modification of visible glances (default: read) by adding
-
-`define( 'GT_EDIT_GLANCES', 'capability_required_to_edit' );`
-
-Restrict application of default glances (default: edit_dashboard) by adding
-
-`define( 'GT_ADMIN_GLANCES', 'capability_required_to_admin' );`
-
 = Filters =
 
-The `gt_labels` filter can be used to custom labels for glances.
+A slew of filters are available to fine tune integration with your site:
 
-`apply_filters( 'gt_labels', str $label, str $glance, int $count );`
+`gt_post_type_selection` lets you limit available glances.
 
-The `gt_option_icons` filter can be used to customize default icon for a specific glance when selected from the dropdown.
+`gt_labels` customizes glance labels.
 
-`apply_filters( 'gt_option_icons', str $icon, str $post_type );`
+`gt_option_icons` customizes default icon for a specific glance when selected from the dropdown.
 
-The `gt_view_at_a_glance` filter is used to allow users viewing of the At a Glance metabox. By default this is limited to those able to `edit_posts`.
+`gt_dashicons` limits the available icons in the icon picker
 
-`apply_filters( 'gt_view_at_a_glance', str $capability );`
+`gt_view_at_a_glance` allows users to view the At a Glance metabox. By default, WP limits to those with `edit_posts` capability.
 
-The constants defined are becoming more plentiful, so in the interest of possibly removing these in a future version, v3.0 adds corresponding filters for nearly all.
-
+The following allow you to show/hide various portions of Glance That:
 `
 gt_show_mine
 gt_show_zero_count
@@ -83,7 +70,6 @@ gt_show_all_status
 gt_show_zero_count_status
 gt_show_mustuse
 gt_show_dropins
-gt_show_all_dashicons
 gt_show_archive
 gt_show_applause
 gt_show_settings
@@ -101,6 +87,9 @@ Silence is golden.
 == Screenshots ==
 
 1. Glance That: At a Glance
+1. Settings Tray, Statuses & Management Form
+1. Recovery Mode
+1. Icon Picker
 
 == Changelog ==
 
@@ -108,7 +97,7 @@ Silence is golden.
 * Support multisite sites
 * Add paused plugins & themes while in recovery mode
 * Add new dashicons from WP 5.2
-* Add new searchable icon picker
+* Add new searchable icon picker & removed `gt_show_all_dashicons` filter
 * Remove many GLOBAL variables
 * Add `gt_show_settings` filter
 * Ability to toggle visibility of WP info
@@ -264,7 +253,7 @@ Silence is golden.
 * Supports multisite sites
 * Adds paused plugins & themes while in recovery mode
 * Adds new dashicons from WP 5.2
-* Adds new searchable icon picker
+* Adds new searchable icon picker & removes `gt_show_all_dashicons` filter
 * Removes many GLOBAL variables
 * Adds `gt_show_settings` filter
 * Ability to toggle visibility of WP info

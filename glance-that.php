@@ -146,6 +146,7 @@ class Glance_That {
 		$this->icons = $this->get_icons();
 		$this->options = array(
 			'show_zero_count' => apply_filters( 'gt_show_zero_count', true ),
+			'show_mine' => apply_filters( 'gt_show_mine', false ),
 			'show_zero_count_status' => apply_filters( 'gt_show_zero_count_status', false ),
 			'show_add_new' => apply_filters( 'gt_show_add_new', true ),
 			'show_all_status' => apply_filters( 'gt_show_all_status', true ),
@@ -343,7 +344,7 @@ class Glance_That {
 				<style> #wp-version-message, #wp-version-message + p { display: none; } </style>
 			<?php }
 
-			if ( $this->adminable && apply_filters( 'gt_show_applause', TRUE ) && apply_filters( 'gt_show_notices', TRUE ) ) {
+			if ( $this->adminable && apply_filters( 'gt_show_applause', TRUE ) ) {
 				$buttons .= '<button id="gt-show-applause" type="button" class="button-link gt-applause" data-action="show"><span class="dashicons dashicons-awards" title="Click to Reveal Applause Actions"></span></button>';
 				$buttons .= '<div id="gt-applause-wrapper">';
 				$buttons .= '<a href="https://typewheel.xyz/give/?ref=Glance%20That" target="_blank" class="gt-applause"><icon title="Applaud the Author (Donation)" class="dashicons dashicons-heart"></icon></a>';
@@ -696,10 +697,16 @@ class Glance_That {
 
 								if ( apply_filters( 'show_advanced_plugins', true, 'mustuse' ) ) {
 									$plugin_stats['mustuse'] = count( get_mu_plugins() );
+								} else {
+									$plugin_stats['mustuse'] = NULL;
+									add_filter( 'gt_show_mustuse', '__return_false' );
 								}
 
 								if ( apply_filters( 'show_advanced_plugins', true, 'dropins' ) ) {
 									$plugin_stats['dropins'] = count( get_dropins() );
+								}  else {
+									$plugin_stats['dropins'] = NULL;
+									add_filter( 'gt_show_dropins', '__return_false' );
 								}
 
 								$plugin_stats['recent'] = count( get_site_option( 'recently_activated', array() ) );
@@ -872,7 +879,7 @@ class Glance_That {
 
 							default:
 								if ( post_type_exists( $item ) ) {
-									$num_posts = wp_count_posts( $item );
+									$num_posts = wp_count_posts( $item );d($num_posts);
 									if ( $num_posts && ( $num_posts->publish || $this->options['show_zero_count'] ) && current_user_can( get_post_type_object( $item )->cap->edit_posts ) ) {
 										$text = _n( '%s ' . $this->label( $item, get_post_type_object( $item )->labels->singular_name, $num_posts->publish ), '%s ' . $this->label( $item, get_post_type_object( $item )->labels->name, $num_posts->publish ), $num_posts->publish );
 
@@ -908,7 +915,7 @@ class Glance_That {
 											", $item, $author ) ) );
 
 
-											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $user_num_posts > 0 || $this->options['show_zero_count_status'] ) && apply_filters( 'gt_show_mine', false ) ) {
+											if ( current_user_can( get_post_type_object( $item )->cap->edit_posts ) && ( $user_num_posts > 0 || $this->options['show_zero_count_status'] ) && $this->options['show_mine'] ) {
 												$statuses .= '<div class="gt-status"><a href="edit.php?post_type=' . $item . '&author=' . $author . '" class="gt-mine" title="Mine">' . $user_num_posts . '</a></div>';
 											}
 											if ( current_user_can( get_post_type_object( $item )->cap->publish_posts ) && ( $num_posts->future > 0 || $this->options['show_zero_count_status'] ) ) {
@@ -1380,7 +1387,7 @@ class Glance_That {
 	public function get_dashicons() {
 
 		// Allow users to filter available iconset
-		$options = apply_filters( 'dashicon_selection', array() );
+		$options = apply_filters( 'gt_dashicons', array() );
 
 		// if dashicon set has been provided by user, replace the default dashicon set
 		if ( ! empty( $options ) ) {
