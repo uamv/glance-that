@@ -21,6 +21,9 @@ Glance That allows users to customize the content viewable in At a Glance on the
 * Plugins
 * Themes
 * Users
+* Site Health Status
+* Data Export Requests
+* Data Removal Requests
 * Gravity Forms
 * Gravity View
 * Formidable Forms
@@ -45,6 +48,7 @@ Additionally, Glance That allows you to toggle view of the number of items match
 * Updates (Plugins & Themes)
 * Favorites, Recently Active, Must-Use, Drop-Ins (Plugins)
 * Paused Plugins & Themes (when in recovery mode)
+* Good Items, Recommended Improvements, Critical Issues (Site Health)
 
 If you've defined custom post state icons via [Post State Tags](https://wordpress.org/plugins/post-state-tags/), then Glance that will inherit these.
 

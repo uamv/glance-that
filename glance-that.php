@@ -541,7 +541,7 @@ class Glance_That {
 									}
 
 									ob_start();
-										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="site-health.php" class="glance-that unordered" title="Site Health (as of ' . date( get_option('date_format'), $site_status_date ) . ')">%2$s</a>%3$s</div>%4$s</div>', $item, $text, $site_info, $statuses );
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="site-health.php" class="glance-that unordered" title="Site Health (last checked ' . date( get_option('date_format'), $site_status_date ) . ')">%2$s</a>%3$s</div>%4$s</div>', $item, $text, $site_info, $statuses );
 									$elements[] = ob_get_clean();
 								} else if ( ! $site_status_result && current_user_can( 'install_plugins' ) ){
 									$text = 'Site Health (Never Checked)';
@@ -1123,7 +1123,7 @@ class Glance_That {
 							'label'      => $this->label( 'user_request-remove_personal_data', '', 2 ),
 						);
 					}
-					if ( version_compare( $wp_version, '5.2', '>=' ) ) {
+					if ( version_compare( $wp_version, '5.2-RC1', '>=' ) ) {
 						$options['health-check-site-status'] = array(
 							'glancing'   => isset( $this->glances['health-check-site-status'] ),
 							'capability' => 'install_plugins',
