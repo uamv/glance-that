@@ -6,7 +6,7 @@ Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires PHP: 5.6
 Requires at least: 3.1
 Tested up to: 5.2
-Stable tag: 4.4
+Stable tag: 4.5
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -93,6 +93,11 @@ Silence is golden.
 1. Icon Picker
 
 == Changelog ==
+
+= 4.5 =
+* Fix identification of user_request-remove_personal_data
+* Add glance for site health status in WP 5.2
+* Add WP version check on some glances
 
 = 4.4 =
 * Support multisite sites
@@ -248,102 +253,3 @@ Silence is golden.
 
 = 1.0 =
 * Initial Release
-
-== Upgrade Notice ==
-
-= 4.4 =
-* Supports multisite sites
-* Adds paused plugins & themes while in recovery mode
-* Adds new dashicons from WP 5.2
-* Adds new searchable icon picker & removes `gt_show_all_dashicons` filter
-* Removes many GLOBAL variables
-* Adds `gt_show_settings` filter
-* Ability to toggle visibility of WP info
-* Improves styling
-* Includes visibility when sending settings to other users
-* Fix Post State Tag integration
-
-= 4.3 =
-* Adds reusable block post type
-
-= 4.2 =
-* Allows other capabilities to view At a Glances
-* Switches `gt_show_mine` to default `false`.
-
-= 4.1 =
-* Adds link to front-end post archive if it exists
-* Adds `gt_show_archive` filter w/ default true
-* Adds some missing notices
-* Adds icon support for WP Show Posts
-* Supports Ninja Forms
-
-= 4.1 =
-* Add link to front-end post archive if it exists
-* Add `gt_show_archive` filter w/ default true
-* Add some missing notices
-* Add icon support for WP Show Posts
-
-= 4.0 =
-* Adds `gt_option_icons` filter
-* Filters unnecessary types from ACF, WP
-* Adds WP user_request CPT w/ request types (export & erasure)
-* Supports GravityView icon
-* Adds inline applause actions & remove admin notices
-
-= 3.8 =
-* Updating Typewheel Notice library
-
-= 3.7 =
-* Supports Sliced Invoices & Estimates
-* Supports ProjectHuddle
-* Adds activation notice and tutorial
-* Adds delayed notices for review and donation
-
-= 3.6 =
-* Fix: Allow sorting on last glance item
-* Readme: Removes documentation of some constants and filters
-
-= 3.5 =
-* Fixes bug preventing access to Glance That settings in some browsers.
-
-= 3.4 =
-* Allow application of current glance configuration to all existing and new users.
-* Change UI of adding/removing glances
-* Few small bug fixes
-
-= 3.3 =
-* Fixes layout bug when no posts or no pages.
-* Adds status for available theme updates
-
-= 3.2 =
-* Modifies label filters and adds glancing of themes.
-
-= 3.0 =
-* Adds 'Add New' quick links and filtering of constants
-
-= 2.8 =
-* Glance That now utilizes ajax for easier editing of glances. There is also support for a few additional statuses and some minor style enhancements.
-
-= 2.7 =
-* Supports Formidable Forms. Note that v3.0 may remove support for custom icon selection.
-
-= 2.6 =
-* Supports `archive` post status & integrates with Post State Tags icon selection
-
-= 2.5 =
-* Supports new dashicons and adds constant to display all dashicons by default
-
-= 2.4 =
-* Supports new dashicons in WP 4.3
-
-= 2.3 =
-* You can now restrict users without a specific capability from editing their visible glances.
-
-= 2.2 =
-* Supporting new dashicons and tagging WP 4.1 compatibility
-
-= 1.8 =
-* New features include sorting and control of native items. Please, note that native items (posts, pages, comments) will need to be manually added after this update.
-
-= 1.4 =
-* Adds new features

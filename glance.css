@@ -138,11 +138,13 @@ a.gt-applause:hover {
 }
 
 #dashboard_right_now li a.gt-add-new:before,
-#dashboard_right_now li a.gt-view-archive:before {
+#dashboard_right_now li a.gt-view-archive:before,
+#dashboard_right_now li a.gt-view-info:before {
 	content: '';
 }
 .gt-add-new,
-.gt-view-archive {
+.gt-view-archive,
+.gt-view-info {
 	opacity: 0;
 	position: relative;
 	top: 2px;
@@ -151,16 +153,22 @@ a.gt-applause:hover {
 	top: 3px;
 	margin-right: -3px;
 }
+.gt-view-info {
+	top: 1px;
+}
 #dashboard_right_now li a.gt-add-new span:before,
-#dashboard_right_now li a.gt-view-archive span:before {
+#dashboard_right_now li a.gt-view-archive span:before,
+#dashboard_right_now li a.gt-view-info span:before {
 	font-size: 16px;
 }
 .gt-item:hover .gt-add-new,
-.gt-item:hover .gt-view-archive {
+.gt-item:hover .gt-view-archive,
+.gt-item:hover .gt-view-info {
 	opacity: .42;
 }
 .gt-item:hover .gt-add-new:hover,
-.gt-item:hover .gt-view-archive:hover {
+.gt-item:hover .gt-view-archive:hover,
+.gt-item:hover .gt-view-info:hover {
 	opacity: 1;
 }
 
@@ -211,8 +219,9 @@ a.gt-applause:hover {
 #dashboard_right_now div.gt-status a.gt-failed:before {
 	content: '\f534';
 }
-#dashboard_right_now div.gt-status a.gt-completed:before {
-	content: '\f147';
+#dashboard_right_now div.gt-status a.gt-completed:before,
+#dashboard_right_now div.gt-status a.gt-good:before {
+	content: '\f12a';
 }
 #dashboard_right_now div.gt-status a.gt-draft:before {
 	content: '\f339';
@@ -254,14 +263,17 @@ a.gt-applause:hover {
 #dashboard_right_now div.gt-status a.gt-mustuse:before {
 	content: '\f468';
 }
-#dashboard_right_now div.gt-status a.gt-dropins:before {
+#dashboard_right_now div.gt-status a.gt-dropins:before,
+#dashboard_right_now div.gt-status a.gt-recommended:before {
 	content: '\f546';
 }
-#dashboard_right_now div.gt-status a.gt-paused {
+#dashboard_right_now div.gt-status a.gt-paused,
+#dashboard_right_now div.gt-status a.gt-critical {
 	color: #db3232;
 	font-weight: bold;
 }
-#dashboard_right_now div.gt-status a.gt-paused:before {
+#dashboard_right_now div.gt-status a.gt-paused:before,
+#dashboard_right_now div.gt-status a.gt-critical:before {
 	content: '\f534';
 	color: #db3232;
 }

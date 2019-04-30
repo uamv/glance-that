@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.4
+ * Version: 4.5
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.4
+ * @version 4.5
  * @author uamv
  * @copyright Copyright (c) 2013-2019, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.4' );
+define( 'GT_VERSION', '4.5' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -210,6 +210,12 @@ class Glance_That {
 
 		// Modify capability for viewing At a Glance
 		add_action( 'wp_dashboard_setup', array( $this, 'at_a_glance' ) );
+
+		// Record date & results of last site health check
+		add_action( 'set_transient_health-check-site-status-result', function( $value, $expiration, $transient ) {
+			update_option( 'gt_health-check-site-status-result', $value );
+			update_option( 'gt_health-check-site-status-date', time() );
+		}, 10, 3 );
 
 	} // end constructor
 
@@ -509,6 +515,42 @@ class Glance_That {
 						$options = $data['data'];
 
 						switch ( $item ) {
+							case 'health-check-site-status':
+								$site_status_result = json_decode( get_option( 'gt_health-check-site-status-result' ), true );
+								$site_status_date = get_option( 'gt_health-check-site-status-date' );
+
+								if ( $site_status_result && current_user_can( 'install_plugins' ) ) {
+									$tests_total = intval( $site_status_result['good'] ) + intval( $site_status_result['recommended'] ) + intval( $site_status_result['critical'] ) * 1.5;
+									$tests_failed = intval( $site_status_result['recommended'] ) + intval( $site_status_result['critical'] ) * 1.5;
+									$tests_result = 100 - ceil( ( $tests_failed / $tests_total ) * 100 );
+
+									$text = $tests_result . '% Site Health';
+
+									$site_info = '<a href="site-health.php?tab=debug" class="gt-view-info"><span class="dashicons dashicons-info" title="View Site Info"></span></a>';
+
+									if ( $this->options['show_all_status'] ) {
+										$critical = intval( $site_status_result['critical'] ) > 0 ? 'gt-critical gt-moderate' : '';
+										$recommended = intval( $site_status_result['recommended'] ) > 0 ? 'gt-moderate' : '';
+										$statuses = '<div id="gt-statuses-health-check-site-status" class="gt-statuses"' . $status_visibility . '>';
+										$statuses .= ( intval( $site_status_result['good'] ) > 0 || $this->options['show_zero_count_status'] ) ? '<div class="gt-status"><a href="site-health.php" class="gt-good" title="Good">' . $site_status_result['good'] . '</a></div>' : FALSE;
+										$statuses .= ( intval( $site_status_result['recommended'] ) > 0 || $this->options['show_zero_count_status'] ) ? '<div class="gt-status ' . $recommended . '"><a href="site-health.php" class="gt-recommended" title="Recommended">' . $site_status_result['recommended'] . '</a></div>' : FALSE;
+										$statuses .= ( intval( $site_status_result['critical'] ) > 0 || $this->options['show_zero_count_status'] ) ? '<div class="gt-status ' . $critical . '"><a href="site-health.php" class="gt-critical" title="Critical">' . $site_status_result['critical'] . '</a></div>' : FALSE;
+										$statuses .= '</div>';
+									} else {
+										$statuses = '';
+									}
+
+									ob_start();
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="site-health.php" class="glance-that unordered" title="Site Health (as of ' . date( get_option('date_format'), $site_status_date ) . ')">%2$s</a>%3$s</div>%4$s</div>', $item, $text, $site_info, $statuses );
+									$elements[] = ob_get_clean();
+								} else if ( ! $site_status_result && current_user_can( 'install_plugins' ) ){
+									$text = 'Site Health (Never Checked)';
+									ob_start();
+										printf( '<div class="' . $classes . '" data-order="gt_' . ( $key + 1 ) . '"><style type="text/css">#dashboard_right_now li a[data-gt="%1$s"]:before{content:\'\\' . $options['icon'] . '\';}</style><div class="gt-published"><a data-gt="%1$s" href="site-health.php" class="glance-that unordered" title="Site Health (Never Checked)">%2$s</a></div></div>', $item, $text );
+									$elements[] = ob_get_clean();
+								}
+								break;
+
 							case 'theme':
 								$themes = get_themes();
 
@@ -970,6 +1012,9 @@ class Glance_That {
 			case 'user_request-remove_personal_data':
 				$label = ( $count > 1 || $count == 0 )  ? 'Data Erasure Requests' : 'Data Erasure Request';
 				break;
+			case 'health-check-site-status':
+				$label = ( $count > 1 || $count == 0 )  ? 'Site Health' : 'Site Health';
+				break;
 			case 'ph-website':
 				$label = ( $count > 1 || $count == 0 )  ? 'PH Sites' : 'PH Site';
 				break;
@@ -1060,19 +1105,32 @@ class Glance_That {
 							'icon'       => array( 'admin-appearance', 'dashicons' ),
 							'label'      => $this->label( 'theme', 'Themes', 2 ),
 						),
-						'user_request-export_personal_data' => array(
+					);
+
+					global $wp_version;
+
+					if ( version_compare( $wp_version, '4.9.6', '>=' ) ) {
+						$options['user_request-export_personal_data'] = array(
 							'glancing'   => isset( $this->glances['user_request-export_personal_data'] ),
 							'capability' => 'manage_options',
 							'icon'       => array( 'download', 'dashicons' ),
 							'label'      => $this->label( 'user_request-export_personal_data', '', 2 ),
-						),
-						'user_request-remove_personal_data' => array(
-							'glancing'   => isset( $this->glances['ser_request-remove_personal_data'] ),
+						);
+						$options['user_request-remove_personal_data'] = array(
+							'glancing'   => isset( $this->glances['user_request-remove_personal_data'] ),
 							'capability' => 'manage_options',
 							'icon'       => array( 'editor-removeformatting', 'dashicons' ),
 							'label'      => $this->label( 'user_request-remove_personal_data', '', 2 ),
-						)
-					);
+						);
+					}
+					if ( version_compare( $wp_version, '5.2', '>=' ) ) {
+						$options['health-check-site-status'] = array(
+							'glancing'   => isset( $this->glances['health-check-site-status'] ),
+							'capability' => 'install_plugins',
+							'icon'       => array( 'heart', 'dashicons' ),
+							'label'      => $this->label( 'health-check-site-status', '', 2 ),
+						);
+					}
 
 					foreach( $post_types as $index => $post_type ) {
 
