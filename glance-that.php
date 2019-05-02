@@ -347,7 +347,11 @@ class Glance_That {
 
 			$buttons .='<button id="gt-toggle-info" type="button" class="button-link gt-settings" data-action="' . $info_visibility_action . '"><span class="dashicons dashicons-wordpress" ' . $info_visibility_style . ' title="Click to Reveal WP Info"></span><span class="dashicons dashicons-wordpress-alt" ' . $info_hidden_style . ' title="Click to Hide WP Info"></span></button>';
 			if ( $this->info_visibility != 'visible' ) { ?>
-				<style> #wp-version-message, #wp-version-message + p { display: none; } </style>
+				<style>
+					#wp-version-message, #wp-version-message + p,
+				 	#dashboard_right_now .inside .sub > *:not(#gt-form)
+						{ display: none; }
+				</style>
 			<?php }
 
 			if ( $this->adminable && apply_filters( 'gt_show_applause', TRUE ) ) {
@@ -418,6 +422,7 @@ class Glance_That {
 								if ( response.success ) {
 
 									$('#wp-version-message, #wp-version-message + p').toggle();
+									$('#dashboard_right_now .inside .sub > *:not(#gt-form)').toggle();
 									$('#gt-toggle-info .dashicons').toggle();
 									if ( 'show' == $(this).data('action') ) {
 										$(this).data('action','hide');

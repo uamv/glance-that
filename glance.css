@@ -17,6 +17,10 @@
 #dashboard_right_now .sub {
 	padding: 0;
 }
+#dashboard_right_now .inside .sub > *:not(#gt-form) {
+	padding: 10px;
+	margin: 0;
+}
 
 #dashboard_right_now.closed #gt-settings-wrapper,
 #dashboard_right_now.closed #gt-applause-wrapper,

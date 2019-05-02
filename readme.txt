@@ -98,6 +98,9 @@ Silence is golden.
 
 == Changelog ==
 
+= 4.6 =
+* Toggle & style other items added to subsection
+
 = 4.5 =
 * Fix identification of user_request-remove_personal_data
 * Add glance for site health status in WP 5.2
