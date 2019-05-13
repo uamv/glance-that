@@ -6,7 +6,7 @@ Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires PHP: 5.6
 Requires at least: 3.1
 Tested up to: 5.2
-Stable tag: 4.5
+Stable tag: 4.6
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
