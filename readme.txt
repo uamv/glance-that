@@ -100,6 +100,7 @@ Silence is golden.
 
 = 4.6 =
 * Toggle & style other items added to subsection
+* Fix fatal error when including plugin API
 
 = 4.5 =
 * Fix identification of user_request-remove_personal_data

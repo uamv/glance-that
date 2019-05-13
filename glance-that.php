@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.5
+ * Version: 4.6
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.5
+ * @version 4.6
  * @author uamv
  * @copyright Copyright (c) 2013-2019, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.5' );
+define( 'GT_VERSION', '4.6' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -759,7 +759,7 @@ class Glance_That {
 								$plugin_stats['recent'] = count( get_site_option( 'recently_activated', array() ) );
 
 								// Get user favorites
-								include( ABSPATH . 'wp-admin/includes/plugin-install.php' );
+								include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' );
 
 								$user = get_user_option( 'wporg_favorites' );
 
