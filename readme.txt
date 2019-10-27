@@ -5,8 +5,8 @@ Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires PHP: 5.6
 Requires at least: 3.1
-Tested up to: 5.2
-Stable tag: 4.6
+Tested up to: 5.3
+Stable tag: 4.7
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -56,7 +56,7 @@ If you've defined custom post state icons via [Post State Tags](https://wordpres
 
 A slew of filters are available to fine tune integration with your site:
 
-`gt_post_type_selection` lets you limit available glances.
+`gt_glance_selection` lets you limit available glances.
 
 `gt_labels` customizes glance labels.
 
@@ -97,6 +97,10 @@ Silence is golden.
 1. Icon Picker
 
 == Changelog ==
+
+= 4.7 =
+* Add `gt_glance_selection` filter
+* Update site health to match WP 5.3 treatment
 
 = 4.6 =
 * Toggle & style other items added to subsection

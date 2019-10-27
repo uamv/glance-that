@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.6
+ * Version: 4.7
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.6
+ * @version 4.7
  * @author uamv
  * @copyright Copyright (c) 2013-2019, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.6' );
+define( 'GT_VERSION', '4.7' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -526,10 +526,10 @@ class Glance_That {
 
 								if ( $site_status_result && current_user_can( 'install_plugins' ) ) {
 									$tests_total = intval( $site_status_result['good'] ) + intval( $site_status_result['recommended'] ) + intval( $site_status_result['critical'] ) * 1.5;
-									$tests_failed = intval( $site_status_result['recommended'] ) + intval( $site_status_result['critical'] ) * 1.5;
+									$tests_failed = intval( $site_status_result['recommended'] ) * .5 + intval( $site_status_result['critical'] ) * 1.5;
 									$tests_result = 100 - ceil( ( $tests_failed / $tests_total ) * 100 );
 
-									$text = $tests_result . '% Site Health';
+									$text = ( 80 <= $tests_result && intval( $site_status_result['critical'] ) == 0 ) ? 'Good' : 'Check Me';
 
 									$site_info = '<a href="site-health.php?tab=debug" class="gt-view-info"><span class="dashicons dashicons-info" title="View Site Info"></span></a>';
 
@@ -1228,9 +1228,14 @@ class Glance_That {
 
 	public function assemble_options( $options ) {
 
+		$available = apply_filters( 'gt_glance_selection', array_keys( $options ) );
+
 		$html = '';
 
 		foreach ( $options as $glance => $args ) {
+
+			if ( ! in_array( $glance, $available, true ) )
+				continue;
 
 			$glancing = $args['glancing'] ? 'data-glancing="shown"' : 'data-glancing="hidden"';
 
@@ -1276,6 +1281,7 @@ class Glance_That {
 		unset( $post_types['frm_styles'] );
 		unset( $post_types['acf-field'] );
 		unset( $post_types['user_request'] );
+		unset( $post_types['gplp'] );
 
 		return $post_types;
 
