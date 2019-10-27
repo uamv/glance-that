@@ -1282,6 +1282,10 @@ class Glance_That {
 		unset( $post_types['acf-field'] );
 		unset( $post_types['user_request'] );
 		unset( $post_types['gplp'] );
+		unset( $post_types['project-huddle'] );
+		unset( $post_types['scheduled-action'] );
+		unset( $post_types['ph_version'] );
+
 
 		return $post_types;
 
