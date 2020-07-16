@@ -1,12 +1,12 @@
 === Glance That ===
 
-Contributors: UaMV
+Contributors: uamv
 Donate link: https://typewheel.xyz/give?ref=Glance%20That
 Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires PHP: 5.6
 Requires at least: 3.1
-Tested up to: 5.3
-Stable tag: 4.7
+Tested up to: 5.5
+Stable tag: 4.8
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -97,6 +97,10 @@ Silence is golden.
 1. Icon Picker
 
 == Changelog ==
+
+= 4.8 =
+* Fix styling w/ WP 5.5
+* Add new dashicons from WP 5.5
 
 = 4.7 =
 * Add `gt_glance_selection` filter

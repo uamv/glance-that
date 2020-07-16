@@ -3,7 +3,7 @@
  * Plugin Name: Glance That
  * Plugin URI: http://typewheel.xyz/
  * Description: Adds content control to At a Glance on the Dashboard
- * Version: 4.7
+ * Version: 4.8
  * Author: Typewheel
  * Author URI: http://typewheel.xyz
  *
@@ -17,7 +17,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  *
  * @package Glance That
- * @version 4.7
+ * @version 4.8
  * @author uamv
  * @copyright Copyright (c) 2013-2019, uamv
  * @link http://typewheel.xyz/
@@ -28,7 +28,7 @@
  * Define plugins globals.
  */
 
-define( 'GT_VERSION', '4.7' );
+define( 'GT_VERSION', '4.8' );
 define( 'GT_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'GT_DIR_URL', plugin_dir_url( __FILE__ ) );
 
@@ -70,6 +70,13 @@ class Glance_That {
 	 * @var      object
 	 */
 	protected static $instance = null;
+
+	/**
+	 * WP version.
+	 *
+	 * @var      array
+	 */
+	protected $wp_version;
 
 	/**
 	 * glances.
@@ -143,22 +150,8 @@ class Glance_That {
 	 */
 	private function __construct() {
 
-		$this->icons = $this->get_icons();
-		$this->options = array(
-			'show_zero_count' => apply_filters( 'gt_show_zero_count', true ),
-			'show_mine' => apply_filters( 'gt_show_mine', false ),
-			'show_zero_count_status' => apply_filters( 'gt_show_zero_count_status', false ),
-			'show_add_new' => apply_filters( 'gt_show_add_new', true ),
-			'show_all_status' => apply_filters( 'gt_show_all_status', true ),
-			'show_settings' => apply_filters( 'gt_show_settings', true ),
-			'show_mustuse' => apply_filters( 'gt_show_mustuse', false ),
-			'show_dropins' => apply_filters( 'gt_show_dropins', false ),
-			'show_archive' => apply_filters( 'gt_show_archive', true ),
-			'edit_glances' => apply_filters( 'gt_edit_glances', GT_EDIT_GLANCES ),
-			'admin_glances' => apply_filters( 'gt_admin_glances', GT_ADMIN_GLANCES ),
-		);
-
-		add_action( 'plugins_loaded', array( $this, 'check_user_cap' ), 20 );
+		add_action( 'init', array( $this, 'initialize_variables' ), 4 );
+		add_action( 'init', array( $this, 'check_user_cap' ), 5 );
 
 		// Process the form
 		add_action( 'init', array( $this, 'get_users_glances' ) );
@@ -238,6 +231,31 @@ class Glance_That {
 		return self::$instance;
 
 	} // end get_instance
+
+	/**
+	 * Set user capabilities for the plugin
+	 */
+	public function initialize_variables() {
+
+      global $wp_version;
+      $this->wp_version = $wp_version;
+
+      $this->icons = $this->get_icons();
+		$this->options = array(
+			'show_zero_count' => apply_filters( 'gt_show_zero_count', true ),
+			'show_mine' => apply_filters( 'gt_show_mine', false ),
+			'show_zero_count_status' => apply_filters( 'gt_show_zero_count_status', false ),
+			'show_add_new' => apply_filters( 'gt_show_add_new', true ),
+			'show_all_status' => apply_filters( 'gt_show_all_status', true ),
+			'show_settings' => apply_filters( 'gt_show_settings', true ),
+			'show_mustuse' => apply_filters( 'gt_show_mustuse', false ),
+			'show_dropins' => apply_filters( 'gt_show_dropins', false ),
+			'show_archive' => apply_filters( 'gt_show_archive', true ),
+			'edit_glances' => apply_filters( 'gt_edit_glances', GT_EDIT_GLANCES ),
+			'admin_glances' => apply_filters( 'gt_admin_glances', GT_ADMIN_GLANCES ),
+		);
+
+	} // end check_user_cap
 
 	/**
 	 * Set user capabilities for the plugin
@@ -365,14 +383,24 @@ class Glance_That {
 
 			$buttons .= '</div>';
 
+         if ( version_compare( $this->wp_version, '5.5-beta2', '>=' ) ) { ?>
+            <style>
+					#gt-applause-wrapper { float: left; }
+				</style>
+         <?php }
+
 			?>
 
 			<script type="text/javascript" language="javascript">
 				jQuery(document).ready(function($) {
 
-					$('#dashboard_right_now .handlediv').after('<button id="gt-show-settings" type="button" class="button-link gt-settings" data-action="show"><span class="dashicons dashicons-admin-settings" title="Click to Reveal Glance That Actions"></span></button>');
-
-					$('#dashboard_right_now .handlediv').after('<?php echo $buttons; ?>');
+               <?php if ( version_compare( $this->wp_version, '5.5-beta2', '<' ) ) : ?>
+   					$('#dashboard_right_now .handlediv').after('<button id="gt-show-settings" type="button" class="button-link gt-settings" data-action="show"><span class="dashicons dashicons-admin-settings" title="Click to Reveal Glance That Actions"></span></button>');
+   					$('#dashboard_right_now .handlediv').after('<?php echo $buttons; ?>');
+               <?php else : ?>
+                  $('#dashboard_right_now .handle-actions').before('<button id="gt-show-settings" type="button" class="button-link gt-settings" data-action="show"><span class="dashicons dashicons-admin-settings" title="Click to Reveal Glance That Actions"></span></button>');
+                  $('#dashboard_right_now .handle-actions').before('<?php echo $buttons; ?>');
+               <?php endif; ?>
 
 					$('#gt-show-settings').hover(
 						function() {
@@ -1286,7 +1314,6 @@ class Glance_That {
 		unset( $post_types['scheduled-action'] );
 		unset( $post_types['ph_version'] );
 
-
 		return $post_types;
 
 	} // end remove_post_type_options
@@ -1489,6 +1516,7 @@ class Glance_That {
 
 		return array(
 			'dashicons' => array(
+            // Admin Menu
 				'f333' => 'menu',
 				'f228' => 'menu-alt',
 				'f329' => 'menu-alt2',
@@ -1516,12 +1544,14 @@ class Glance_That {
 				'f536' => 'filter',
 				'f540' => 'admin-customizer',
 				'f541' => 'admin-multisite',
+            // Welcome Screen
 				'f119' => 'welcome-write-blog',
 				'f133' => 'welcome-add-page',
 				'f115' => 'welcome-view-site',
 				'f116' => 'welcome-widgets-menus',
 				'f117' => 'welcome-comments',
 				'f118' => 'welcome-learn-more',
+            // Post Formats
 				'f123' => 'format-aside',
 				'f128' => 'format-image',
 				'f161' => 'format-gallery',
@@ -1537,6 +1567,7 @@ class Glance_That {
 				'f234' => 'video-alt',
 				'f235' => 'video-alt2',
 				'f236' => 'video-alt3',
+            // Media
 				'f501' => 'media-archive',
 				'f500' => 'media-audio',
 				'f499' => 'media-code',
@@ -1558,6 +1589,7 @@ class Glance_That {
 				'f521' => 'controls-volumeon',
 				'f520' => 'controls-volumeoff',
 				'f121' => 'text-page',
+            // Image Editing
 				'f165' => 'image-crop',
 				'f531' => 'image-rotate',
 				'f166' => 'image-rotate-left',
@@ -1567,6 +1599,35 @@ class Glance_That {
 				'f533' => 'image-filter',
 				'f171' => 'undo',
 				'f172' => 'redo',
+            // Block Editor
+            'f10a' => 'align-pull-left',
+            'f10b' => 'align-pull-right',
+            'f12b' => 'block-default',
+            'f137' => 'cloud-saved',
+            'f13b' => 'cloud-upload',
+            'f13c' => 'columns',
+            'f13d' => 'cover-image',
+            'f13e' => 'embed-audio',
+            'f13f' => 'embed-generic',
+            'f144' => 'embed-photo',
+            'f146' => 'embed-post',
+            'f149' => 'embed-video',
+            'f14a' => 'exit',
+            'f14b' => 'html',
+            'f14c' => 'info-outline',
+            'f14d' => 'insert-after',
+            'f14e' => 'insert-before',
+            'f10f' => 'insert',
+            'f14f' => 'remove',
+            'f150' => 'shortcode',
+            'f151' => 'table-col-after',
+            'f152' => 'table-col-before',
+            'f15a' => 'table-col-delete',
+            'f15b' => 'table-row-after',
+            'f15c' => 'table-row-before',
+            'f15d' => 'table-row-delete',
+            'f15e' => 'saved',
+            // TinyMCE
 				'f200' => 'editor-bold',
 				'f201' => 'editor-italic',
 				'f203' => 'editor-ul',
@@ -1600,6 +1661,7 @@ class Glance_That {
 				'f475' => 'editor-code',
 				'f476' => 'editor-paragraph',
 				'f535' => 'editor-table',
+            // Posts Screen
 				'f135' => 'align-left',
 				'f136' => 'align-right',
 				'f134' => 'align-center',
@@ -1614,6 +1676,7 @@ class Glance_That {
 				'f464' => 'edit',
 				'f182' => 'trash',
 				'f537' => 'sticky',
+            // Sorting
 				'f504' => 'external',
 				'f142' => 'arrow-up',
 				'f140' => 'arrow-down',
@@ -1634,6 +1697,7 @@ class Glance_That {
 				'f164' => 'exerpt-view',
 				'f509' => 'grid-view',
 				'f545' => 'move',
+            // Social
 				'f237' => 'share',
 				'f240' => 'share-alt',
 				'f242' => 'share-alt2',
@@ -1644,11 +1708,20 @@ class Glance_That {
 				'f467' => 'email-alt2',
 				'f304' => 'facebook',
 				'f305' => 'facebook-alt',
+            'f325' => 'networking',
 				'f12d' => 'instagram',
-				'f462' => 'googleplus',
-				'f325' => 'networking',
-				'f120' => 'wordpress',
-				'f324' => 'wordpress-alt',
+            'f162' => 'amazon',
+            'f18b' => 'google',
+            'f18d' => 'linkedin',
+            'f192' => 'pinterest',
+            'f19c' => 'podio',
+            'f195' => 'reddit',
+            'f196' => 'spotify',
+            'f199' => 'twitch',
+            'f19a' => 'whatsapp',
+            'f19d' => 'xing',
+            'f19b' => 'youtube',
+				// WordPress
 				'f308' => 'hammer',
 				'f309' => 'art',
 				'f310' => 'migrate',
@@ -1664,6 +1737,7 @@ class Glance_That {
 				'f10d' => 'tide',
 				'f124' => 'rest-api',
 				'f13a' => 'code-standards',
+            // Buddicons
 				'f452' => 'buddicons-activity',
 				'f12b' => 'buddicons-bbpress-logo',
 				'f448' => 'buddicons-buddypress-logo',
@@ -1675,6 +1749,9 @@ class Glance_That {
 				'f451' => 'buddicons-replies',
 				'f450' => 'buddicons-topics',
 				'f455' => 'buddicons-tracking',
+            // Products
+            'f120' => 'wordpress',
+				'f324' => 'wordpress-alt',
 				'f157' => 'pressthis',
 				'f463' => 'update',
 				'f113' => 'update-alt',
@@ -1684,11 +1761,21 @@ class Glance_That {
 				'f175' => 'feedback',
 				'f176' => 'cloud',
 				'f326' => 'translation',
+            // Taxonomies
 				'f323' => 'tag',
 				'f318' => 'category',
+            // Widgets
 				'f480' => 'archive',
 				'f479' => 'tagcloud',
 				'f478' => 'text',
+            // Databases
+            'f170' => 'database-add',
+            'f17a' => 'database-export',
+            'f17b' => 'database-import',
+            'f17c' => 'database-remove',
+            'f17d' => 'database-view',
+            'f17e' => 'database',
+            // Notifications
 				'f147' => 'yes',
 				'f12a' => 'yes-alt',
 				'f158' => 'no',
@@ -1703,6 +1790,8 @@ class Glance_That {
 				'f154' => 'star-empty',
 				'f227' => 'flag',
 				'f534' => 'warning',
+            'f16d' => 'bell',
+            // Misc
 				'f230' => 'location',
 				'f231' => 'location-alt',
 				'f178' => 'vault',
@@ -1740,9 +1829,18 @@ class Glance_That {
 				'f471' => 'tablet',
 				'f470' => 'smartphone',
 				'f525' => 'phone',
+            'f16e' => 'calculator',
+            'f18a' => 'games',
+            'f193' => 'printer',
 				'f510' => 'index-card',
 				'f511' => 'carrot',
+            'f16c' => 'beer',
+            'f16f' => 'coffee',
+            'f17f' => 'drumstick',
+            'f187' => 'food',
 				'f512' => 'building',
+            'f15f' => 'airplane',
+            'f16b' => 'car',
 				'f513' => 'store',
 				'f514' => 'album',
 				'f527' => 'palmtree',
@@ -1753,6 +1851,20 @@ class Glance_That {
 				'f529' => 'thumbs-up',
 				'f538' => 'layout',
 				'f546' => 'paperclip',
+            'f131' => 'color-picker',
+            'f327' => 'edit-large',
+            'f16a' => 'bank',
+            'f18c' => 'hourglass',
+            'f18e' => 'money-alt',
+            'f18f' => 'open-folder',
+            'f190' => 'pdf',
+            'f191' => 'pets',
+            'f194' => 'privacy',
+            'f198' => 'superhero',
+            'f197' => 'superhero-alt',
+            'f186' => 'edit-page',
+            'f188' => 'fullscreen-alt',
+            'f189' => 'fullscreen-exit-alt',
 			)
 		);
 
