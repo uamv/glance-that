@@ -6,7 +6,7 @@ Tags: cpt, custom, post type, post status, glance, dashboard, admin, dashicons
 Requires PHP: 5.6
 Requires at least: 3.1
 Tested up to: 5.5
-Stable tag: 4.8
+Stable tag: 4.9
 License: GPLv2 or later
 
 Adds content control to At a Glance on the Dashboard
@@ -97,6 +97,9 @@ Silence is golden.
 1. Icon Picker
 
 == Changelog ==
+
+= 4.9 =
+* Adding github workflow deployment
 
 = 4.8 =
 * Fix styling w/ WP 5.5
